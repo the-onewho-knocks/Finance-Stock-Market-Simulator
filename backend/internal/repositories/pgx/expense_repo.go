@@ -31,9 +31,29 @@ func (r *ExpenseRepositoryPgx) AddExpense(e *models.Expense) error {
 }
 
 func (r *ExpenseRepositoryPgx) ListExpense(userID string) ([]models.Expense, error) {
+	query := `
+		select id , user_id , amount , category , description , created_at
+		from expenses where user_id = $1
+	`
+	rows, err := r.db.Query(context.Background(), query, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
 
+	var res []models.Expense
+	for rows.Next() {
+		var e models.Expense
+		_ = rows.Scan(&e.ID, &e.UserID, &e.Amount, &e.Category, e.Description, e.CreatedAt)
+		res = append(res, e)
+	}
+	return res, nil
 }
 
 func (r *ExpenseRepositoryPgx) DeleteExpense(id string, userID string) error {
-
+	query := `
+		delete from expenses where id=$1 and user_id=$2
+	`
+	_, err := r.db.Exec(context.Background(), query, id, userID)
+	return err
 }
