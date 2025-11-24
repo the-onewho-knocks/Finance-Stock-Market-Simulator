@@ -17,6 +17,7 @@ type Portfolio struct {
 	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 }
 
+// we using this one here but lets see if any changes further
 type PortfolioItem struct {
 	ID          string    `json:"id"`
 	UserID      string    `json:"user_id"`
