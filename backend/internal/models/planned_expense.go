@@ -17,14 +17,12 @@ const (
 )
 
 type PlannedExpense struct {
-	ID             uuid.UUID       `json:"id" db:"id"`
-	UserID         uuid.UUID       `json:"user_id" db:"user_id"`
-	Amount         decimal.Decimal `json:"amount" db:"amount"`
-	Category       string          `json:"category" db:"category"`
-	Note           string          `json:"note" db:"note"`
-	Date           time.Time       `json:"date" db:"date"`
-	IsRecurring    bool            `json:"is_recurring" db:"is_recurring"`
-	RecurrenceType *RecurrenceType `json:"recurrence_type,omitempty" db:"recurrence_type"`
+	ID     uuid.UUID       `json:"id" db:"id"`
+	UserID uuid.UUID       `json:"user_id" db:"user_id"`
+	Title  string          `json:"title" db:"title"`
+	Amount decimal.Decimal `json:"amount" db:"amount"`
+	Note   string          `json:"note" db:"note"`
+	Date   time.Time       `json:"date" db:"date"`
 
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
