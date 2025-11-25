@@ -2,6 +2,7 @@ package pgx
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -75,9 +76,72 @@ func (r *PortfolioRepositoryPgx) BuyStock(item *models.PortfolioItem) error {
 }
 
 func (r *PortfolioRepositoryPgx) SellStock(userID string, stockSymbol string, quantity int) error {
+	ctx := context.Background()
 
+	tx, err := r.db.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+	query := `
+		select quantity from portfolio_items
+	 	where
+		user_id = $1 and stock_symbol = $2
+	`
+	var currentQty int
+	err = tx.QueryRow(ctx, query, userID, stockSymbol).Scan(&currentQty)
+	if err != nil {
+		return err
+	}
+
+	if currentQty == quantity {
+		delQuery := `
+			delete from portfolio_items
+			where
+			user_id = $1 and stock_symbol = $2
+		`
+		if _, err := tx.Exec(ctx, delQuery, userID, stockSymbol); err != nil {
+			return err
+		}
+	} else {
+		updateQuery := `
+			update portfolio_items
+			set quantity = quantity - $1 , updated_at = $2
+			where user_id = $3 and stock_symbol = $4
+		`
+		if _, err := tx.Exec(ctx, updateQuery, quantity, time.NOW().UTC(), userID, stockSymbol); err != nil {
+			return err
+		}
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r *PortfolioRepositoryPgx) GetStockHolding(userID string, stockSymbol string) (*models.PortfolioItem, error) {
+	query := `
+		select id , user_id , stock_symbol , quantity , avg_price , created_at , updated_at
+		from portfolio_items
+		where
+		user_id=$1 and stock_symbol=$2
+	`
+	ctx := context.Background()
 
+	var it models.PortfolioItem
+	err := r.db.QueryRow(ctx, query, userID, stockSymbol).Scan(
+		&it.ID,
+		&it.UserID,
+		&it.StockSymbol,
+		&it.Quantity,
+		&it.AvgPrice,
+		&it.CreatedAt,
+		&it.UpdatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &it, err
 }
