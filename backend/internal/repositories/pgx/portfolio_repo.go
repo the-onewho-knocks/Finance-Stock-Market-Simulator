@@ -109,7 +109,7 @@ func (r *PortfolioRepositoryPgx) SellStock(userID string, stockSymbol string, qu
 			set quantity = quantity - $1 , updated_at = $2
 			where user_id = $3 and stock_symbol = $4
 		`
-		if _, err := tx.Exec(ctx, updateQuery, quantity, time.NOW().UTC(), userID, stockSymbol); err != nil {
+		if _, err := tx.Exec(ctx, updateQuery, quantity, time.Now().UTC(), userID, stockSymbol); err != nil {
 			return err
 		}
 	}
