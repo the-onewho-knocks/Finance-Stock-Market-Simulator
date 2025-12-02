@@ -88,6 +88,13 @@ func (n *NewsClient) GetSymbolNews(symbol string) ([]NewsItem, error) {
 	defer resp.Body.Close()
 
 	news := []NewsItem{}
+
+	// FIX: decode the JSON here
+	var raw map[string]interface{}
+	if err := json.NewDecoder(resp.Body).Decode(&raw); err != nil {
+		return nil, err
+	}
+
 	if newsArr, ok := raw["news"].([]interface{}); ok {
 		for _, nitem := range newsArr {
 			entry := nitem.(map[string]interface{})
@@ -112,5 +119,6 @@ func (n *NewsClient) GetSymbolNews(symbol string) ([]NewsItem, error) {
 			})
 		}
 	}
+
 	return news, nil
 }
