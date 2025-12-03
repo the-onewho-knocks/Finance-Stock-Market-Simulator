@@ -57,7 +57,7 @@ func (c *StockCache) GetPrice(symbol string) (float64, error) {
 
 func (c *StockCache) GetChange(symbol string) (float64, error) {
 	ctx := context.Background()
-	key := fmt.Sprintf("stock: %s", symbol)
+	key := fmt.Sprintf("stock:%s", symbol)
 	return c.client.HGet(ctx, key, "change").Float64()
 }
 
