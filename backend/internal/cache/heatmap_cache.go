@@ -19,7 +19,7 @@ func NewHeatmapCache() *HeatmapCache {
 
 func (c *HeatmapCache) SetColor(symbol string, color string) error {
 	ctx := context.Background()
-	key := fmt.Sprintf("heatmap: %s", symbol)
+	key := fmt.Sprintf("heatmap:%s", symbol)
 	return c.client.Set(ctx, key, color, 0).Err()
 }
 
