@@ -29,6 +29,7 @@ func (c *HeatmapCache) SetSectorColor(sector string, color string) error {
 	return c.client.Set(ctx, key, color, 0).Err()
 }
 
+//* means select all the symbols from the redis database
 func (c *HeatmapCache) GetFullHeatmap() (map[string]string, error) {
 	ctx := context.Background()
 	pattern := "heatmap:*"
