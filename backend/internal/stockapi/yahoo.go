@@ -5,20 +5,27 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 )
 
 type YahooClient struct {
 	httpClient *http.Client
+	apiKey     string
+	apiHost    string
 }
 
-func NewYahooClient() *YahooClient {
+func NewYahooClient(apiKey, apiHost string) *YahooClient {
 	return &YahooClient{
-		httpClient: &http.Client{
-			Timeout: 5 * time.Second,
-		},
+		httpClient: &http.Client{Timeout: 6 * time.Second},
+		apiKey:     apiKey,
+		apiHost:    apiHost,
 	}
 }
+
+/* ============================
+   RESPONSE STRUCTURE
+============================ */
 
 type yahooResponse struct {
 	QuoteResponse struct {
@@ -27,15 +34,39 @@ type yahooResponse struct {
 			QuoteSourceName            string  `json:"quoteSourceName"`
 			RegularMarketPrice         float64 `json:"regularMarketPrice"`
 			RegularMarketChangePercent float64 `json:"regularMarketChangePercent"`
-			RegularMarketVolume        int64   `json:"regulatMarketVolume"`
+			RegularMarketVolume        int64   `json:"regularMarketVolume"`
 		} `json:"result"`
 	} `json:"quoteResponse"`
 }
 
-// 1. Fetch Single Symbol
+/* ============================
+   HTTP HELPER
+============================ */
+
+func (y *YahooClient) doRequest(url string) (*http.Response, error) {
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("X-RapidAPI-Key", y.apiKey)
+	req.Header.Set("X-RapidAPI-Host", y.apiHost)
+
+	return y.httpClient.Do(req)
+}
+
+/* ============================
+   SINGLE PRICE
+============================ */
+
 func (y *YahooClient) GetPrice(symbol string) (*PriceData, error) {
-	url := fmt.Sprintf("https://query1.finance.yahoo.com/v7/finance/quote?symbols=%s", symbol)
-	resp, err := y.httpClient.Get(url)
+	url := fmt.Sprintf(
+		"https://%s/api/yahoo/qu/quote?symbols=%s",
+		y.apiHost,
+		symbol,
+	)
+
+	resp, err := y.doRequest(url)
 	if err != nil {
 		return nil, err
 	}
@@ -43,8 +74,13 @@ func (y *YahooClient) GetPrice(symbol string) (*PriceData, error) {
 
 	var data yahooResponse
 	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
+		return nil, err
+	}
+
+	if len(data.QuoteResponse.Result) == 0 {
 		return nil, errors.New("symbol not found")
 	}
+
 	q := data.QuoteResponse.Result[0]
 
 	return &PriceData{
@@ -57,22 +93,24 @@ func (y *YahooClient) GetPrice(symbol string) (*PriceData, error) {
 	}, nil
 }
 
-// fetch multiple symbols
-func (y *YahooClient) GetPrices(symbol []string) ([]PriceData, error) {
-	if len(symbol) == 0 {
+/* ============================
+   MULTIPLE PRICES
+============================ */
+
+func (y *YahooClient) GetPrices(symbols []string) ([]PriceData, error) {
+	if len(symbols) == 0 {
 		return []PriceData{}, nil
 	}
 
-	joined := ""
-	for i, s := range symbol {
-		if i != 0 {
-			joined += ","
-		}
-		joined = joined + s
-	}
+	joined := strings.Join(symbols, ",")
 
-	url := fmt.Sprintf("https://query1.finance.yahoo.com/v7/finance/quote?symbols=%s", joined)
-	resp, err := y.httpClient.Get(url)
+	url := fmt.Sprintf(
+		"https://%s/api/yahoo/qu/quote?symbols=%s",
+		y.apiHost,
+		joined,
+	)
+
+	resp, err := y.doRequest(url)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +121,7 @@ func (y *YahooClient) GetPrices(symbol []string) ([]PriceData, error) {
 		return nil, err
 	}
 
-	results := []PriceData{}
+	results := make([]PriceData, 0, len(data.QuoteResponse.Result))
 	for _, q := range data.QuoteResponse.Result {
 		results = append(results, PriceData{
 			Symbol:    q.Symbol,
@@ -94,11 +132,17 @@ func (y *YahooClient) GetPrices(symbol []string) ([]PriceData, error) {
 			Timestamp: time.Now().UTC(),
 		})
 	}
+
 	return results, nil
 }
 
+/* ============================
+   STREAMING (POLLING)
+============================ */
+
 func (y *YahooClient) PriceStream(symbols []string) (<-chan PriceData, error) {
 	ch := make(chan PriceData)
+
 	go func() {
 		ticker := time.NewTicker(1 * time.Second)
 		defer ticker.Stop()
@@ -113,5 +157,6 @@ func (y *YahooClient) PriceStream(symbols []string) (<-chan PriceData, error) {
 			}
 		}
 	}()
+
 	return ch, nil
 }
