@@ -5,13 +5,13 @@ import (
 	"fmt"
 )
 
-func (y *YahooClient) GetCompanyProfile(symbol string) (*CompanyProfile, error) {
+func (y *YahooClient) GetFinancials(symbol string) (*FinancialReport, error) {
 	if symbol == "" {
-		return nil, fmt.Errorf("Symbol cannot be empty")
+		return nil, fmt.Errorf("the symbol field is empty")
 	}
 
 	url := fmt.Sprintf(
-		"https://%s/api/yahoo/qu/quote/%s/asset-profile",
+		"https://%s/api/yahoo/qu/quote/%s/financials",
 		y.apiHost,
 		symbol,
 	)
@@ -22,9 +22,10 @@ func (y *YahooClient) GetCompanyProfile(symbol string) (*CompanyProfile, error) 
 	}
 	defer resp.Body.Close()
 
-	var profile CompanyProfile
-	if err := json.NewDecoder(resp.Body).Decode(&profile); err != nil {
+	var report FinancialReport
+	if err := json.NewDecoder(resp.Body).Decode(&report); err != nil {
 		return nil, err
 	}
-	return &profile, nil
+
+	return &report, nil
 }

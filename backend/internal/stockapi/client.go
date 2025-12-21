@@ -85,8 +85,4 @@ type Client interface {
 	// Company
 	GetCompanyProfile(symbol string) (*CompanyProfile, error)
 	GetFinancials(symbol string) (*FinancialReport, error)
-
-	// Indicators
-	GetRSI(symbol string, period int) ([]float64, error)
-	GetSMA(symbol string, period int) ([]float64, error)
 }
