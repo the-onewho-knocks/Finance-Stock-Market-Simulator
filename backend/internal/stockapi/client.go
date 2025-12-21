@@ -19,7 +19,7 @@ type NewsItem struct {
 	Link        string
 	Summary     string
 	PublishedAt time.Time
-	Ticker      []string
+	Tickers     []string
 }
 
 // CompanyProfile represents basic company information
