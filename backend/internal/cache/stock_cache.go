@@ -49,12 +49,15 @@ func (c *StockCache) SetStockData(symbol string, price float64, change float64) 
 
 //getters
 
+// this fuckin current stock price which is set
 func (c *StockCache) GetPrice(symbol string) (float64, error) {
 	ctx := context.Background()
 	key := fmt.Sprintf("stock:%s", symbol)
 	return c.client.HGet(ctx, key, "price").Float64()
 }
 
+// this fuckin function fetches the price of change of a stock
+// (for example +1.25 or -0.80) from Redis cache.
 func (c *StockCache) GetChange(symbol string) (float64, error) {
 	ctx := context.Background()
 	key := fmt.Sprintf("stock:%s", symbol)
