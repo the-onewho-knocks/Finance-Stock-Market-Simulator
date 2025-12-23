@@ -19,8 +19,8 @@ type Portfolio struct {
 
 // we using this one here but lets see if any changes further
 type PortfolioItem struct {
-	ID          string    `json:"id"`
-	UserID      string    `json:"user_id"`
+	ID          uuid.UUID `json:"id"`
+	UserID      uuid.UUID `json:"user_id"`
 	StockSymbol string    `json:"stock_symbol"`
 	Quantity    int       `json:"quantity"`
 	AvgPrice    float64   `json:"avg_price"`

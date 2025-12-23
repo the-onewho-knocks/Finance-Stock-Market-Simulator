@@ -22,17 +22,17 @@ func (r *ExpenseRepositoryPgx) GetDB() *pgxpool.Pool {
 
 func (r *ExpenseRepositoryPgx) AddExpense(e *models.Expense) error {
 	query := `
-		insert into expenses (id,user_ID,amount,category,discription,created_at )
-		 values ($1 , $2 , $3 , $4 , $5 , $6)
+		insert into expenses (id,user_ID,amount,category,description,date,created_at )
+		 values ($1 , $2 , $3 , $4 , $5 , $6, $7, now())
 	`
-	_, err := r.db.Exec(context.Background(), query, e.ID, e.UserID, e.Amount, e.Category, e.Description, e.CreatedAt)
+	_, err := r.db.Exec(context.Background(), query, e.ID, e.UserID, e.Amount, e.Category, e.Description, e.Date,e.CreatedAt)
 	return err
 
 }
 
 func (r *ExpenseRepositoryPgx) ListExpense(userID string) ([]models.Expense, error) {
 	query := `
-		select id , user_id , amount , category , description , created_at
+		select id , user_id , amount , category , description , date, created_at
 		from expenses where user_id = $1
 	`
 	rows, err := r.db.Query(context.Background(), query, userID)
@@ -44,7 +44,7 @@ func (r *ExpenseRepositoryPgx) ListExpense(userID string) ([]models.Expense, err
 	var res []models.Expense
 	for rows.Next() {
 		var e models.Expense
-		_ = rows.Scan(&e.ID, &e.UserID, &e.Amount, &e.Category, e.Description, e.CreatedAt)
+		_ = rows.Scan(&e.ID, &e.UserID, &e.Amount, &e.Category,&e.Description,&e.Date, &e.CreatedAt)
 		res = append(res, e)
 	}
 	return res, nil

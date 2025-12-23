@@ -12,7 +12,7 @@ type Expense struct {
 	UserID      uuid.UUID       `json:"user_id" db:"user_id"`
 	Amount      decimal.Decimal `json:"amount" db:"amount"`
 	Category    string          `json:"category" db:"category"`
-	Description string          `json:"discription" db:"discriptione"`
+	Description string          `json:"description" db:"description"`
 	Date        time.Time       `json:"date" db:"date"`
 
 	CreatedAt time.Time `json:"created_at" db:"created_at"`

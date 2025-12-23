@@ -2,64 +2,138 @@ package services
 
 import (
 	"context"
-	"sync"
+	"time"
 
+	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
-	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/cache"
+
 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/models"
-	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/repositories/interfaces"
+	repo "github.com/the-onewho-knocks/finance-Simulation/backend/internal/repositories/interfaces"
 )
 
 type NetworthService struct {
-	portfolioRepo interfaces.PortfolioRepository
-	expenseRepo   interfaces.ExpenseRepository
-	networthRepo  interfaces.NetworthRepository
-
-	stockCache     *cache.StockCache
-	dashboardCache *cache.DashBoardCache
+	networthRepo    repo.NetworthRepository
+	userRepo        repo.UserRepository
+	portfolioSvc    *PortfolioService
+	expenseSvc      *ExpenseService
 }
 
-//dependencys
 func NewNetworthService(
-	portfolioRepo interfaces.PortfolioRepository,
-	expenseRepo interfaces.ExpenseRepository,
-	networthRepo interfaces.NetworthRepository,
-
-	stockCache *cache.StockCache,
-	dashboardCache *cache.DashBoardCache,
+	networthRepo repo.NetworthRepository,
+	userRepo repo.UserRepository,
+	portfolioSvc *PortfolioService,
+	expenseSvc *ExpenseService,
 ) *NetworthService {
 	return &NetworthService{
-		portfolioRepo:  portfolioRepo,
-		expenseRepo:    expenseRepo,
-		networthRepo:   networthRepo,
-		stockCache:     stockCache,
-		dashboardCache: dashboardCache,
+		networthRepo: networthRepo,
+		userRepo:     userRepo,
+		portfolioSvc: portfolioSvc,
+		expenseSvc:   expenseSvc,
 	}
 }
 
-//public api
+//
+// ----------------------------------------------------
+// CORE AGGREGATION LOGIC
+// ----------------------------------------------------
+//
 
-// this function computes users net worth using concrrency
+// RecalculateNetworth recomputes net worth and persists snapshots
 func (s *NetworthService) RecalculateNetworth(
 	ctx context.Context,
 	userID string,
 ) (*models.NetWorthBreakdown, error) {
 
-	var(
-		cashBalance decimal.Decimal
-		portfolioVal decimal.Decimal
-		totalExpenses decimal.Decimal
-	)
-
-
-	wg := sync.WaitGroup{}
-	wg.Add(3) //that is we are executing 3 goroutines here
-
-	//channel-based parallel computation
-	errCh := make(chan error , 3)
-
-	go func(){
-		defer wg.Done()
-		p , err := s.portfolioRepo.GetPortfolio()
+	uid, err := uuid.Parse(userID)
+	if err != nil {
+		return nil, err
 	}
+
+	// 1️⃣ Cash balance
+	user, err := s.userRepo.GetUserByID(userID)
+	if err != nil {
+		return nil, err
+	}
+	cash := decimal.NewFromFloat(float64(user.Fake_Balance))
+
+	// 2️⃣ Portfolio value + invested
+	portfolioValueFloat, totalInvestedFloat, err :=
+		s.portfolioSvc.GetPortfolioMetrics(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	portfolioValue := decimal.NewFromFloat(portfolioValueFloat)
+	totalInvested := decimal.NewFromFloat(totalInvestedFloat)
+
+	// 3️⃣ Total expenses
+	expensesFloat, err := s.expenseSvc.GetTotalExpenses(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	totalExpenses := decimal.NewFromFloat(expensesFloat)
+
+	// 4️⃣ Net worth formula
+	netWorth := portfolioValue.
+		Add(cash).
+		Sub(totalExpenses)
+
+	// 5️⃣ Build breakdown
+	breakdown := &models.NetWorthBreakdown{
+		UserID:          uid,
+		PortfolioValue:  portfolioValue,
+		CashBalance:     cash,
+		TotalExpenses:   totalExpenses,
+		TotalInvested:   totalInvested,
+		CurrentNetWorth: netWorth,
+		UpdatedAt:       time.Now().UTC(),
+	}
+
+	// 6️⃣ Persist breakdown
+	_ = s.networthRepo.SaveBreakdown(breakdown)
+
+	// 7️⃣ Persist snapshot (simple)
+	_ = s.networthRepo.SaveNetworth(&models.Networth{
+		UserID: userID,
+		Total:  netWorth.InexactFloat64(),
+	})
+
+	// 8️⃣ Persist history
+	_ = s.networthRepo.SaveNetWorthHistory(&models.NetWorthHistory{
+		UserID:    uid,
+		NetWorth: netWorth,
+		Timestamp: time.Now().UTC(),
+	})
+
+	return breakdown, nil
+}
+
+//
+// ----------------------------------------------------
+// READ OPERATIONS
+// ----------------------------------------------------
+//
+
+// GetLatestNetworth returns last computed net worth
+func (s *NetworthService) GetLatestNetworth(
+	ctx context.Context,
+	userID string,
+) (*models.Networth, error) {
+	return s.networthRepo.GetLatestNetworth(userID)
+}
+
+// GetNetworthHistory returns net worth timeline
+func (s *NetworthService) GetNetworthHistory(
+	ctx context.Context,
+	userID string,
+) ([]models.Networth, error) {
+	return s.networthRepo.GetNetworthHistory(userID)
+}
+
+// GetNetworthBreakdown returns latest breakdown
+func (s *NetworthService) GetNetworthBreakdown(
+	ctx context.Context,
+	userID string,
+) (*models.NetWorthBreakdown, error) {
+	return s.networthRepo.GetBreakdown(userID)
 }

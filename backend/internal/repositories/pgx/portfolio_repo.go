@@ -61,7 +61,7 @@ func (r *PortfolioRepositoryPgx) BuyStock(item *models.PortfolioItem) error {
 		) / (portfolio_items.quantity + excluded.quantity)
 		end
 	),
-	updated_ay = now()
+	updated_at = now()
 	`
 	id := uuid.New()
 	_, err := r.db.Exec(context.Background(), query,
