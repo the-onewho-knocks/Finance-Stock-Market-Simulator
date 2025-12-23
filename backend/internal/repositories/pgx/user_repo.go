@@ -22,10 +22,19 @@ func (r *UserRepositoryPgx) GetDB() *pgxpool.Pool {
 
 func (r *UserRepositoryPgx) CreateUser(user *models.User) error {
 	query := `
-		insert into users (id,email,full_namename,avatar_url,google_id,fake_balance)
-		values ($1,$2,$3,$4,$5,$6)
+	insert into users (id,email,full_namename,avatar_url,google_id,fake_balance)
+	values ($1,$2,$3,$4,$5,$6)
 	`
-	_, err := r.db.Exec(context.Background(), query, user.ID, user.Email, user.AvatarURL, user.GoogleID, user.Fake_Balance)
+	_, err := r.db.Exec(
+		context.Background(),
+		query,
+		user.ID,
+		user.Email,
+		user.FullName,
+		user.AvatarURL,
+		user.GoogleID,
+		user.Fake_Balance,
+	)
 	return err
 }
 
@@ -35,8 +44,14 @@ func (r *UserRepositoryPgx) GetUserByID(id string) (*models.User, error) {
 	select  id , email , full_name , avatar_url, google_id, fake_balance
 	from users where id=$1
 	`
-	err := r.db.QueryRow(context.Background(), query, id).Scan(&user.ID, &user.Email, &user.FullName, &user.AvatarURL, &user.Fake_Balance)
-	if err != nil {
+	if err := r.db.QueryRow(context.Background(), query, id).Scan(
+		&user.ID,
+		&user.Email,
+		&user.FullName,
+		&user.AvatarURL,
+		&user.GoogleID,
+		&user.Fake_Balance,
+	); err != nil {
 		return nil, err
 	}
 	return &user, nil
