@@ -50,6 +50,10 @@ func (s *UserService) CreateUser(
 		Fake_Balance: InitialFakeBalance,
 	}
 
+	// we are calling the function in the pgx query folder here after assigining the values
+	// to user variable and of type models.User{} so yeahh its kinda easy but having errors in the
+	// pgx folder will break everything so it is the most important folder
+
 	if err := s.userRepo.CreateUser(user); err != nil {
 		return nil, err
 	}
