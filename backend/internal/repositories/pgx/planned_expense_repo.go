@@ -13,7 +13,7 @@ type PlannedExpenseRepositoryPgx struct {
 	DB *pgxpool.Pool
 }
 
-func NewPlannedExpenseRepsoitory(db *pgxpool.Pool) interfaces.PlannedExpenseRepository {
+func NewPlannedExpenseRepository(db *pgxpool.Pool) interfaces.PlannedExpenseRepository {
 	return &PlannedExpenseRepositoryPgx{DB: db}
 }
 
