@@ -64,7 +64,7 @@ func (s *TransactionService) Buy(
 
 	//we update the portfolio
 	if err := s.portfolioRepo.BuyStock(&models.PortfolioItem{
-		UserID:      userID.String(),
+		UserID:      userID,
 		StockSymbol: symbol,
 		Quantity:    int(qty.IntPart()),
 		AvgPrice:    priceFloat,
