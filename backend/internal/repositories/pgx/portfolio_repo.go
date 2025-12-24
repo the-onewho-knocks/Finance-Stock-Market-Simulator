@@ -22,7 +22,7 @@ func (r *PortfolioRepositoryPgx) GetDB() *pgxpool.Pool {
 	return r.db
 }
 
-func (r *PortfolioRepositoryPgx) GetPortfolio(userID string) ([]models.PortfolioItem, error) {
+func (r *PortfolioRepositoryPgx) GetPortfolio(userID uuid.UUID) ([]models.PortfolioItem, error) {
 	query := `
 		select id ,user_id , stock_symbol , quantity , avg_price , created_at , updated_at
 		from portfolio_items where user_id = $1
@@ -75,7 +75,7 @@ func (r *PortfolioRepositoryPgx) BuyStock(item *models.PortfolioItem) error {
 	return err
 }
 
-func (r *PortfolioRepositoryPgx) SellStock(userID string, stockSymbol string, quantity int) error {
+func (r *PortfolioRepositoryPgx) SellStock(userID uuid.UUID, stockSymbol string, quantity int) error {
 	ctx := context.Background()
 
 	tx, err := r.db.Begin(ctx)
@@ -121,7 +121,7 @@ func (r *PortfolioRepositoryPgx) SellStock(userID string, stockSymbol string, qu
 	return nil
 }
 
-func (r *PortfolioRepositoryPgx) GetStockHolding(userID string, stockSymbol string) (*models.PortfolioItem, error) {
+func (r *PortfolioRepositoryPgx) GetStockHolding(userID uuid.UUID, stockSymbol string) (*models.PortfolioItem, error) {
 	query := `
 		select id , user_id , stock_symbol , quantity , avg_price , created_at , updated_at
 		from portfolio_items

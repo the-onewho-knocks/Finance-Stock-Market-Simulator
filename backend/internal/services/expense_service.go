@@ -10,35 +10,31 @@ import (
 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/repositories/interfaces"
 )
 
-type ExpenseSevice struct {
+type ExpenseService struct {
 	expenseRepo interfaces.ExpenseRepository
 }
 
 //this is the logic for adding values into the repo we just use the function from the pgx file here in service layer to 
 //perform operations
-func NewExpenseService(expenseRepo interfaces.ExpenseRepository) *ExpenseSevice {
-	return &ExpenseSevice{
+func NewExpenseService(expenseRepo interfaces.ExpenseRepository) *ExpenseService {
+	return &ExpenseService{
 		expenseRepo: expenseRepo,
 	}
 }
 
-func (s *ExpenseSevice) AddExpense(
+func (s *ExpenseService) AddExpense(
 	ctx context.Context,
-	userID string,
+	userID uuid.UUID,
 	amount decimal.Decimal,
 	category string,
 	description string,
 	date time.Time,
 )error{
 
-	uid , err := uuid.Parse(userID)
-	if err != nil{
-		return err
-	}
 
 	expense := &models.Expense{
 		ID: uuid.New(),
-		UserID: uid,
+		UserID: userID,
 		Amount: amount,
 		Category: category,
 		Description: description,
@@ -51,27 +47,27 @@ func (s *ExpenseSevice) AddExpense(
 }
 
 //reading all the expenses
-func (s *ExpenseSevice) ListExpenses(
+func (s *ExpenseService) ListExpenses(
 	ctx context.Context,
-	userID string,
+	userID uuid.UUID,
 )([]models.Expense , error){
 	return s.expenseRepo.ListExpense(userID)
 }
 
 //deleting the expenses
-func(s *ExpenseSevice) DeleteExpense(
+func(s *ExpenseService) DeleteExpense(
 	ctx context.Context,
 	expenseID string,
-	userID string,
+	userID uuid.UUID,
 ) error{
-	return s.expenseRepo.DeleteExpense(userID , expenseID)
+	return s.expenseRepo.DeleteExpense( expenseID , userID)
 }
 
 //expenses is a slice we are iterating through it and declared a initial value for a variable total 
 //e.amount gets added to the total during the iteration 
-func (s *ExpenseSevice) GetTotalExpenses(
+func (s *ExpenseService) GetTotalExpenses(
 	ctx context.Context,
-	userID string,
+	userID uuid.UUID,
 )(decimal.Decimal , error){
 	expenses , err := s.expenseRepo.ListExpense(userID)
 	if err != nil{

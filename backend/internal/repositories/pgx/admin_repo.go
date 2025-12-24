@@ -48,14 +48,14 @@ func (r *AdminRepositoryPGX) GetAllUsers() ([]models.User, error) {
 	return res, nil
 }
 
-func (r *AdminRepositoryPGX) DeleteUser(id string) error {
+func (r *AdminRepositoryPGX) DeleteUser(id uuid.UUID) error {
 	ctx := context.Background()
 	query := `DELETE FROM users WHERE id=$1`
 	_, err := r.db.Exec(ctx, query, id)
 	return err
 }
 
-func (r *AdminRepositoryPGX) GetUserPortfolio(userID string) ([]models.PortfolioItem, error) {
+func (r *AdminRepositoryPGX) GetUserPortfolio(userID uuid.UUID) ([]models.PortfolioItem, error) {
 	query := `SELECT id, user_id, stock_symbol, quantity, avg_price, created_at, updated_at FROM portfolio_items WHERE user_id=$1`
 	ctx := context.Background()
 	rows, err := r.db.Query(ctx, query, userID)
@@ -74,8 +74,8 @@ func (r *AdminRepositoryPGX) GetUserPortfolio(userID string) ([]models.Portfolio
 		if err := rows.Scan(&id, &uid, &it.StockSymbol, &it.Quantity, &it.AvgPrice, &created, &updated); err != nil {
 			return nil, err
 		}
-		it.ID = id.String()
-		it.UserID = uid.String()
+		it.ID = id
+		it.UserID = uid
 		it.CreatedAt = created
 		it.UpdatedAt = updated
 		res = append(res, it)

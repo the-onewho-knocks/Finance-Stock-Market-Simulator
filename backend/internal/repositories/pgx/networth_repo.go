@@ -40,7 +40,7 @@ func (r *NetworthRepositoryPgx) SaveNetworth(n *models.Networth) error {
 	return nil
 }
 
-func (r *NetworthRepositoryPgx) GetLatestNetworth(userID string) (*models.Networth, error) {
+func (r *NetworthRepositoryPgx) GetLatestNetworth(userID uuid.UUID) (*models.Networth, error) {
 	ctx := context.Background()
 
 	query := `
@@ -60,7 +60,7 @@ func (r *NetworthRepositoryPgx) GetLatestNetworth(userID string) (*models.Networ
 	return &n, nil
 }
 
-func (r *NetworthRepositoryPgx) GetNetworthHistory(userID string) ([]models.Networth, error) {
+func (r *NetworthRepositoryPgx) GetNetworthHistory(userID uuid.UUID) ([]models.Networth, error) {
 	ctx := context.Background()
 
 	query := `
@@ -114,7 +114,7 @@ func (r *NetworthRepositoryPgx) SaveNetWorthHistory(h *models.NetWorthHistory) e
 
 }
 
-func (r *NetworthRepositoryPgx) GetNetWorthHistoryRecords(userID string) ([]models.NetWorthHistory, error) {
+func (r *NetworthRepositoryPgx) GetNetWorthHistoryRecords(userID uuid.UUID) ([]models.NetWorthHistory, error) {
 	ctx := context.Background()
 
 	query := `
@@ -179,7 +179,7 @@ func (r *NetworthRepositoryPgx) SaveBreakdown(b *models.NetWorthBreakdown) error
 	return err
 }
 
-func (r *NetworthRepositoryPgx) GetBreakdown(userID string) (*models.NetWorthBreakdown, error) {
+func (r *NetworthRepositoryPgx) GetBreakdown(userID uuid.UUID) (*models.NetWorthBreakdown, error) {
 	ctx := context.Background()
 
 	query := `

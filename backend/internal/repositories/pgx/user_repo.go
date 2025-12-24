@@ -3,6 +3,7 @@ package pgx
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/models"
 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/repositories/interfaces"
@@ -38,7 +39,8 @@ func (r *UserRepositoryPgx) CreateUser(user *models.User) error {
 	return err
 }
 
-func (r *UserRepositoryPgx) GetUserByID(id string) (*models.User, error) {
+//im a but suspicious here to the id may cause data type conflict
+func (r *UserRepositoryPgx) GetUserByID(id uuid.UUID) (*models.User, error) {
 	user := models.User{}
 	query := `
 	select  id , email , full_name , avatar_url, google_id, fake_balance
@@ -79,7 +81,7 @@ func (r *UserRepositoryPgx) UpdateUser(user *models.User) error {
 	return err
 }
 
-func (r *UserRepositoryPgx) IncrementFakeBalance(userID string, amount float64) error {
+func (r *UserRepositoryPgx) IncrementFakeBalance(userID uuid.UUID, amount float64) error {
 	query := `
 		update users set fake_balance = fake_balance + $1 where id=$2
 	`
@@ -87,7 +89,7 @@ func (r *UserRepositoryPgx) IncrementFakeBalance(userID string, amount float64) 
 	return err
 }
 
-func (r *UserRepositoryPgx) DeductFakeBalance(userID string, amount float64) error {
+func (r *UserRepositoryPgx) DeductFakeBalance(userID uuid.UUID, amount float64) error {
 	query := `
 		update users set fake_balance = fake_balance - $1 where id=$2
 	`

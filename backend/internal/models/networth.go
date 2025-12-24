@@ -7,14 +7,12 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-
 type Networth struct {
 	ID        string    `json:"id"`
-	UserID    string    `json:"user_id"`
+	UserID    uuid.UUID `json:"user_id"`
 	Total     float64   `json:"total"`
 	CreatedAt time.Time `json:"created_at"`
 }
-
 
 // NetWorthHistory stores snapshots of a user's total financial worth
 // including portfolio value, cash balance, expenses impact, etc.

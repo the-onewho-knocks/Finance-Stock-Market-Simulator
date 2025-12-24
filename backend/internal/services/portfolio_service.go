@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/cache"
 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/models"
@@ -27,7 +28,7 @@ func NewPortfolioRepository(
 // this is for listing just uses the code in the pgx portfolioRepo
 func (s *PortfolioService) GetPortfolio(
 	ctx context.Context,
-	userID string) ([]models.PortfolioItem, error) {
+	userID uuid.UUID) ([]models.PortfolioItem, error) {
 	return s.protfolioRepo.GetPortfolio(userID)
 }
 
@@ -36,7 +37,7 @@ func (s *PortfolioService) GetPortfolio(
 
 func (s *PortfolioService) GetPortfolioMetrics(
 	ctx context.Context,
-	userID string,
+	userID uuid.UUID,
 ) (portfolioValue decimal.Decimal, totalInvested decimal.Decimal, err error) {
 
 	items, err := s.protfolioRepo.GetPortfolio(userID)

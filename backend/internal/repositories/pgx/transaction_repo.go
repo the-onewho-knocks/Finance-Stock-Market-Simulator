@@ -39,7 +39,7 @@ func (r *TransactionRepositoryPgx) AddTransaction(tx *models.Transaction) error 
 
 }
 
-func (r *TransactionRepositoryPgx) GetTransaction(userID string) ([]models.Transaction, error) {
+func (r *TransactionRepositoryPgx) GetTransaction(userID uuid.UUID) ([]models.Transaction, error) {
 	ctx := context.Background()
 
 	query := `

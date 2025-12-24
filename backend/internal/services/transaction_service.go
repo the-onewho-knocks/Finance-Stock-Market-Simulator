@@ -58,7 +58,7 @@ func (s *TransactionService) Buy(
 	total := price.Mul(qty)
 
 	//fake balance is deducted here
-	if err := s.userRepo.DeductFakeBalance(userID.String(), total.InexactFloat64()); err != nil {
+	if err := s.userRepo.DeductFakeBalance(userID, total.InexactFloat64()); err != nil {
 		return errors.New("insufficient balance")
 	}
 
@@ -88,7 +88,7 @@ func (s *TransactionService) Buy(
 		return err
 	}
 
-	go s.networthService.RecalculateNetworth(ctx, userID.String())
+	go s.networthService.RecalculateNetworth(ctx, userID)
 
 	return nil
 }
@@ -106,7 +106,7 @@ func (s *TransactionService) Sell(
 		return errors.New("invalid quantity")
 	}
 
-	holding, err := s.portfolioRepo.GetStockHolding(userID.String(), symbol)
+	holding, err := s.portfolioRepo.GetStockHolding(userID, symbol)
 	if err != nil || holding.Quantity < int(qty.IntPart()) {
 		return errors.New("not enough holdings")
 	}
@@ -121,7 +121,7 @@ func (s *TransactionService) Sell(
 
 	//update the portfolio
 	if err := s.portfolioRepo.SellStock(
-		userID.String(),
+		userID,
 		symbol,
 		int(qty.IntPart()),
 	); err != nil {
@@ -129,7 +129,7 @@ func (s *TransactionService) Sell(
 	}
 
 	if err := s.userRepo.IncrementFakeBalance(
-		userID.String(),
+		userID,
 		total.InexactFloat64(),
 	); err != nil {
 		return err
@@ -154,7 +154,7 @@ func (s *TransactionService) Sell(
 
 	//we use goroutine here to recalculate the networth
 	// in the background its executes successfully
-	go s.networthService.RecalculateNetworth(ctx, userID.String())
+	go s.networthService.RecalculateNetworth(ctx, userID)
 
 	return nil
 }

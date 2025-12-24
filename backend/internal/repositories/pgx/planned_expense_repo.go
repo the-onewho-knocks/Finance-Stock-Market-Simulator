@@ -3,6 +3,7 @@ package pgx
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/models"
 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/repositories/interfaces"
@@ -29,7 +30,7 @@ func (r *PlannedExpenseRepositoryPgx) CreatePlan(plan *models.PlannedExpense) er
 	return err
 }
 
-func (r *PlannedExpenseRepositoryPgx) GetPlansByUser(userID string) ([]models.PlannedExpense, error) {
+func (r *PlannedExpenseRepositoryPgx) GetPlansByUser(userID uuid.UUID) ([]models.PlannedExpense, error) {
 	query := `
 		select id , user_id , title , amount , note , date
 		from planned_expenses where user_id = $1
@@ -52,7 +53,7 @@ func (r *PlannedExpenseRepositoryPgx) GetPlansByUser(userID string) ([]models.Pl
 	return res, nil
 }
 
-func (r *PlannedExpenseRepositoryPgx) DeletePlan(planID string, userID string) error {
+func (r *PlannedExpenseRepositoryPgx) DeletePlan(planID string, userID uuid.UUID) error {
 	query := `
 		delete from planned_expenses where id=$1 and user_id = $2
 	`

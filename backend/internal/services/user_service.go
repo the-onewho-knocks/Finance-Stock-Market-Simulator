@@ -63,7 +63,7 @@ func (s *UserService) CreateUser(
 
 func (s *UserService) GetUserByID(
 	ctx context.Context,
-	userID string,
+	userID uuid.UUID,
 ) (*models.User, error) {
 	return s.userRepo.GetUserByID(userID)
 }
@@ -77,7 +77,7 @@ func (s *UserService) GetUserByEmail(
 
 func (s *UserService) DeductFakeBalance(
 	ctx context.Context,
-	userID string,
+	userID uuid.UUID,
 	amount float64,
 ) error {
 	if amount <= 0 {
@@ -88,7 +88,7 @@ func (s *UserService) DeductFakeBalance(
 
 func (s *UserService) IncrementFakeBalance(
 	ctx context.Context,
-	userID string,
+	userID uuid.UUID,
 	amount float64,
 ) error {
 	if amount <= 0 {
