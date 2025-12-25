@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/models"
@@ -36,10 +37,12 @@ func (s *UserService) CreateUser(
 ) (*models.User, error) {
 
 	//checking is user already exists
-	existing, err := s.userRepo.GetUserByEmail(email)
+	existing, err := s.userRepo.GetUserByGoogleID(googleID)
 	if err == nil && existing != nil {
 		return existing, nil
 	}
+
+	now := time.Now().UTC()
 
 	user := &models.User{
 		ID:           uuid.New(),
@@ -48,6 +51,9 @@ func (s *UserService) CreateUser(
 		AvatarURL:    avatarUrl,
 		GoogleID:     googleID,
 		Fake_Balance: InitialFakeBalance,
+		IsAdmin:      false,
+		CreatedAt:    now,
+		UpdatedAt:    now,
 	}
 
 	// we are calling the function in the pgx query folder here after assigining the values
@@ -73,6 +79,13 @@ func (s *UserService) GetUserByEmail(
 	email string,
 ) (*models.User, error) {
 	return s.userRepo.GetUserByEmail(email)
+}
+
+func (s *UserService) GetUserByGoogleID(
+	ctx context.Context,
+	googleID string,
+) (*models.User, error) {
+	return s.userRepo.GetUserByGoogleID(googleID)
 }
 
 func (s *UserService) DeductFakeBalance(

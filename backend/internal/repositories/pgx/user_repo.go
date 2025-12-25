@@ -23,8 +23,8 @@ func (r *UserRepositoryPgx) GetDB() *pgxpool.Pool {
 
 func (r *UserRepositoryPgx) CreateUser(user *models.User) error {
 	query := `
-	insert into users (id,email,full_namename,avatar_url,google_id,fake_balance)
-	values ($1,$2,$3,$4,$5,$6)
+	insert into users (id,email,full_namename,avatar_url,google_id,fake_balance,is_admin, created_at, updated_at)
+	values ($1,$2,$3,$4,$5,$6,$7,$8<$9)
 	`
 	_, err := r.db.Exec(
 		context.Background(),
@@ -35,11 +35,14 @@ func (r *UserRepositoryPgx) CreateUser(user *models.User) error {
 		user.AvatarURL,
 		user.GoogleID,
 		user.Fake_Balance,
+		user.IsAdmin,
+		user.CreatedAt,
+		user.UpdatedAt,
 	)
 	return err
 }
 
-//im a but suspicious here to the id may cause data type conflict
+// im a but suspicious here to the id may cause data type conflict
 func (r *UserRepositoryPgx) GetUserByID(id uuid.UUID) (*models.User, error) {
 	user := models.User{}
 	query := `
@@ -95,4 +98,36 @@ func (r *UserRepositoryPgx) DeductFakeBalance(userID uuid.UUID, amount float64) 
 	`
 	_, err := r.db.Exec(context.Background(), query, amount, userID)
 	return err
+}
+
+func (r *UserRepositoryPgx) getSingle(where string, value any) (*models.User, error) {
+	query := `
+		select id , email , full_name , avatar_url , google_id , fake_balance
+		, is_admin , created_at , updated_at 
+		from users where
+	` + where
+
+	var u models.User
+
+	err := r.db.QueryRow(context.Background(), query, value).Scan(
+		&u.ID,
+		&u.Email,
+		&u.FullName,
+		&u.AvatarURL,
+		&u.GoogleID,
+		&u.Fake_Balance,
+		&u.IsAdmin,
+		&u.CreatedAt,
+		&u.UpdatedAt,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &u, nil
+}
+
+func (r *UserRepositoryPgx) GetUserByGoogleID(googleID string) (*models.User, error) {
+	return r.getSingle("google_id=$1", googleID)
 }

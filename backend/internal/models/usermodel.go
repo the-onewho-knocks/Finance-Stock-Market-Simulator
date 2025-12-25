@@ -13,6 +13,7 @@ type User struct {
 	AvatarURL    string    `json:"avatar_url" db:"avatar_url"`
 	GoogleID     string    `json:"google_id" db:"google_id"`
 	Fake_Balance float64   `json:"fake_balance" db:"fake_balance"`
+	IsAdmin      bool      `json:"is_admin" db:"is_admin"`
 
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
