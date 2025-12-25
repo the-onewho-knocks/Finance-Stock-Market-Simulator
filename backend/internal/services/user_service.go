@@ -110,3 +110,35 @@ func (s *UserService) IncrementFakeBalance(
 
 	return s.userRepo.IncrementFakeBalance(userID, amount)
 }
+
+func (s *UserService) UpdateUser(
+	ctx context.Context,
+	user *models.User,
+) (*models.User, error) {
+
+
+	existing, err := s.userRepo.GetUserByID(user.ID)
+	if err != nil {
+		return nil, errors.New("user not found")
+	}
+
+	if user.FullName != "" {
+		existing.FullName = user.FullName
+	}
+	if user.AvatarURL != "" {
+		existing.AvatarURL = user.AvatarURL
+	}
+
+	if existing.FullName == "" {
+		return nil, errors.New("full name cannot be empty")
+	}
+
+	existing.UpdatedAt = time.Now().UTC()
+
+	if err := s.userRepo.UpdateUser(existing); err != nil {
+		return nil, err
+	}
+
+	return existing, nil
+}
+
