@@ -60,3 +60,19 @@ func (s *PortfolioService) GetPortfolioMetrics(
 	}
 	return portfolioValue, totalInvested, nil
 }
+
+func (s *PortfolioService) BuyStock(
+	ctx context.Context,
+	item *models.PortfolioItem,
+) error {
+	return s.protfolioRepo.BuyStock(item)
+}
+
+func (s *PortfolioService) SellStock(
+	ctx context.Context,
+	userID uuid.UUID,
+	stockSymbol string,
+	quantity int,
+) error {
+	return s.protfolioRepo.SellStock(userID, stockSymbol, quantity)
+}
