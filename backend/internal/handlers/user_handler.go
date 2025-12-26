@@ -225,7 +225,12 @@ func (h *UserHandler) IncrementFakeBalance(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+
+	json.NewEncoder(w).Encode(map[string]string{
+		"status": "balance incremented successfully",
+	})
 }
 
 func (h *UserHandler) DeductFakeBalance(w http.ResponseWriter, r *http.Request) {
@@ -254,5 +259,10 @@ func (h *UserHandler) DeductFakeBalance(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+
+	json.NewEncoder(w).Encode(map[string]string{
+		"status": "balance deducted successfully",
+	})
 }

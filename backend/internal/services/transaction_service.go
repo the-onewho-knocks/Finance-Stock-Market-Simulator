@@ -158,3 +158,10 @@ func (s *TransactionService) Sell(
 
 	return nil
 }
+
+func (s *TransactionService) GetTransactions(
+	ctx context.Context,
+	userID uuid.UUID,
+) ([]models.Transaction, error) {
+	return s.transactionRepo.GetTransaction(userID)
+}
