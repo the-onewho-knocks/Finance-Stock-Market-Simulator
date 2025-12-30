@@ -9,7 +9,7 @@ import (
 // RegisterTransactionRoutes registers all transaction-related routes
 func RegisterTransactionRoutes(
 	r chi.Router,
-	transactionHandler *handlers.TransactionHandler,
+	transactionHandler *handler.TransactionHandler,
 ) {
 	r.Route("/transactions", func(r chi.Router) {
 		r.Post("/buy", transactionHandler.Buy)

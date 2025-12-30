@@ -9,7 +9,7 @@ import (
 // RegisterPlannedExpenseRoutes binds planned expense endpoints
 func RegisterPlannedExpenseRoutes(
 	r chi.Router,
-	handler *handlers.PlannedExpenseHandler,
+	handler *handler.PlannedExpenseHandler,
 ) {
 	r.Route("/users/{userID}/planned-expenses", func(r chi.Router) {
 

@@ -5,7 +5,7 @@ import (
 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/handlers"
 )
 
-func RegisterUserRoutes(r chi.Router, h *handlers.UserHandler) {
+func RegisterUserRoutes(r chi.Router, h *handler.UserHandler) {
 	r.Post("/users", h.CreateUser)
 
 	r.Get("/users/{id}", h.GetUserByID)

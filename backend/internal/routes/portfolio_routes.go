@@ -7,7 +7,7 @@ import (
 
 func RegisterPortfolioRoutes(
 	r chi.Router,
-	h *handlers.PortfolioHandler,
+	h *handler.PortfolioHandler,
 ) {
 	r.Route("/portfolio", func(r chi.Router) {
 
