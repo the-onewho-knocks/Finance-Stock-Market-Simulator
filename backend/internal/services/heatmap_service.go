@@ -115,3 +115,7 @@ func mapChangeToColor(change float64) string {
 		return "dark-red"
 	}
 }
+
+func (s *HeatmapService) GetHeatmapCache() (map[string]string, error) {
+	return s.heatmapCache.GetFullHeatmap()
+}
