@@ -31,7 +31,7 @@ func main() {
 	// -------------------------
 	dbPool, err := db.NewPGXPool()
 	if err != nil {
-		log.Fatal("failed to connect to database:", err)
+		log.Fatal("db connection failed:", err)
 	}
 	defer dbPool.Close()
 
@@ -39,11 +39,12 @@ func main() {
 	// Cache (Redis)
 	// -------------------------
 	stockCache := cache.NewStockCache()
+	heatmapCache := cache.NewHeatmapCache()
 
 	// -------------------------
 	// External APIs
 	// -------------------------
-	stockClient := stockapi.NewClient()
+	stockClient := stockapi.NewYahooClient()
 
 	// -------------------------
 	// Repositories
@@ -59,13 +60,22 @@ func main() {
 	// -------------------------
 	// Services
 	// -------------------------
+
+	// core services
 	userService := services.NewUserService(userRepo)
+	authService := services.NewAuthService(userService)
+	adminService := services.NewAdminService(adminRepo)
+
+	expenseService := services.NewExpenseService(expenseRepo)
+	portfolioService := services.NewPortfolioRepository(portfolioRepo, stockCache)
+
 	networthService := services.NewNetworthRepository(
 		networthRepo,
 		userRepo,
-		portfolioSvc,
-		expenseSvc,
+		portfolioService,
+		expenseService,
 	)
+
 	transactionService := services.NewTransactionService(
 		userRepo,
 		portfolioRepo,
@@ -73,18 +83,17 @@ func main() {
 		stockCache,
 		networthService,
 	)
-	portfolioService := services.NewPortfolioService(
-		portfolioRepo,
-		stockCache,
-		networthService,
-	)
-	expenseService := services.NewExpenseService(
-		expenseRepo,
-		networthService,
-	)
+
 	plannedExpenseService := services.NewPlannedExpenseService(plannedExpenseRepo)
+
 	marketService := services.NewMarketService(stockClient, stockCache)
-	heatmapService := services.NewHeatmapService(stockClient)
+
+	heatmapService := services.NewHeatmapService(
+		stockCache,
+		heatmapCache,
+		stockClient,
+	)
+
 	dashboardService := services.NewDashboardService(
 		networthService,
 		portfolioService,
@@ -92,27 +101,34 @@ func main() {
 		heatmapService,
 	)
 
+	newsService := services.NewNewsService(stockClient)
+	companyService := services.NewCompanyService(stockClient)
+	indicatorService := services.NewIndiacatorService(stockClient)
+
 	// -------------------------
 	// Handlers
 	// -------------------------
-	authHandler := handler.NewAuthHandler(userService)
+	authHandler := handler.NewAuthHandler(authService)
 	userHandler := handler.NewUserHandler(userService)
-	adminHandler := handler.NewAdminHandler(adminRepo)
+	adminHandler := handler.NewAdminHandler(adminService)
 	portfolioHandler := handler.NewPortfolioHandler(portfolioService)
 	transactionHandler := handler.NewTransactionHandler(transactionService)
 	expenseHandler := handler.NewExpenseHandler(expenseService)
 	plannedExpenseHandler := handler.NewPlannedExpenseHandler(plannedExpenseService)
 	networthHandler := handler.NewNetworthHandler(networthService)
 	marketHandler := handler.NewMarketHandler(marketService)
-	dashboardHandler := handler.NewDashboardHandler(dashboardService)
 	heatmapHandler := handler.NewHeatmapHandler(heatmapService)
+	dashboardHandler := handler.NewDashboardHandler(dashboardService)
+	newsHandler := handler.NewNewsHandler(newsService)
+	companyHandler := handler.NewCompanyHandler(companyService)
+	indicatorHandler := handler.NewIndicatorHandler(indicatorService)
 
 	// -------------------------
 	// Router
 	// -------------------------
 	r := chi.NewRouter()
 
-	// global middleware
+	// middleware
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger)
@@ -143,9 +159,14 @@ func main() {
 		heatmapHandler,
 	)
 
+	// extra feature routes
+	routes.RegisterNewsRoutes(r, newsHandler)
+	routes.RegisterCompanyRoutes(r, companyHandler)
+	routes.RegisterIndicatorRoutes(r, indicatorHandler)
+
 	// -------------------------
 	// Server
 	// -------------------------
-	log.Println("Server running on port", port)
+	log.Println("Server started on port", port)
 	log.Fatal(http.ListenAndServe(":"+port, r))
 }
