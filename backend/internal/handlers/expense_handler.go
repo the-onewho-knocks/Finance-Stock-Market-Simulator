@@ -40,6 +40,7 @@ func (h *ExpenseHandler) AddExpense(
 	userID, err := uuid.Parse(userIDParam)
 	if err != nil {
 		http.Error(w, "invalid userID", http.StatusBadRequest)
+		return
 	}
 
 	var req createExpenseRequest
@@ -51,6 +52,7 @@ func (h *ExpenseHandler) AddExpense(
 	//validatiob
 	if req.Amount.LessThanOrEqual(decimal.Zero) || req.Category == "" {
 		http.Error(w, "amount and category are required", http.StatusBadRequest)
+		return
 	}
 
 	err = h.expenseService.AddExpense(
@@ -79,11 +81,13 @@ func (h *ExpenseHandler) ListExpenses(
 	userID, err := uuid.Parse(userIDParam)
 	if err != nil {
 		http.Error(w, "invalid userID", http.StatusBadRequest)
+		return
 	}
 
 	expenses, err := h.expenseService.ListExpenses(r.Context(), userID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	writeJSON(w, http.StatusOK, expenses)
@@ -109,6 +113,7 @@ func (h *ExpenseHandler) DeleteExpense(
 	err = h.expenseService.DeleteExpense(r.Context(), expenseID, userID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	writeJSON(w, http.StatusOK, map[string]string{
@@ -125,11 +130,13 @@ func (h *ExpenseHandler) GetTotalExpenses(
 	userID, err := uuid.Parse(userIDParam)
 	if err != nil {
 		http.Error(w, "invalid userID", http.StatusBadRequest)
+		return
 	}
 
 	total,err:= h.expenseService.GetTotalExpenses(r.Context(), userID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	writeJSON(w, http.StatusOK, map[string]string{
