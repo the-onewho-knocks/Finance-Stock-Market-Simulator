@@ -10,7 +10,6 @@ import (
 func RegisterRoutes(
 	r chi.Router,
 
-	// handlers
 	authHandler *handler.AuthHandler,
 	userHandler *handler.UserHandler,
 	adminHandler *handler.AdminHandler,
@@ -22,60 +21,42 @@ func RegisterRoutes(
 	networthHandler *handler.NetworthHandler,
 	dashboardHandler *handler.DashboardHandler,
 	heatmapHandler *handler.HeatmapHandler,
+	newsHandler *handler.NewsHandler,
 ) {
 
-	// -------------------------
 	// Auth
-	// -------------------------
 	RegisterAuthRoutes(r, authHandler)
 
-	// -------------------------
 	// Users
-	// -------------------------
 	RegisterUserRoutes(r, userHandler)
 
-	// -------------------------
 	// Admin
-	// -------------------------
 	RegisterAdminRoutes(r, adminHandler)
 
-	// -------------------------
 	// Portfolio
-	// -------------------------
 	RegisterPortfolioRoutes(r, portfolioHandler)
 
-	// -------------------------
 	// Transactions
-	// -------------------------
 	RegisterTransactionRoutes(r, transactionHandler)
 
-	// -------------------------
 	// Market
-	// -------------------------
 	RegisterMarketRoutes(r, marketHandler)
 
-	// -------------------------
 	// Expenses
-	// -------------------------
 	RegisterExpenseRoutes(r, expenseHandler)
 
-	// -------------------------
 	// Planned Expenses
-	// -------------------------
 	RegisterPlannedExpenseRoutes(r, plannedExpenseHandler)
 
-	// -------------------------
 	// Networth
-	// -------------------------
 	RegisterNetworthRoutes(r, networthHandler)
 
-	// -------------------------
 	// Dashboard
-	// -------------------------
 	RegisterDashboardRoutes(r, dashboardHandler)
 
-	// -------------------------
 	// Heatmap
-	// -------------------------
 	RegisterHeatmapRoutes(r, heatmapHandler)
+
+	// News
+	RegisterNewsRoutes(r, newsHandler)
 }

@@ -15,6 +15,9 @@ type Config struct {
 	RedisHost     string
 	RedisPassword string
 	RedisDB       int
+
+	RapidAPIKey  string
+	RapidAPIHost string
 }
 
 func LoadConfig() *Config {
@@ -34,6 +37,9 @@ func LoadConfig() *Config {
 	cfg.RedisHost = getEnv("REDIS_HOST", "localhost:6379")
 	cfg.RedisPassword = getEnv("REDIS_PASSWORD", "")
 	cfg.RedisDB = parseInt(getEnv("REDIS_DB", "0"))
+
+	cfg.RapidAPIKey = getEnv("RAPIDAPI_KEY", "")
+	cfg.RapidAPIHost = getEnv("RAPIDAPI_HOST", "")
 
 	return cfg
 }

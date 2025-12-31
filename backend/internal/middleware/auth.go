@@ -17,7 +17,6 @@ const (
 
 func Auth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
 		h := r.Header.Get("Authorization")
 		if h == "" {
 			http.Error(w, "missing token", http.StatusUnauthorized)

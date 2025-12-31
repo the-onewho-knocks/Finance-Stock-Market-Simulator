@@ -15,7 +15,7 @@ type PortfolioService struct {
 	stockCache    *cache.StockCache
 }
 
-func NewPortfolioRepository(
+func NewPortfolioService(
 	protfolioRepo interfaces.PortfolioRepository,
 	stockCache *cache.StockCache,
 ) *PortfolioService {

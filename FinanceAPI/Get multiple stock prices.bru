@@ -1,0 +1,19 @@
+meta {
+  name: Get multiple stock prices
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:8080//market/prices?symbols=AAPL,MSFT,GOOG
+  body: none
+  auth: inherit
+}
+
+params:query {
+  symbols: AAPL,MSFT,GOOG
+}
+
+settings {
+  encodeUrl: true
+}

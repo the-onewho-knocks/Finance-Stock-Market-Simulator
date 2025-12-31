@@ -17,7 +17,7 @@ type NetworthService struct {
 	expenseSvc   *ExpenseService
 }
 
-func NewNetworthRepository(
+func NewNetworthService(
 	networthRepo interfaces.NetworthRepository,
 	userRepo interfaces.UserRepository,
 	portfolioSvc *PortfolioService,

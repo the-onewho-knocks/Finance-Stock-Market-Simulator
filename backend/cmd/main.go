@@ -1,15 +1,19 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/joho/godotenv"
 
 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/cache"
+	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/config"
 	handler "github.com/the-onewho-knocks/finance-Simulation/backend/internal/handlers"
 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/repositories/pgx"
 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/routes"
@@ -18,37 +22,31 @@ import (
 )
 
 func main() {
-	// -------------------------
-	// Config
-	// -------------------------
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found")
 	}
 
-	// -------------------------
+	cfg := config.LoadConfig()
+
 	// Database
-	// -------------------------
-	dbPool, err := db.NewPGXPool()
+	dbPool, err := pgxpool.New(context.Background(), cfg.DatabaseURL)
 	if err != nil {
-		log.Fatal("db connection failed:", err)
+		log.Fatal("failed to connect to database:", err)
 	}
 	defer dbPool.Close()
+	log.Println("connected to PostgreSQL successfully")
 
-	// -------------------------
-	// Cache (Redis)
-	// -------------------------
+	// Redis
+	cache.InitializeRedis(cfg)
+	log.Println("connected to redis successfully")
+
 	stockCache := cache.NewStockCache()
 	heatmapCache := cache.NewHeatmapCache()
 
-	// -------------------------
-	// External APIs
-	// -------------------------
-	stockClient := stockapi.NewYahooClient()
+	// External API
+	stockClient := stockapi.NewYahooClient(cfg.RapidAPIKey, cfg.RapidAPIHost)
 
-	// -------------------------
 	// Repositories
-	// -------------------------
 	userRepo := pgx.NewUserRepository(dbPool)
 	adminRepo := pgx.NewAdminRepository(dbPool)
 	portfolioRepo := pgx.NewPortfolioRepository(dbPool)
@@ -57,19 +55,17 @@ func main() {
 	plannedExpenseRepo := pgx.NewPlannedExpenseRepository(dbPool)
 	networthRepo := pgx.NewNetworthRepository(dbPool)
 
-	// -------------------------
 	// Services
-	// -------------------------
-
-	// core services
 	userService := services.NewUserService(userRepo)
 	authService := services.NewAuthService(userService)
 	adminService := services.NewAdminService(adminRepo)
 
 	expenseService := services.NewExpenseService(expenseRepo)
-	portfolioService := services.NewPortfolioRepository(portfolioRepo, stockCache)
+	plannedExpenseService := services.NewPlannedExpenseService(plannedExpenseRepo)
 
-	networthService := services.NewNetworthRepository(
+	portfolioService := services.NewPortfolioService(portfolioRepo, stockCache)
+
+	networthService := services.NewNetworthService(
 		networthRepo,
 		userRepo,
 		portfolioService,
@@ -84,66 +80,55 @@ func main() {
 		networthService,
 	)
 
-	plannedExpenseService := services.NewPlannedExpenseService(plannedExpenseRepo)
-
 	marketService := services.NewMarketService(stockClient, stockCache)
-
-	heatmapService := services.NewHeatmapService(
-		stockCache,
-		heatmapCache,
-		stockClient,
-	)
-
+	heatmapService := services.NewHeatmapService(stockCache, heatmapCache, stockClient)
 	dashboardService := services.NewDashboardService(
 		networthService,
 		portfolioService,
 		expenseService,
 		heatmapService,
 	)
-
 	newsService := services.NewNewsService(stockClient)
-	companyService := services.NewCompanyService(stockClient)
-	indicatorService := services.NewIndiacatorService(stockClient)
 
-	// -------------------------
 	// Handlers
-	// -------------------------
 	authHandler := handler.NewAuthHandler(authService)
 	userHandler := handler.NewUserHandler(userService)
 	adminHandler := handler.NewAdminHandler(adminService)
 	portfolioHandler := handler.NewPortfolioHandler(portfolioService)
 	transactionHandler := handler.NewTransactionHandler(transactionService)
+	marketHandler := handler.NewMarketHandler(marketService)
 	expenseHandler := handler.NewExpenseHandler(expenseService)
 	plannedExpenseHandler := handler.NewPlannedExpenseHandler(plannedExpenseService)
 	networthHandler := handler.NewNetworthHandler(networthService)
-	marketHandler := handler.NewMarketHandler(marketService)
-	heatmapHandler := handler.NewHeatmapHandler(heatmapService)
 	dashboardHandler := handler.NewDashboardHandler(dashboardService)
+	heatmapHandler := handler.NewHeatmapHandler(heatmapService)
 	newsHandler := handler.NewNewsHandler(newsService)
-	companyHandler := handler.NewCompanyHandler(companyService)
-	indicatorHandler := handler.NewIndicatorHandler(indicatorService)
 
-	// -------------------------
 	// Router
-	// -------------------------
 	r := chi.NewRouter()
 
-	// middleware
+	// ✅ CORS (FIXED)
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins: []string{
+			"http://localhost:5500",
+			"http://127.0.0.1:5500",
+		},
+		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders: []string{"Accept", "Authorization", "Content-Type"},
+		AllowCredentials: true,
+		MaxAge:           300,
+	}))
+
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Timeout(60 * time.Second))
 
-	// health check
-	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
+	r.Get("/health", func(w http.ResponseWriter, _ *http.Request) {
 		w.Write([]byte("OK"))
 	})
 
-	// -------------------------
-	// Routes
-	// -------------------------
 	routes.RegisterRoutes(
 		r,
 		authHandler,
@@ -157,16 +142,9 @@ func main() {
 		networthHandler,
 		dashboardHandler,
 		heatmapHandler,
+		newsHandler,
 	)
 
-	// extra feature routes
-	routes.RegisterNewsRoutes(r, newsHandler)
-	routes.RegisterCompanyRoutes(r, companyHandler)
-	routes.RegisterIndicatorRoutes(r, indicatorHandler)
-
-	// -------------------------
-	// Server
-	// -------------------------
-	log.Println("Server started on port", port)
-	log.Fatal(http.ListenAndServe(":"+port, r))
+	log.Println("Server running on port", cfg.AppPort)
+	log.Fatal(http.ListenAndServe(":"+cfg.AppPort, r))
 }

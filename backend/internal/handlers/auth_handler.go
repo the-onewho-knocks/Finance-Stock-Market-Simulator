@@ -17,7 +17,6 @@ func NewAuthHandler(authService *services.AuthService) *AuthHandler {
 }
 
 func (h *AuthHandler) GoogleLogin(w http.ResponseWriter, r *http.Request) {
-
 	var req struct {
 		IDToken string `json:"id_token"`
 	}

@@ -23,9 +23,20 @@ func (r *UserRepositoryPgx) GetDB() *pgxpool.Pool {
 
 func (r *UserRepositoryPgx) CreateUser(user *models.User) error {
 	query := `
-	insert into users (id,email,full_namename,avatar_url,google_id,fake_balance,is_admin, created_at, updated_at)
-	values ($1,$2,$3,$4,$5,$6,$7,$8<$9)
+		INSERT INTO users (
+			id,
+			email,
+			full_name,
+			avatar_url,
+			google_id,
+			fake_balance,
+			is_admin,
+			created_at,
+			updated_at
+		)
+		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
 	`
+
 	_, err := r.db.Exec(
 		context.Background(),
 		query,
@@ -39,6 +50,7 @@ func (r *UserRepositoryPgx) CreateUser(user *models.User) error {
 		user.CreatedAt,
 		user.UpdatedAt,
 	)
+
 	return err
 }
 
@@ -65,10 +77,17 @@ func (r *UserRepositoryPgx) GetUserByID(id uuid.UUID) (*models.User, error) {
 func (r *UserRepositoryPgx) GetUserByEmail(email string) (*models.User, error) {
 	user := models.User{}
 	query := `
-		select id , email , full_name , avatar_url, google_id, fake_balance
-		from users where email=$1
+		SELECT id, email, full_name, avatar_url, google_id, fake_balance
+		FROM users WHERE email=$1
 	`
-	err := r.db.QueryRow(context.Background(), query, email).Scan(&user.ID, &user.Email, &user.FullName, &user.AvatarURL, &user.Fake_Balance)
+	err := r.db.QueryRow(context.Background(), query, email).Scan(
+		&user.ID,
+		&user.Email,
+		&user.FullName,
+		&user.AvatarURL,
+		&user.GoogleID,
+		&user.Fake_Balance,
+	)
 	if err != nil {
 		return nil, err
 	}

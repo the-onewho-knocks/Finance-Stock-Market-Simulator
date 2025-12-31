@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Google Login Test</title>
+
+    <!-- Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+  </head>
+
+  <body>
+    <h2>Login with Google</h2>
+
+    <div
+      id="g_id_onload"
+      data-client_id="230330457774-bpd729119de1oml3udlv7nehj3n7gcmj.apps.googleusercontent.com"
+      data-callback="handleGoogleLogin">
+    </div>
+
+    <div class="g_id_signin"></div>
+
+    <pre id="output"></pre>
+
+    <script>
+      function handleGoogleLogin(response) {
+        const idToken = response.credential; // 🔥 REAL ID TOKEN
+
+        document.getElementById("output").innerText =
+          "ID TOKEN (copy if needed):\n\n" + idToken;
+
+        // send token to backend
+        fetch("http://localhost:8080/auth/google", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ id_token: idToken })
+        })
+        .then(res => res.json())
+        .then(data => {
+          console.log("Backend response:", data);
+        })
+        .catch(err => console.error(err));
+      }
+    </script>
+  </body>
+</html>

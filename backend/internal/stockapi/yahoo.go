@@ -5,9 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 )
+
+/* ============================
+   CLIENT
+============================ */
 
 type YahooClient struct {
 	httpClient *http.Client
@@ -17,26 +20,34 @@ type YahooClient struct {
 
 func NewYahooClient(apiKey, apiHost string) *YahooClient {
 	return &YahooClient{
-		httpClient: &http.Client{Timeout: 6 * time.Second},
-		apiKey:     apiKey,
-		apiHost:    apiHost,
+		httpClient: &http.Client{
+			Timeout: 6 * time.Second,
+		},
+		apiKey:  apiKey,
+		apiHost: apiHost,
 	}
 }
 
 /* ============================
-   RESPONSE STRUCTURE
+   RAPIDAPI RESPONSE STRUCTURE
 ============================ */
 
-type yahooResponse struct {
-	QuoteResponse struct {
-		Result []struct {
-			Symbol                     string  `json:"symbol"`
-			QuoteSourceName            string  `json:"quoteSourceName"`
-			RegularMarketPrice         float64 `json:"regularMarketPrice"`
-			RegularMarketChangePercent float64 `json:"regularMarketChangePercent"`
-			RegularMarketVolume        int64   `json:"regularMarketVolume"`
-		} `json:"result"`
-	} `json:"quoteResponse"`
+type yahooQuoteResponse struct {
+	Body struct {
+		Symbol string `json:"symbol"`
+
+		RegularMarketPrice struct {
+			Raw float64 `json:"raw"`
+		} `json:"regularMarketPrice"`
+
+		RegularMarketChangePercent struct {
+			Raw float64 `json:"raw"`
+		} `json:"regularMarketChangePercent"`
+
+		RegularMarketVolume struct {
+			Raw int64 `json:"raw"`
+		} `json:"regularMarketVolume"`
+	} `json:"body"`
 }
 
 /* ============================
@@ -44,7 +55,7 @@ type yahooResponse struct {
 ============================ */
 
 func (y *YahooClient) doRequest(url string) (*http.Response, error) {
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -52,16 +63,32 @@ func (y *YahooClient) doRequest(url string) (*http.Response, error) {
 	req.Header.Set("X-RapidAPI-Key", y.apiKey)
 	req.Header.Set("X-RapidAPI-Host", y.apiHost)
 
-	return y.httpClient.Do(req)
+	resp, err := y.httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		resp.Body.Close()
+		return nil, fmt.Errorf("yahoo api error: %s", resp.Status)
+	}
+
+	return resp, nil
 }
 
-/* ============================
-   SINGLE PRICE
-============================ */
+/*
+	============================
+	  SINGLE PRICE
 
+============================
+*/
 func (y *YahooClient) GetPrice(symbol string) (*PriceData, error) {
+	if symbol == "" {
+		return nil, errors.New("symbol is empty")
+	}
+
 	url := fmt.Sprintf(
-		"https://%s/api/yahoo/qu/quote?symbols=%s",
+		"https://%s/api/yahoo/qu/quoteSummary/%s?modules=price",
 		y.apiHost,
 		symbol,
 	)
@@ -72,23 +99,40 @@ func (y *YahooClient) GetPrice(symbol string) (*PriceData, error) {
 	}
 	defer resp.Body.Close()
 
-	var data yahooResponse
-	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
+	var raw struct {
+		QuoteSummary struct {
+			Result []struct {
+				Price struct {
+					Symbol             string `json:"symbol"`
+					RegularMarketPrice struct {
+						Raw float64 `json:"raw"`
+					} `json:"regularMarketPrice"`
+					RegularMarketChangePercent struct {
+						Raw float64 `json:"raw"`
+					} `json:"regularMarketChangePercent"`
+					RegularMarketVolume struct {
+						Raw int64 `json:"raw"`
+					} `json:"regularMarketVolume"`
+				} `json:"price"`
+			} `json:"result"`
+		} `json:"quoteSummary"`
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(&raw); err != nil {
 		return nil, err
 	}
 
-	if len(data.QuoteResponse.Result) == 0 {
+	if len(raw.QuoteSummary.Result) == 0 {
 		return nil, errors.New("symbol not found")
 	}
 
-	q := data.QuoteResponse.Result[0]
+	p := raw.QuoteSummary.Result[0].Price
 
 	return &PriceData{
-		Symbol:    q.Symbol,
-		Price:     q.RegularMarketPrice,
-		Change:    q.RegularMarketChangePercent,
-		Volume:    q.RegularMarketVolume,
-		Sector:    q.QuoteSourceName,
+		Symbol:    p.Symbol,
+		Price:     p.RegularMarketPrice.Raw,
+		Change:    p.RegularMarketChangePercent.Raw,
+		Volume:    p.RegularMarketVolume.Raw,
 		Timestamp: time.Now().UTC(),
 	}, nil
 }
@@ -98,43 +142,19 @@ func (y *YahooClient) GetPrice(symbol string) (*PriceData, error) {
 ============================ */
 
 func (y *YahooClient) GetPrices(symbols []string) ([]PriceData, error) {
-	if len(symbols) == 0 {
-		return []PriceData{}, nil
-	}
+	results := make([]PriceData, 0, len(symbols))
 
-	joined := strings.Join(symbols, ",")
-
-	url := fmt.Sprintf(
-		"https://%s/api/yahoo/qu/quote?symbols=%s",
-		y.apiHost,
-		joined,
-	)
-
-	resp, err := y.doRequest(url)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	var data yahooResponse
-	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
-		return nil, err
-	}
-
-	results := make([]PriceData, 0, len(data.QuoteResponse.Result))
-	for _, q := range data.QuoteResponse.Result {
-		results = append(results, PriceData{
-			Symbol:    q.Symbol,
-			Price:     q.RegularMarketPrice,
-			Change:    q.RegularMarketChangePercent,
-			Volume:    q.RegularMarketVolume,
-			Sector:    q.QuoteSourceName,
-			Timestamp: time.Now().UTC(),
-		})
+	for _, sym := range symbols {
+		p, err := y.GetPrice(sym)
+		if err != nil {
+			continue
+		}
+		results = append(results, *p)
 	}
 
 	return results, nil
 }
+
 
 /* ============================
    STREAMING (POLLING)
@@ -144,7 +164,7 @@ func (y *YahooClient) PriceStream(symbols []string) (<-chan PriceData, error) {
 	ch := make(chan PriceData)
 
 	go func() {
-		ticker := time.NewTicker(1 * time.Second)
+		ticker := time.NewTicker(2 * time.Second)
 		defer ticker.Stop()
 
 		for range ticker.C {
@@ -159,4 +179,20 @@ func (y *YahooClient) PriceStream(symbols []string) (<-chan PriceData, error) {
 	}()
 
 	return ch, nil
+}
+
+/* ============================
+   SEARCH (OPTIONAL)
+============================ */
+
+func (y *YahooClient) SearchSymbols(query string) ([]string, error) {
+	return []string{}, nil
+}
+
+/* ============================
+   FINANCIALS (NOT SUPPORTED)
+============================ */
+
+func (y *YahooClient) GetFinancials(symbol string) (*FinancialReport, error) {
+	return nil, errors.New("financials not supported by yahoo rapidapi client")
 }
