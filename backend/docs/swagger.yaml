@@ -1,0 +1,9 @@
+basePath: /
+host: localhost:8080
+info:
+  contact: {}
+  description: Backend API for Finance Stock Market Simulator
+  title: Finance Simulation API
+  version: "1.0"
+paths: {}
+swagger: "2.0"

@@ -1,3 +1,9 @@
+// @title Finance Simulation API
+// @version 1.0
+// @description Backend API for Finance Stock Market Simulator
+// @host localhost:8080
+// @BasePath /
+
 package main
 
 import (
@@ -12,6 +18,10 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 
+	httpSwagger "github.com/swaggo/http-swagger"
+	_ "github.com/the-onewho-knocks/finance-Simulation/backend/docs"
+
+	// Internal packages
 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/cache"
 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/config"
 	handler "github.com/the-onewho-knocks/finance-Simulation/backend/internal/handlers"
@@ -22,13 +32,18 @@ import (
 )
 
 func main() {
+	// =========================
+	// Load ENV
+	// =========================
 	if err := godotenv.Load(); err != nil {
 		log.Println("No .env file found")
 	}
 
 	cfg := config.LoadConfig()
 
-	// Database
+	// =========================
+	// Database (PostgreSQL)
+	// =========================
 	dbPool, err := pgxpool.New(context.Background(), cfg.DatabaseURL)
 	if err != nil {
 		log.Fatal("failed to connect to database:", err)
@@ -36,17 +51,26 @@ func main() {
 	defer dbPool.Close()
 	log.Println("connected to PostgreSQL successfully")
 
+	// =========================
 	// Redis
+	// =========================
 	cache.InitializeRedis(cfg)
 	log.Println("connected to redis successfully")
 
 	stockCache := cache.NewStockCache()
 	heatmapCache := cache.NewHeatmapCache()
 
-	// External API
-	stockClient := stockapi.NewYahooClient(cfg.RapidAPIKey, cfg.RapidAPIHost)
+	// =========================
+	// External APIs
+	// =========================
+	stockClient := stockapi.NewYahooClient(
+		cfg.RapidAPIKey,
+		cfg.RapidAPIHost,
+	)
 
+	// =========================
 	// Repositories
+	// =========================
 	userRepo := pgx.NewUserRepository(dbPool)
 	adminRepo := pgx.NewAdminRepository(dbPool)
 	portfolioRepo := pgx.NewPortfolioRepository(dbPool)
@@ -55,7 +79,9 @@ func main() {
 	plannedExpenseRepo := pgx.NewPlannedExpenseRepository(dbPool)
 	networthRepo := pgx.NewNetworthRepository(dbPool)
 
+	// =========================
 	// Services
+	// =========================
 	userService := services.NewUserService(userRepo)
 	authService := services.NewAuthService(userService)
 	adminService := services.NewAdminService(adminRepo)
@@ -63,7 +89,10 @@ func main() {
 	expenseService := services.NewExpenseService(expenseRepo)
 	plannedExpenseService := services.NewPlannedExpenseService(plannedExpenseRepo)
 
-	portfolioService := services.NewPortfolioService(portfolioRepo, stockCache)
+	portfolioService := services.NewPortfolioService(
+		portfolioRepo,
+		stockCache,
+	)
 
 	networthService := services.NewNetworthService(
 		networthRepo,
@@ -80,17 +109,29 @@ func main() {
 		networthService,
 	)
 
-	marketService := services.NewMarketService(stockClient, stockCache)
-	heatmapService := services.NewHeatmapService(stockCache, heatmapCache, stockClient)
+	marketService := services.NewMarketService(
+		stockClient,
+		stockCache,
+	)
+
+	heatmapService := services.NewHeatmapService(
+		stockCache,
+		heatmapCache,
+		stockClient,
+	)
+
 	dashboardService := services.NewDashboardService(
 		networthService,
 		portfolioService,
 		expenseService,
 		heatmapService,
 	)
+
 	newsService := services.NewNewsService(stockClient)
 
+	// =========================
 	// Handlers
+	// =========================
 	authHandler := handler.NewAuthHandler(authService)
 	userHandler := handler.NewUserHandler(userService)
 	adminHandler := handler.NewAdminHandler(adminService)
@@ -104,17 +145,19 @@ func main() {
 	heatmapHandler := handler.NewHeatmapHandler(heatmapService)
 	newsHandler := handler.NewNewsHandler(newsService)
 
+	// =========================
 	// Router
+	// =========================
 	r := chi.NewRouter()
 
-	// ✅ CORS (FIXED)
+	// CORS
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins: []string{
 			"http://localhost:5500",
 			"http://127.0.0.1:5500",
 		},
-		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders: []string{"Accept", "Authorization", "Content-Type"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
 		AllowCredentials: true,
 		MaxAge:           300,
 	}))
@@ -125,10 +168,22 @@ func main() {
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Timeout(60 * time.Second))
 
+	// =========================
+	// Health Check
+	// =========================
 	r.Get("/health", func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("OK"))
 	})
 
+	// =========================
+	// Swagger
+	// =========================
+	r.Get("/swagger/*", httpSwagger.WrapHandler)
+
+	// =========================
+	// API Routes
+	// =========================
 	routes.RegisterRoutes(
 		r,
 		authHandler,
@@ -145,6 +200,9 @@ func main() {
 		newsHandler,
 	)
 
+	// =========================
+	// Start Server
+	// =========================
 	log.Println("Server running on port", cfg.AppPort)
 	log.Fatal(http.ListenAndServe(":"+cfg.AppPort, r))
 }
