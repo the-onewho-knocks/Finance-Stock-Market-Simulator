@@ -15,3 +15,4 @@ func RegisterMarketRoutes(
 		r.Get("/prices", marketHandler.GetPrices)
 	})
 }
+
