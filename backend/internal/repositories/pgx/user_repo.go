@@ -96,12 +96,26 @@ func (r *UserRepositoryPgx) GetUserByEmail(email string) (*models.User, error) {
 
 func (r *UserRepositoryPgx) UpdateUser(user *models.User) error {
 	query := `
-		UPDATE users SET full_name=$1, avatar_url=$2, fake_balance=$3
+		UPDATE users
+		SET 
+			full_name=$1,
+			avatar_url=$2,
+			updated_at=$3
 		WHERE id=$4
 	`
-	_, err := r.db.Exec(context.Background(), query, user.FullName, user.AvatarURL, user.Fake_Balance, user.ID)
+
+	_, err := r.db.Exec(
+		context.Background(),
+		query,
+		user.FullName,
+		user.AvatarURL,
+		user.UpdatedAt,
+		user.ID,
+	)
+
 	return err
 }
+
 
 func (r *UserRepositoryPgx) IncrementFakeBalance(userID uuid.UUID, amount float64) error {
 	query := `
@@ -147,6 +161,6 @@ func (r *UserRepositoryPgx) getSingle(where string, value any) (*models.User, er
 	return &u, nil
 }
 
-func (r *UserRepositoryPgx) GetUserByGoogleID(googleID string) (*models.User, error) {
-	return r.getSingle("google_id=$1", googleID)
-}
+// func (r *UserRepositoryPgx) GetUserByGoogleID(googleID string) (*models.User, error) {
+// 	return r.getSingle("google_id=$1", googleID)
+// }

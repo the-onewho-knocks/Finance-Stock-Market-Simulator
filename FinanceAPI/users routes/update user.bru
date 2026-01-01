@@ -1,0 +1,25 @@
+meta {
+  name: update user
+  type: http
+  seq: 4
+}
+
+patch {
+  url: http://localhost:8080/users/69860366-8d1e-4136-9b78-19bb183cecfe
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "full_name": "John Updated",
+    "avatar_url": "https://example.com/new-avatar.jpg",
+    "google_id": "googleid-134312431ifweogwd" //not updated
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

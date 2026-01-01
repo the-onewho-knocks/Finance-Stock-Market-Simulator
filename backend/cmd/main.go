@@ -83,7 +83,7 @@ func main() {
 	// Services
 	// =========================
 	userService := services.NewUserService(userRepo)
-	authService := services.NewAuthService(userService)
+//	authService := services.NewAuthService(userService)
 	adminService := services.NewAdminService(adminRepo)
 
 	expenseService := services.NewExpenseService(expenseRepo)
@@ -132,7 +132,7 @@ func main() {
 	// =========================
 	// Handlers
 	// =========================
-	authHandler := handler.NewAuthHandler(authService)
+//	authHandler := handler.NewAuthHandler(authService)
 	userHandler := handler.NewUserHandler(userService)
 	adminHandler := handler.NewAdminHandler(adminService)
 	portfolioHandler := handler.NewPortfolioHandler(portfolioService)
@@ -186,7 +186,7 @@ func main() {
 	// =========================
 	routes.RegisterRoutes(
 		r,
-		authHandler,
+	//	authHandler,
 		userHandler,
 		adminHandler,
 		portfolioHandler,

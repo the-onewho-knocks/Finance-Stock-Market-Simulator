@@ -1,0 +1,23 @@
+meta {
+  name: decrement fake balance
+  type: http
+  seq: 6
+}
+
+post {
+  url: http://localhost:8080/users/69860366-8d1e-4136-9b78-19bb183cecfe/balance/deduct
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "amount": 200
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

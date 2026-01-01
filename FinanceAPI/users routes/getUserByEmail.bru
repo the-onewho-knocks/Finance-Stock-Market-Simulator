@@ -1,15 +1,16 @@
 meta {
-  name: histroy
+  name: getUserByEmail
   type: http
   seq: 3
 }
 
 get {
-  url: http://localhost:8080/history/
+  url: http://localhost:8080/users/email/luffy@gmail.com
   body: none
   auth: inherit
 }
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

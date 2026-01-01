@@ -37,10 +37,10 @@ func (s *UserService) CreateUser(
 ) (*models.User, error) {
 
 	//checking is user already exists
-	existing, err := s.userRepo.GetUserByGoogleID(googleID)
-	if err == nil && existing != nil {
-		return existing, nil
-	}
+	// existing, err := s.userRepo.GetUserByGoogleID(googleID)
+	// if err == nil && existing != nil {
+	// 	return existing, nil
+	// }
 
 	now := time.Now().UTC()
 
@@ -49,13 +49,12 @@ func (s *UserService) CreateUser(
 		Email:        email,
 		FullName:     fullName,
 		AvatarURL:    avatarUrl,
-		GoogleID:     googleID,
+	//	GoogleID:     googleID,
 		Fake_Balance: InitialFakeBalance,
 		IsAdmin:      false,
 		CreatedAt:    now,
 		UpdatedAt:    now,
-	}
-
+	} 
 	// we are calling the function in the pgx query folder here after assigining the values
 	// to user variable and of type models.User{} so yeahh its kinda easy but having errors in the
 	// pgx folder will break everything so it is the most important folder
@@ -64,7 +63,7 @@ func (s *UserService) CreateUser(
 		return nil, err
 	}
 
-	return user, err
+	return user, nil
 }
 
 func (s *UserService) GetUserByID(
@@ -81,12 +80,12 @@ func (s *UserService) GetUserByEmail(
 	return s.userRepo.GetUserByEmail(email)
 }
 
-func (s *UserService) GetUserByGoogleID(
-	ctx context.Context,
-	googleID string,
-) (*models.User, error) {
-	return s.userRepo.GetUserByGoogleID(googleID)
-}
+// func (s *UserService) GetUserByGoogleID(
+// 	ctx context.Context,
+// 	googleID string,
+// ) (*models.User, error) {
+// 	return s.userRepo.GetUserByGoogleID(googleID)
+// }
 
 func (s *UserService) DeductFakeBalance(
 	ctx context.Context,

@@ -10,7 +10,7 @@ import (
 func RegisterRoutes(
 	r chi.Router,
 
-	authHandler *handler.AuthHandler,
+//	authHandler *handler.AuthHandler,
 	userHandler *handler.UserHandler,
 	adminHandler *handler.AdminHandler,
 	portfolioHandler *handler.PortfolioHandler,
@@ -25,7 +25,7 @@ func RegisterRoutes(
 ) {
 
 	// Auth
-	RegisterAuthRoutes(r, authHandler)
+//	RegisterAuthRoutes(r, authHandler)
 
 	// Users
 	RegisterUserRoutes(r, userHandler)

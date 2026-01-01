@@ -133,28 +133,28 @@ func (h *UserHandler) GetUserByEmail(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *UserHandler) GetUserByGoogleID(w http.ResponseWriter, r *http.Request) {
+// func (h *UserHandler) GetUserByGoogleID(w http.ResponseWriter, r *http.Request) {
 
-	defer r.Body.Close()
+// 	defer r.Body.Close()
 
-	googleID := chi.URLParam(r, "google_id")
+// 	googleID := chi.URLParam(r, "google_id")
 
-	if googleID == "" {
-		http.Error(w, "googleID is required", http.StatusBadRequest)
-		return
-	}
+// 	if googleID == "" {
+// 		http.Error(w, "googleID is required", http.StatusBadRequest)
+// 		return
+// 	}
 
-	user, err := h.userService.GetUserByGoogleID(r.Context(), googleID)
-	if err != nil {
-		http.Error(w, "user not found ", http.StatusNotFound)
-		return
-	}
+// 	user, err := h.userService.GetUserByGoogleID(r.Context(), googleID)
+// 	if err != nil {
+// 		http.Error(w, "user not found ", http.StatusNotFound)
+// 		return
+// 	}
 
-	w.Header().Set("Content-type", "application/json")
-	if err := json.NewEncoder(w).Encode(user); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-}
+// 	w.Header().Set("Content-type", "application/json")
+// 	if err := json.NewEncoder(w).Encode(user); err != nil {
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 	}
+// }
 
 // updating user profile
 func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
