@@ -1,46 +1,19 @@
 package stockapi
 
-import (
-	"encoding/json"
-	"fmt"
-	"net/url"
-)
+func (c *RapidApiClient) SearchIndustry(query string) ([]Industry, error) {
+	var resp struct {
+		Data []Industry `json:"data"`
+	}
 
-type yahooSearchResponse struct {
-	Qoutes []struct {
-		Symbol string `json:"symbol"`
-	} `json:"qoutes"`
+	err := c.doRequest("/industry_search?query="+query, &resp)
+	return resp.Data, err
 }
 
-func (y *YahooClient) SearchSymbol(query string) ([]string, error) {
-	if query == "" {
-		return nil, fmt.Errorf("search query cannot be empty")
+func (c *RapidApiClient) SearchMutualFund(query string) ([]MutualFund, error) {
+	var resp struct {
+		Data []MutualFund `json:"data"`
 	}
 
-	safeQuery := url.PathEscape(query)
-
-	url := fmt.Sprintf(
-		"http://%s/api/yahoo/sa/search/%s", y.apiHost, safeQuery,
-	)
-
-	resp, err := y.doRequest(url)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	var res yahooSearchResponse
-	if err := json.NewDecoder(resp.Body).Decode(&res); err != nil {
-		return nil, err
-	}
-
-	symbols := make([]string, 0, len(res.Qoutes))
-	for _, q := range res.Qoutes {
-		//if empty then skip it
-		if q.Symbol == "" {
-			continue
-		}
-		symbols = append(symbols, q.Symbol)
-	}
-	return symbols, nil
+	err := c.doRequest("/mutual_fund_search?query="+query, &resp)
+	return resp.Data, err
 }

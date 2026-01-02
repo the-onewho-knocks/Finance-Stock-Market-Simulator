@@ -1,29 +1,19 @@
 package services
 
 import (
-	"context"
+	"encoding/json"
 
 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/stockapi"
 )
 
-type CompanyService struct {
-	api stockapi.Client
+type IndianStockService struct {
+	api *stockapi.IndianStockClient
 }
 
-func NewCompanyService(api stockapi.Client) *CompanyService {
-	return &CompanyService{
-		api: api,
-	}
+func NewIndianStockService(api *stockapi.IndianStockClient) *IndianStockService {
+	return &IndianStockService{api: api}
 }
 
-func (s *CompanyService) GetCompanyProfile(
-	ctx context.Context,
-	symbol string,
-) (*stockapi.CompanyProfile, error) {
-
-	if symbol == "" {
-		return nil, ErrInvalidSymbol
-	}
-
-	return s.api.GetCompanyProfile(symbol)
+func (s *IndianStockService) GetStockByNameRaw(name string) (json.RawMessage, error) {
+	return s.api.GetStockByNameRaw(name)
 }

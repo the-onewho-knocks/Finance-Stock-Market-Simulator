@@ -22,10 +22,8 @@ func RegisterRoutes(
 	dashboardHandler *handler.DashboardHandler,
 	heatmapHandler *handler.HeatmapHandler,
 	newsHandler *handler.NewsHandler,
+	indianStockHandler *handler.IndianStockHandler,
 ) {
-
-	// Auth
-//	RegisterAuthRoutes(r, authHandler)
 
 	// Users
 	RegisterUserRoutes(r, userHandler)
@@ -59,4 +57,7 @@ func RegisterRoutes(
 
 	// News
 	RegisterNewsRoutes(r, newsHandler)
+
+	// Indian Stocks
+	RegisterIndianStockRoutes(r, indianStockHandler)
 }

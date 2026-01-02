@@ -1,0 +1,20 @@
+meta {
+  name: getIndianStock
+  type: http
+  seq: 3
+}
+
+get {
+  url: http://localhost:8080/stocks/indian?name=tata steel
+  body: none
+  auth: inherit
+}
+
+params:query {
+  name: tata steel
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

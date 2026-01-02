@@ -63,7 +63,7 @@ func main() {
 	// =========================
 	// External APIs
 	// =========================
-	stockClient := stockapi.NewYahooClient(
+	yahooClient := stockapi.NewYahooClient(
 		cfg.RapidAPIKey,
 		cfg.RapidAPIHost,
 	)
@@ -83,7 +83,6 @@ func main() {
 	// Services
 	// =========================
 	userService := services.NewUserService(userRepo)
-//	authService := services.NewAuthService(userService)
 	adminService := services.NewAdminService(adminRepo)
 
 	expenseService := services.NewExpenseService(expenseRepo)
@@ -110,14 +109,14 @@ func main() {
 	)
 
 	marketService := services.NewMarketService(
-		stockClient,
+		yahooClient,
 		stockCache,
 	)
 
 	heatmapService := services.NewHeatmapService(
 		stockCache,
 		heatmapCache,
-		stockClient,
+		yahooClient,
 	)
 
 	dashboardService := services.NewDashboardService(
@@ -127,12 +126,11 @@ func main() {
 		heatmapService,
 	)
 
-	newsService := services.NewNewsService(stockClient)
+	newsService := services.NewNewsService(yahooClient)
 
 	// =========================
 	// Handlers
 	// =========================
-//	authHandler := handler.NewAuthHandler(authService)
 	userHandler := handler.NewUserHandler(userService)
 	adminHandler := handler.NewAdminHandler(adminService)
 	portfolioHandler := handler.NewPortfolioHandler(portfolioService)
@@ -150,7 +148,6 @@ func main() {
 	// =========================
 	r := chi.NewRouter()
 
-	// CORS
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins: []string{
 			"http://localhost:5500",
@@ -186,7 +183,6 @@ func main() {
 	// =========================
 	routes.RegisterRoutes(
 		r,
-	//	authHandler,
 		userHandler,
 		adminHandler,
 		portfolioHandler,

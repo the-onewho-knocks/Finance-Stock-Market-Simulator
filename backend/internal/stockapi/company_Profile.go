@@ -2,29 +2,59 @@ package stockapi
 
 import (
 	"encoding/json"
-	"fmt"
+	"errors"
+	"io"
+	"net/http"
+	"net/url"
+	"time"
 )
 
-func (y *YahooClient) GetCompanyProfile(symbol string) (*CompanyProfile, error) {
-	if symbol == "" {
-		return nil, fmt.Errorf("Symbol cannot be empty")
+type IndianStockClient struct {
+	apiKey string
+	client *http.Client
+}
+
+func NewIndianStockClient(apiKey string) *IndianStockClient {
+	return &IndianStockClient{
+		apiKey: apiKey,
+		client: &http.Client{Timeout: 10 * time.Second},
+	}
+}
+
+// RAW response (no struct)
+func (c *IndianStockClient) GetStockByNameRaw(name string) (json.RawMessage, error) {
+	if name == "" {
+		return nil, errors.New("stock name required")
 	}
 
-	url := fmt.Sprintf(
-		"https://%s/api/yahoo/qu/quote/%s/asset-profile",
-		y.apiHost,
-		symbol,
+	req, err := http.NewRequest(
+		http.MethodGet,
+		"https://indian-stock-exchange-api2.p.rapidapi.com/stock?name="+url.QueryEscape(name),
+		nil,
 	)
+	if err != nil {
+		return nil, err
+	}
 
-	resp, err := y.doRequest(url)
+	req.Header.Set("x-rapidapi-host", "indian-stock-exchange-api2.p.rapidapi.com")
+	req.Header.Set("x-rapidapi-key", c.apiKey)
+
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
 
-	var profile CompanyProfile
-	if err := json.NewDecoder(resp.Body).Decode(&profile); err != nil {
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
 		return nil, err
 	}
-	return &profile, nil
+
+	// Validate JSON (optional but recommended)
+	var raw json.RawMessage
+	if err := json.Unmarshal(body, &raw); err != nil {
+		return nil, err
+	}
+
+	return raw, nil
 }

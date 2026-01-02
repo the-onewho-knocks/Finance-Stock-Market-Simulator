@@ -1,88 +1,31 @@
 package stockapi
 
-import (
-	"encoding/json"
-	"fmt"
-	"time"
-)
+import "fmt"
 
-/*
-Yahoo chart API response (minimal fields needed)
-*/
-type yahooChartResponse struct {
-	Chart struct {
-		Result []struct {
-			Timestamp  []int64 `json:"timestamp"`
-			Indicators struct {
-				Quote []struct {
-					Close []float64 `json:"close"`
-				} `json:"quote"`
-			} `json:"indicators"`
-		} `json:"result"`
-	} `json:"chart"`
-}
-
-// GetHistoricalPrices fetches historical price data for a symbol
-func (y *YahooClient) GetHistoricalPrices(symbol string, start, end time.Time, interval string) ([]PriceData, error) {
-
-	// Validate interval (basic safety)
-	validIntervals := map[string]bool{
-		"1d":  true,
-		"1wk": true,
-		"1mo": true,
-	}
-	if !validIntervals[interval] {
-		return nil, fmt.Errorf("invalid interval: %s", interval)
+func (c *RapidApiClient) GetHistoricalPrices(stock, period string) ([]HistoricalPrice, error) {
+	var resp struct {
+		Data []HistoricalPrice `json:"data"`
 	}
 
-	url := fmt.Sprintf(
-		"https://%s/api/yahoo/hi/history/%s/%d/%d?interval=%s",
-		y.apiHost,
-		symbol,
-		start.Unix(),
-		end.Unix(),
-		interval,
+	path := fmt.Sprintf(
+		"/historical_data?stock_name=%s&period=%s&filter=price",
+		stock, period,
 	)
 
-	resp, err := y.doRequest(url)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
+	err := c.doRequest(path, &resp)
+	return resp.Data, err
+}
 
-	var res yahooChartResponse
-	if err := json.NewDecoder(resp.Body).Decode(&res); err != nil {
-		return nil, err
+func (c *RapidApiClient) GetHistoricalStats(stock, stats string) ([]HistoricalStat, error) {
+	var resp struct {
+		Data []HistoricalStat `json:"data"`
 	}
 
-	// Defensive checks
-	if len(res.Chart.Result) == 0 {
-		return nil, fmt.Errorf("no historical data returned for %s", symbol)
-	}
+	path := fmt.Sprintf(
+		"/historical_stats?stock_name=%s&stats=%s",
+		stock, stats,
+	)
 
-	result := res.Chart.Result[0]
-
-	if len(result.Indicators.Quote) == 0 {
-		return nil, fmt.Errorf("no quote data available for %s", symbol)
-	}
-
-	closes := result.Indicators.Quote[0].Close
-	timestamps := result.Timestamp
-
-	out := make([]PriceData, 0, len(timestamps))
-
-	for i := 0; i < len(timestamps) && i < len(closes); i++ {
-		price := closes[i]
-		if price == 0 {
-			continue // skip invalid price points
-		}
-
-		out = append(out, PriceData{
-			Symbol:    symbol,
-			Price:     price,
-			Timestamp: time.Unix(timestamps[i], 0),
-		})
-	}
-
-	return out, nil
+	err := c.doRequest(path, &resp)
+	return resp.Data, err
 }

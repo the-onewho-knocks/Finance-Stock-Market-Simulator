@@ -2,17 +2,14 @@ package routes
 
 import (
 	"github.com/go-chi/chi/v5"
-
 	handler "github.com/the-onewho-knocks/finance-Simulation/backend/internal/handlers"
 )
 
-func RegisterCompanyRoutes(
+func RegisterIndianStockRoutes(
 	r chi.Router,
-	companyHandler *handler.CompanyHandler,
+	h *handler.IndianStockHandler,
 ) {
-	r.Route("/company", func(r chi.Router) {
-
-		// GET /company/{symbol}
-		r.Get("/{symbol}", companyHandler.GetCompanyProfile)
+	r.Route("/stocks", func(r chi.Router) {
+		r.Get("/indian", h.GetStockByName)
 	})
 }
