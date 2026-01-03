@@ -1,9 +1,8 @@
 package handler
 
 import (
+	"encoding/json"
 	"net/http"
-	"strconv"
-	"time"
 
 	"github.com/go-chi/chi/v5"
 
@@ -18,40 +17,44 @@ func NewHistoryHandler(service *services.HistoryService) *HistoryHandler {
 	return &HistoryHandler{service: service}
 }
 
-// GET /history/{symbol}?start=...&end=...&interval=1d
-func (h *HistoryHandler) GetHistoricalPrices(
-	w http.ResponseWriter,
-	r *http.Request,
-) {
-	symbol := chi.URLParam(r, "symbol")
-	interval := r.URL.Query().Get("interval")
-
-	startStr := r.URL.Query().Get("start")
-	endStr := r.URL.Query().Get("end")
-
-	startUnix, err := strconv.ParseInt(startStr, 10, 64)
-	if err != nil {
-		http.Error(w, "invalid start timestamp", http.StatusBadRequest)
-		return
+/*
+GET /history/{stock}?period=1m
+*/
+func (h *HistoryHandler) GetHistory(w http.ResponseWriter, r *http.Request) {
+	stock := chi.URLParam(r, "stock")
+	period := r.URL.Query().Get("period")
+	if period == "" {
+		period = "1m"
 	}
 
-	endUnix, err := strconv.ParseInt(endStr, 10, 64)
-	if err != nil {
-		http.Error(w, "invalid end timestamp", http.StatusBadRequest)
-		return
-	}
-
-	data, err := h.service.GetHistoricalPrices(
-		r.Context(),
-		symbol,
-		time.Unix(startUnix, 0),
-		time.Unix(endUnix, 0),
-		interval,
-	)
+	data, err := h.service.GetHistoricalPrices(stock, period)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	writeJSON(w, http.StatusOK, data)
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(data)
+}
+
+/*
+GET /history/{stock}/stats?stats=quarter_results
+*/
+func (h *HistoryHandler) GetHistoryStats(w http.ResponseWriter, r *http.Request) {
+	stock := chi.URLParam(r, "stock")
+	stats := r.URL.Query().Get("stats")
+
+	if stats == "" {
+		http.Error(w, "stats query param is required", http.StatusBadRequest)
+		return
+	}
+
+	data, err := h.service.GetHistoricalStats(stock, stats)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(data)
 }

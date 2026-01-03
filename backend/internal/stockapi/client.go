@@ -75,7 +75,7 @@ type Client interface {
 	SearchMutualFund(query string) ([]MutualFund, error)
 
 	// Mutual funds
-	GetAllMutualFunds() ([]MutualFund, error)
+//	GetAllMutualFunds() ([]MutualFund, error)
 
 	// Market data
 	GetCommodities() ([]Commodity, error)
@@ -107,5 +107,5 @@ type Client interface {
 	GetIPOList() ([]IPO, error)
 
 	// 52 week
-	Get52WeekHighLow() ([]Week52Data, error)
+//	Get52WeekHighLow() ([]Week52Data, error)
 }

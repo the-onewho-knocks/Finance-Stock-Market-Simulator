@@ -32,7 +32,7 @@ func (c *RapidApiClient) doRequest(path string, result interface{}) error {
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return nil
+		return err
 	}
 	defer resp.Body.Close()
 

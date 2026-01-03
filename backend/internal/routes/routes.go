@@ -15,14 +15,14 @@ func RegisterRoutes(
 	adminHandler *handler.AdminHandler,
 	portfolioHandler *handler.PortfolioHandler,
 	transactionHandler *handler.TransactionHandler,
-	marketHandler *handler.MarketHandler,
+//	marketHandler *handler.MarketHandler,
 	expenseHandler *handler.ExpenseHandler,
 	plannedExpenseHandler *handler.PlannedExpenseHandler,
 	networthHandler *handler.NetworthHandler,
-	dashboardHandler *handler.DashboardHandler,
-	heatmapHandler *handler.HeatmapHandler,
-	newsHandler *handler.NewsHandler,
+//	dashboardHandler *handler.DashboardHandler,
+//	heatmapHandler *handler.HeatmapHandler,
 	indianStockHandler *handler.IndianStockHandler,
+	historyHandler *handler.HistoryHandler,
 ) {
 
 	// Users
@@ -38,7 +38,7 @@ func RegisterRoutes(
 	RegisterTransactionRoutes(r, transactionHandler)
 
 	// Market
-	RegisterMarketRoutes(r, marketHandler)
+//	RegisterMarketRoutes(r, marketHandler)
 
 	// Expenses
 	RegisterExpenseRoutes(r, expenseHandler)
@@ -50,14 +50,13 @@ func RegisterRoutes(
 	RegisterNetworthRoutes(r, networthHandler)
 
 	// Dashboard
-	RegisterDashboardRoutes(r, dashboardHandler)
+//	RegisterDashboardRoutes(r, dashboardHandler)
 
 	// Heatmap
-	RegisterHeatmapRoutes(r, heatmapHandler)
-
-	// News
-	RegisterNewsRoutes(r, newsHandler)
+//	RegisterHeatmapRoutes(r, heatmapHandler)
 
 	// Indian Stocks
 	RegisterIndianStockRoutes(r, indianStockHandler)
+
+	RegisterHistoryRoutes(r , historyHandler)
 }
