@@ -54,6 +54,49 @@
 // 	log.Fatal(http.ListenAndServe(":"+cfg.AppPort, r))
 // }
 
+// package main
+
+// import (
+// 	"fmt"
+// 	"log"
+// 	"net/http"
+// 	"os"
+
+// 	"github.com/go-chi/chi/v5"
+// 	"github.com/joho/godotenv"
+// 	"github.com/redis/go-redis/v9"
+
+// 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/cache"
+// 	handler "github.com/the-onewho-knocks/finance-Simulation/backend/internal/handlers"
+// 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/routes"
+// 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/services"
+// )
+
+// func main() {
+// 	_ = godotenv.Load() // 🔥 REQUIRED
+
+// 	fmt.Println("RAPIDAPI_KEY:", os.Getenv("RAPIDAPI_KEY"))
+// 	fmt.Println("RAPIDAPI_HOST:", os.Getenv("RAPIDAPI_HOST"))
+
+// 	r := chi.NewRouter()
+
+// 	redisClient := redis.NewClient(&redis.Options{
+// 		Addr: "localhost:6379",
+// 	})
+
+// 	cache := cache.NewMarketCache(redisClient)
+// 	service := services.NewMarketService(
+// 		os.Getenv("RAPIDAPI_KEY"),
+// 		cache,
+// 	)
+
+// 	handler := handler.NewMarketHandler(service)
+// 	routes.MarketRoutes(r, handler)
+
+// 	log.Println("🚀 Market service running on :8080")
+// 	http.ListenAndServe(":8080", r)
+// }
+
 package main
 
 import (
@@ -70,29 +113,52 @@ import (
 	handler "github.com/the-onewho-knocks/finance-Simulation/backend/internal/handlers"
 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/routes"
 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/services"
+	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/stockapi"
 )
 
 func main() {
-	_ = godotenv.Load() // 🔥 REQUIRED
+
+	_ = godotenv.Load(".env") // 🔥 REQUIRED
+
+	fmt.Println("DEBUG RAPIDAPI_KEY =", os.Getenv("RAPIDAPI_KEY"))
+	fmt.Println("DEBUG RAPIDAPI_HOST =", os.Getenv("RAPIDAPI_HOST"))
 
 	fmt.Println("RAPIDAPI_KEY:", os.Getenv("RAPIDAPI_KEY"))
 	fmt.Println("RAPIDAPI_HOST:", os.Getenv("RAPIDAPI_HOST"))
 
 	r := chi.NewRouter()
 
+	// ================= Redis =================
+
 	redisClient := redis.NewClient(&redis.Options{
 		Addr: "localhost:6379",
 	})
 
-	cache := cache.NewMarketCache(redisClient)
-	service := services.NewMarketService(
+	indicatorCache := cache.NewIndicatorCache(redisClient)
+
+	// ================= API Client =================
+	stockClient := stockapi.NewRapidApiClient(
 		os.Getenv("RAPIDAPI_KEY"),
-		cache,
+		os.Getenv("RAPIDAPI_HOST"),
 	)
 
-	handler := handler.NewMarketHandler(service)
-	routes.MarketRoutes(r, handler)
+	// ================= Services =================
 
-	log.Println("🚀 Market service running on :8080")
-	http.ListenAndServe(":8080", r)
+	indicatorService := services.NewIndicatorService(
+		stockClient,
+		indicatorCache,
+	)
+
+	// ================= Handlers =================
+
+	indicatorHandler := handler.NewIndicatorHandler(
+		indicatorService,
+	)
+
+	// ================= Routes =================
+
+	routes.IndicatorRoutes(r, indicatorHandler)
+
+	log.Println("🚀 Indicator service running on :8080")
+	log.Fatal(http.ListenAndServe(":8080", r))
 }

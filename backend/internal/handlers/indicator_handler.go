@@ -1,114 +1,90 @@
 package handler
 
-// import (
-// 	"net/http"
-// 	"strconv"
-// 	"time"
+import (
+	"net/http"
+	"strconv"
 
-// 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5"
+	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/services"
+)
 
-// 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/services"
-// )
+type IndicatorHandler struct {
+	service *services.IndicatorService
+}
 
-// type IndicatorHandler struct {
-// 	service *services.IndicatorService
-// }
+func NewIndicatorHandler(service *services.IndicatorService) *IndicatorHandler {
+	return &IndicatorHandler{service: service}
+}
 
-// func NewIndicatorHandler(service *services.IndicatorService) *IndicatorHandler {
-// 	return &IndicatorHandler{
-// 		service: service,
-// 	}
-// }
+func (h *IndicatorHandler) GetSMA(w http.ResponseWriter, r *http.Request) {
+	symbol := chi.URLParam(r, "symbol")
 
-// // GET /indicators/sma/{symbol}?period=14&start=...&end=...&interval=1d
-// func (h *IndicatorHandler) GetSMA(
-// 	w http.ResponseWriter,
-// 	r *http.Request,
-// ) {
-// 	h.handleIndicator(w, r, "sma")
-// }
+	interval := r.URL.Query().Get("interval")
+	if interval == "" {
+		interval = "5m"
+	}
 
-// // GET /indicators/rsi/{symbol}?period=14&start=...&end=...&interval=1d
-// func (h *IndicatorHandler) GetRSI(
-// 	w http.ResponseWriter,
-// 	r *http.Request,
-// ) {
-// 	h.handleIndicator(w, r, "rsi")
-// }
+	period, _ := strconv.Atoi(r.URL.Query().Get("period"))
+	if period == 0 {
+		period = 50
+	}
 
-// // shared logic
-// func (h *IndicatorHandler) handleIndicator(
-// 	w http.ResponseWriter,
-// 	r *http.Request,
-// 	indicator string,
-// ) {
-// 	symbol := chi.URLParam(r, "symbol")
-// 	if symbol == "" {
-// 		http.Error(w, "symbol is required", http.StatusBadRequest)
-// 		return
-// 	}
+	limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
+	if limit == 0 {
+		limit = 50
+	}
 
-// 	periodStr := r.URL.Query().Get("period")
-// 	startStr := r.URL.Query().Get("start")
-// 	endStr := r.URL.Query().Get("end")
-// 	interval := r.URL.Query().Get("interval")
+	data, err := h.service.GetSMA(
+		r.Context(),
+		symbol,
+		interval,
+		period,
+		limit,
+	)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
 
-// 	period, err := strconv.Atoi(periodStr)
-// 	if err != nil || period <= 0 {
-// 		http.Error(w, "invalid period", http.StatusBadRequest)
-// 		return
-// 	}
+	writeJSON(w, http.StatusOK, data)
+}
 
-// 	startUnix, err := strconv.ParseInt(startStr, 10, 64)
-// 	if err != nil {
-// 		http.Error(w, "invalid start timestamp", http.StatusBadRequest)
-// 		return
-// 	}
+func (h *IndicatorHandler) GetRSI(w http.ResponseWriter, r *http.Request) {
+	symbol := chi.URLParam(r, "symbol")
 
-// 	endUnix, err := strconv.ParseInt(endStr, 10, 64)
-// 	if err != nil {
-// 		http.Error(w, "invalid end timestamp", http.StatusBadRequest)
-// 		return
-// 	}
+	interval := r.URL.Query().Get("interval")
+	if interval == "" {
+		interval = "5m"
+	}
 
-// 	start := time.Unix(startUnix, 0)
-// 	end := time.Unix(endUnix, 0)
+	period, _ := strconv.Atoi(r.URL.Query().Get("period"))
+	if period == 0 {
+		period = 50
+	}
 
-// 	var result []float64
+	limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
+	if limit == 0 {
+		limit = 50
+	}
 
-// 	switch indicator {
-// 	case "sma":
-// 		result, err = h.service.GetSMA(
-// 			r.Context(),
-// 			symbol,
-// 			period,
-// 			start,
-// 			end,
-// 			interval,
-// 		)
-// 	case "rsi":
-// 		result, err = h.service.GetRSI(
-// 			r.Context(),
-// 			symbol,
-// 			period,
-// 			start,
-// 			end,
-// 			interval,
-// 		)
-// 	default:
-// 		http.Error(w, "unsupported indicator", http.StatusBadRequest)
-// 		return
-// 	}
+	data, err := h.service.GetRSI(
+		r.Context(),
+		symbol,
+		interval,
+		period,
+		limit,
+	)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
 
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
+	writeJSON(w, http.StatusOK, data)
+}
 
-// 	writeJSON(w, http.StatusOK, map[string]any{
-// 		"symbol":    symbol,
-// 		"indicator": indicator,
-// 		"period":    period,
-// 		"values":    result,
-// 	})
-// }
+// writeError sends a standardized error response
+func writeError(w http.ResponseWriter, status int, message string) {
+	writeJSON(w, status, map[string]string{
+		"error": message,
+	})
+}

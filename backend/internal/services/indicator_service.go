@@ -1,114 +1,148 @@
 package services
 
-// import (
-// 	"context"
-// 	"errors"
-// 	"sync"
-// 	"time"
+import (
+	"context"
+	"errors"
+	"fmt"
 
-// 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/stockapi"
-// )
+	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/cache"
+	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/stockapi"
+)
 
-// type IndicatorService struct {
-// 	api stockapi.Client
-// }
+type IndicatorService struct {
+	api   stockapi.IndicatorClient
+	cache *cache.IndicatorCache
+}
 
-// func NewIndiacatorService(api stockapi.Client) *IndicatorService {
-// 	return &IndicatorService{api: api}
-// }
+func NewIndicatorService(
+	api stockapi.IndicatorClient,
+	cache *cache.IndicatorCache,
+) *IndicatorService {
+	return &IndicatorService{
+		api:   api,
+		cache: cache,
+	}
+}
 
-// // sma simple moving average
-// func (s *IndicatorService) GetSMA(
-// 	ctx context.Context, symbol string,
-// 	period int, start, end time.Time,
-// 	interval string,
-// ) ([]float64, error) {
-// 	prices, err := s.fetchClosePrices(symbol, start, end, interval)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return calculateRSI(prices, period), nil
-// }
+// ================= SMA =================
 
-// // RSI relative strength index
-// func (s *IndicatorService) GetRSI(
+func (s *IndicatorService) GetSMA(
+	ctx context.Context,
+	symbol string,
+	interval string,
+	timePeriod int,
+	limit int,
+) ([]stockapi.SMAPoint, error) {
+
+	cacheKey := fmt.Sprintf(
+		"sma:%s:%s:%d:%d",
+		symbol, interval, timePeriod, limit,
+	)
+
+	var cached []stockapi.SMAPoint
+	if ok, _ := s.cache.Get(ctx, cacheKey, &cached); ok {
+		return cached, nil
+	}
+
+	resp, err := s.api.GetSMA(
+		symbol,
+		interval,
+		"close",
+		timePeriod,
+		limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(resp.Body) == 0 {
+		return nil, errors.New("no SMA data returned")
+	}
+
+	_ = s.cache.Set(ctx, cacheKey, resp.Body)
+	return resp.Body, nil
+}
+
+// ================= RSI =================
+
+func (s *IndicatorService) GetRSI(
+	ctx context.Context,
+	symbol string,
+	interval string,
+	timePeriod int,
+	limit int,
+) ([]stockapi.RSIPoint, error) {
+
+	cacheKey := fmt.Sprintf(
+		"rsi:%s:%s:%d:%d",
+		symbol, interval, timePeriod, limit,
+	)
+
+	var cached []stockapi.RSIPoint
+	if ok, _ := s.cache.Get(ctx, cacheKey, &cached); ok {
+		return cached, nil
+	}
+
+	resp, err := s.api.GetRSI(
+		symbol,
+		interval,
+		"close",
+		timePeriod,
+		limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(resp.Body) == 0 {
+		return nil, errors.New("no RSI data returned")
+	}
+
+	_ = s.cache.Set(ctx, cacheKey, resp.Body)
+	return resp.Body, nil
+}
+
+// func (s *IndicatorService) GetSMAAndRSI(
 // 	ctx context.Context,
 // 	symbol string,
-// 	period int,
-// 	start, end time.Time,
 // 	interval string,
-// ) ([]float64, error) {
-// 	prices, err := s.fetchClosePrices(symbol, start, end, interval)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return calculateRSI(prices, period), nil
-// }
+// 	timePeriod int,
+// 	limit int,
+// ) (stockapi.SMAPoint, stockapi.RSIPoint, error) {
 
-// // fetchClosePrices fetches hirstorical prices using goroutines
-// func (s *IndicatorService) fetchClosePrices(
-// 	symbol string,
-// 	start, end time.Time,
-// 	interval string,
-// ) ([]float64, error) {
-// 	history, err := s.api.GetHistoricalPrices(symbol, start, end, interval)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	if len(history) == 0 {
-// 		return nil, errors.New("no historical data available")
-// 	}
+// 	var (
+// 		sma stockapi.SMAPoint
+// 		rsi stockapi.RSIPoint
+// 	)
 
-// 	prices := make([]float64, len(history))
+// 	errCh := make(chan error, 2)
 // 	wg := sync.WaitGroup{}
-// 	for i, h := range history {
-// 		wg.Add(1)
-// 		go func(i int, price float64) {
-// 			defer wg.Done()
-// 			prices[i] = price
-// 		}(i, h.Price)
-// 	}
+// 	wg.Add(2)
+
+// 	go func() {
+// 		defer wg.Done()
+// 		var err error
+// 		sma, err = s.api.GetSMA(ctx, symbol, interval, timePeriod, limit)
+// 		if err != nil {
+// 			errCh <- err
+// 		}
+// 	}()
+
+// 	go func() {
+// 		defer wg.Done()
+// 		var err error
+// 		rsi, err = s.api.GetRSI(ctx, symbol, interval, timePeriod, limit)
+// 		if err != nil {
+// 			errCh <- err
+// 		}
+// 	}()
+
 // 	wg.Wait()
-// 	return prices, nil
-// }
+// 	close(errCh)
 
-// func calculateSMA(prices []float64, period int) []float64 {
-// 	if period <= 0 || len(prices) < period {
-// 		return []float64{}
+// 	if err := <-errCh; err != nil {
+// 		return nil, nil, err
 // 	}
 
-// 	out := make([]float64, 0, len(prices)-period+1)
-
-// 	for i := period - 1; i < len(prices); i++ {
-// 		sum := 0.0
-// 		for j := i - period + 1; j <= i; j++ {
-// 			sum += prices[j]
-// 		}
-// 		out = append(out, sum/float64(period))
-// 	}
-// 	return out
-// }
-
-// func calculateRSI(prices []float64, period int) []float64 {
-// 	if len(prices) <= period {
-// 		return []float64{}
-// 	}
-
-// 	gains, losses := 0.0, 0.0
-// 	for i := 1; i <= period; i++ {
-// 		diff := prices[i] - prices[i-1]
-// 		if diff >= 0 {
-// 			gains += diff
-// 		} else {
-// 			losses -= diff
-// 		}
-// 	}
-
-// 	if losses == 0 {
-// 		return []float64{100}
-// 	}
-
-// 	rs := gains / losses
-// 	rsi := 100 - (100 / (1 + rs))
-// 	return []float64{rsi}
+// 	return sma, rsi, nil
 // }

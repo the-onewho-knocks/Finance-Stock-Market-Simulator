@@ -2,43 +2,56 @@ package stockapi
 
 import (
 	"encoding/json"
-	"errors"
+	"fmt"
+	"io"
 	"net/http"
 	"time"
 )
 
 type RapidApiClient struct {
-	httpClient *http.Client
-	apiKey     string
-	baseUrl    string
+	apiKey  string
+	apiHost string
+	client  *http.Client
 }
 
-func NewRapidAPIClient(apiKey string) *RapidApiClient {
+func NewRapidApiClient(apiKey, apiHost string) *RapidApiClient {
 	return &RapidApiClient{
-		httpClient: &http.Client{Timeout: 10 * time.Second},
-		apiKey:     apiKey,
-		baseUrl:    "https://indian-stock-exchange-api2.p.rapidapi.com",
+		apiKey:  apiKey,
+		apiHost: apiHost,
+		client: &http.Client{
+			Timeout: 10 * time.Second,
+		},
 	}
 }
 
-func (c *RapidApiClient) doRequest(path string, result interface{}) error {
-	req, err := http.NewRequest("GET", c.baseUrl+path, nil)
+func (c *RapidApiClient) doRequest(path string, out any) error {
+	url := fmt.Sprintf("https://%s%s", c.apiHost, path)
+
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return err
 	}
 
-	req.Header.Set("x-rapidapi-key", c.apiKey)
-	req.Header.Set("x-rapidapi-host", "indian-stock-exchange-api2.p.rapidapi.com")
+	// 🔴 THESE HEADERS MUST BE EXACT
+	req.Header.Set("X-RapidAPI-Key", c.apiKey)
+	req.Header.Set("X-RapidAPI-Host", c.apiHost)
 
-	resp, err := c.httpClient.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
 
+	bodyBytes, _ := io.ReadAll(resp.Body)
+
+	// 🔴 LOG REAL RAPIDAPI ERROR
 	if resp.StatusCode != http.StatusOK {
-		return errors.New("rapidapi request failed")
+		return fmt.Errorf(
+			"rapidapi error: status=%d body=%s",
+			resp.StatusCode,
+			string(bodyBytes),
+		)
 	}
 
-	return json.NewDecoder(resp.Body).Decode(result)
+	return json.Unmarshal(bodyBytes, out)
 }

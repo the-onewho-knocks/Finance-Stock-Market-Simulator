@@ -108,4 +108,40 @@ type Client interface {
 
 	// 52 week
 //	Get52WeekHighLow() ([]Week52Data, error)
+
+ GetRSI(
+	symbol string,
+	interval string,
+	seriesType string,
+	timePeriod int,
+	limit int,
+) (*RSIResponse, error)
+
+GetSMA(
+	symbol string,
+	interval string,
+	seriesType string,
+	timePeriod int,
+	limit int,
+) (*SMAResponse, error)
+
+
+}
+
+type IndicatorClient interface {
+	GetRSI(
+		symbol string,
+		interval string,
+		seriesType string,
+		timePeriod int,
+		limit int,
+	) (*RSIResponse, error)
+
+	GetSMA(
+		symbol string,
+		interval string,
+		seriesType string,
+		timePeriod int,
+		limit int,
+	) (*SMAResponse, error)
 }
