@@ -1,18 +1,24 @@
 package routes
 
-// import (
-// 	"github.com/go-chi/chi/v5"
-// 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/handlers"
-// )
+import (
+	"github.com/go-chi/chi/v5"
 
-// // RegisterMarketRoutes registers market-related endpoints
-// func RegisterMarketRoutes(
-// 	r chi.Router,
-// 	marketHandler *handler.MarketHandler,
-// ) {
-// 	r.Route("/market", func(r chi.Router) {
-// 		r.Get("/price/{symbol}", marketHandler.GetPrice)
-// 		r.Get("/prices", marketHandler.GetPrices)
-// 	})
-// }
+	handler "github.com/the-onewho-knocks/finance-Simulation/backend/internal/handlers"
+)
 
+func MarketRoutes(r chi.Router, h *handler.MarketHandler) {
+
+	r.Route("/market", func(r chi.Router) {
+
+		// prices
+		r.Get("/price/{symbol}", h.GetPrice)
+		r.Get("/prices", h.GetPrices)
+
+		// streaming
+		r.Get("/stream", h.PriceStream)
+
+		// quotes & news
+		r.Get("/quote/{ticker}", h.GetQuote)
+		r.Get("/news/{ticker}", h.GetMarketNews)
+	})
+}

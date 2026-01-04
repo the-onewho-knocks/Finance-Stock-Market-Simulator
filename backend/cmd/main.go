@@ -1,55 +1,98 @@
+// package main
+
+// import (
+// 	"log"
+// 	"net/http"
+// 	"time"
+
+// 	"github.com/go-chi/chi/v5"
+// 	"github.com/go-chi/chi/v5/middleware"
+
+// 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/cache"
+// 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/config"
+// 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/handlers"
+// 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/routes"
+// 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/services"
+// 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/stockapi"
+// )
+
+// func main() {
+// 	cfg := config.LoadConfig()
+
+// 	// Redis
+// 	cache.InitializeRedis(cfg)
+
+// 	// Router
+// 	r := chi.NewRouter()
+
+// 	// Middleware (industry standard)
+// 	r.Use(middleware.RequestID)
+// 	r.Use(middleware.RealIP)
+// 	r.Use(middleware.Logger)
+// 	r.Use(middleware.Recoverer)
+// 	r.Use(middleware.Timeout(15 * time.Second))
+
+// 	// Stock API client
+// 	stockClient := stockapi.NewRapidAPIClient(cfg.RapidAPIKey)
+
+// 	// Cache
+// 	historyCache := cache.NewHistoryCache()
+
+// 	// Service
+// 	historyService := services.NewHistoryService(
+// 		*stockClient,
+// 		historyCache,
+// 	)
+
+// 	// Handler
+// 	historyHandler := handler.NewHistoryHandler(historyService)
+
+// 	// Routes
+// 	routes.RegisterHistoryRoutes(r, historyHandler)
+
+// 	log.Println("Server running on port", cfg.AppPort)
+// 	log.Fatal(http.ListenAndServe(":"+cfg.AppPort, r))
+// }
+
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
-	"time"
+	"os"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
+	"github.com/joho/godotenv"
+	"github.com/redis/go-redis/v9"
 
 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/cache"
-	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/config"
-	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/handlers"
+	handler "github.com/the-onewho-knocks/finance-Simulation/backend/internal/handlers"
 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/routes"
 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/services"
-	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/stockapi"
 )
 
 func main() {
-	cfg := config.LoadConfig()
+	_ = godotenv.Load() // 🔥 REQUIRED
 
-	// Redis
-	cache.InitializeRedis(cfg)
+	fmt.Println("RAPIDAPI_KEY:", os.Getenv("RAPIDAPI_KEY"))
+	fmt.Println("RAPIDAPI_HOST:", os.Getenv("RAPIDAPI_HOST"))
 
-	// Router
 	r := chi.NewRouter()
 
-	// Middleware (industry standard)
-	r.Use(middleware.RequestID)
-	r.Use(middleware.RealIP)
-	r.Use(middleware.Logger)
-	r.Use(middleware.Recoverer)
-	r.Use(middleware.Timeout(15 * time.Second))
+	redisClient := redis.NewClient(&redis.Options{
+		Addr: "localhost:6379",
+	})
 
-	// Stock API client
-	stockClient := stockapi.NewRapidAPIClient(cfg.RapidAPIKey)
-
-	// Cache
-	historyCache := cache.NewHistoryCache()
-
-	// Service
-	historyService := services.NewHistoryService(
-		*stockClient,
-		historyCache,
+	cache := cache.NewMarketCache(redisClient)
+	service := services.NewMarketService(
+		os.Getenv("RAPIDAPI_KEY"),
+		cache,
 	)
 
-	// Handler
-	historyHandler := handler.NewHistoryHandler(historyService)
+	handler := handler.NewMarketHandler(service)
+	routes.MarketRoutes(r, handler)
 
-	// Routes
-	routes.RegisterHistoryRoutes(r, historyHandler)
-
-	log.Println("Server running on port", cfg.AppPort)
-	log.Fatal(http.ListenAndServe(":"+cfg.AppPort, r))
+	log.Println("🚀 Market service running on :8080")
+	http.ListenAndServe(":8080", r)
 }

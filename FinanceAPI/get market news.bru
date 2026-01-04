@@ -1,0 +1,15 @@
+meta {
+  name: get market news
+  type: http
+  seq: 14
+}
+
+get {
+  url: http://localhost:8080/market/news/AAPL
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}
