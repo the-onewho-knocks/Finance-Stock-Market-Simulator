@@ -228,28 +228,28 @@ func (s *MarketService) StartPriceStream(
 	return out
 }
 
-func (s *MarketService) RunAutoUpdater(
-	symbols []string,
-	interval time.Duration,
-) {
+// func (s *MarketService) RunAutoUpdater(
+// 	symbols []string,
+// 	interval time.Duration,
+// ) {
 
-	go func() {
-		ticker := time.NewTicker(interval)
-		defer ticker.Stop()
+// 	go func() {
+// 		ticker := time.NewTicker(interval)
+// 		defer ticker.Stop()
 
-		for range ticker.C {
-			ctx := context.Background()
+// 		for range ticker.C {
+// 			ctx := context.Background()
 
-			for _, symbol := range symbols {
-				quote, err := s.GetPrice(ctx, symbol)
-				if err != nil {
-					continue
-				}
-				s.cache.SetPrice(ctx, symbol, quote)
-			}
-		}
-	}()
-}
+// 			for _, symbol := range symbols {
+// 				quote, err := s.GetPrice(ctx, symbol)
+// 				if err != nil {
+// 					continue
+// 				}
+// 				s.cache.SetPrice(ctx, symbol, quote)
+// 			}
+// 		}
+// 	}()
+// }
 
 func (s *MarketService) GetMarketNews(ctx context.Context, ticker string) (*stockapi.NewsResponse, error) {
 	key := "news:" + ticker

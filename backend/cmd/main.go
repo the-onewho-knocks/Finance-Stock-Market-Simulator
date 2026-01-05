@@ -194,7 +194,7 @@ func main() {
 	// =========================
 	dbPool, err := pgxpool.New(context.Background(), cfg.DatabaseURL)
 	if err != nil {
-		log.Fatal("❌ failed to connect to database:", err)
+		log.Fatal(" failed to connect to database:", err)
 	}
 	defer dbPool.Close()
 

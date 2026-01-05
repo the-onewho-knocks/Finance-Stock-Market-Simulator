@@ -5,11 +5,21 @@ meta {
 }
 
 post {
-  url: 
-  body: none
+  url: http://localhost:8080/transactions/buy
+  body: json
   auth: inherit
+}
+
+body:json {
+  {
+    "user_id": "69860366-8d1e-4136-9b78-19bb183cecfe",
+    "symbol": "AAPL",
+    "quantity": "1"
+  }
+  
 }
 
 settings {
   encodeUrl: true
+  timeout: 0
 }
