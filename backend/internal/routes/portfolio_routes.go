@@ -18,6 +18,7 @@ func RegisterPortfolioRoutes(
 		r.Get("/{user_id}/metrics", h.GetPortfolioMetrics)
 
 		// trading actions
+		//this are admin internal actions the user should not use this functions actully
 		r.Post("/buy", h.BuyStock)
 		r.Post("/sell", h.SellStock)
 	})

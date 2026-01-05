@@ -6,7 +6,7 @@ import (
 	handler "github.com/the-onewho-knocks/finance-Simulation/backend/internal/handlers"
 )
 
-func MarketRoutes(r chi.Router, h *handler.MarketHandler) {
+func RegisterMarketRoutes(r chi.Router, h *handler.MarketHandler) {
 
 	r.Route("/market", func(r chi.Router) {
 

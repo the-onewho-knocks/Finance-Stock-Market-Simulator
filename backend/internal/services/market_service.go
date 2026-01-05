@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/cache"
@@ -12,30 +14,44 @@ import (
 )
 
 type MarketService struct {
-	client *http.Client
-	apiKey string
-	cache  *cache.MarketCache
+	client     *http.Client
+	apiKey     string
+	cache      *cache.MarketCache
+	stockCache *cache.StockCache
 }
 
 func NewMarketService(
 	apiKey string,
 	cache *cache.MarketCache,
+	stockCache *cache.StockCache,
 ) *MarketService {
 	return &MarketService{
-		client: &http.Client{Timeout: 5 * time.Second},
-		apiKey: apiKey,
-		cache:  cache,
+		client:     &http.Client{Timeout: 5 * time.Second},
+		apiKey:     apiKey,
+		cache:      cache,
+		stockCache: stockCache,
 	}
+}
+
+func parsePrice(s string) (float64, error) {
+	s = strings.ReplaceAll(s, "$", "")
+	s = strings.ReplaceAll(s, ",", "")
+	s = strings.TrimSpace(s)
+	return strconv.ParseFloat(s, 64)
+}
+
+func parseChange(s string) float64 {
+	s = strings.ReplaceAll(s, "%", "")
+	s = strings.ReplaceAll(s, "+", "")
+	s = strings.TrimSpace(s)
+	val, _ := strconv.ParseFloat(s, 64)
+	return val
 }
 
 func (s *MarketService) GetPrice(
 	ctx context.Context,
 	symbol string,
 ) (*stockapi.QuoteResponse, error) {
-
-	if cached, ok := s.cache.GetPrice(ctx, symbol); ok {
-		return cached, nil
-	}
 
 	url := fmt.Sprintf(
 		"https://yahoo-finance15.p.rapidapi.com/api/v1/markets/quote?ticker=%s&type=STOCKS",
@@ -58,20 +74,32 @@ func (s *MarketService) GetPrice(
 	}
 
 	s.cache.SetPrice(ctx, symbol, &quote)
+
+	price, err := parsePrice(quote.Body.PrimaryData.LastSalePrice)
+	if err == nil {
+		change := parseChange(quote.Body.PrimaryData.NetChange)
+
+		// Cache failure should NOT break price fetch
+		_ = s.stockCache.SetStockData(
+			symbol,
+			price,
+			change,
+		)
+	}
+
 	return &quote, nil
 }
 
+//this is the working one incase everything fails
 // func (s *MarketService) GetPrice(
 // 	ctx context.Context,
 // 	symbol string,
 // ) (*stockapi.QuoteResponse, error) {
 
-// 	// 1️⃣ Cache first
 // 	if cached, ok := s.cache.GetPrice(ctx, symbol); ok {
 // 		return cached, nil
 // 	}
 
-// 	// 2️⃣ Build request
 // 	url := fmt.Sprintf(
 // 		"https://yahoo-finance15.p.rapidapi.com/api/v1/markets/quote?ticker=%s&type=STOCKS",
 // 		symbol,
@@ -81,24 +109,59 @@ func (s *MarketService) GetPrice(
 // 	req.Header.Set("x-rapidapi-host", "yahoo-finance15.p.rapidapi.com")
 // 	req.Header.Set("x-rapidapi-key", s.apiKey)
 
-// 	// 3️⃣ Execute request
 // 	resp, err := s.client.Do(req)
 // 	if err != nil {
 // 		return nil, err
 // 	}
 // 	defer resp.Body.Close()
 
-// 	// 4️⃣ READ RAW RESPONSE 🔥🔥🔥
+// 	var quote stockapi.QuoteResponse
+// 	if err := json.NewDecoder(resp.Body).Decode(&quote); err != nil {
+// 		return nil, err
+// 	}
+
+// 	s.cache.SetPrice(ctx, symbol, &quote)
+// 	return &quote, nil
+// }
+
+// func (s *MarketService) GetPrice(
+// 	ctx context.Context,
+// 	symbol string,
+// ) (*stockapi.QuoteResponse, error) {
+
+// 	//  Cache first
+// 	if cached, ok := s.cache.GetPrice(ctx, symbol); ok {
+// 		return cached, nil
+// 	}
+
+// 	//  Build request
+// 	url := fmt.Sprintf(
+// 		"https://yahoo-finance15.p.rapidapi.com/api/v1/markets/quote?ticker=%s&type=STOCKS",
+// 		symbol,
+// 	)
+
+// 	req, _ := http.NewRequestWithContext(ctx, "GET", url, nil)
+// 	req.Header.Set("x-rapidapi-host", "yahoo-finance15.p.rapidapi.com")
+// 	req.Header.Set("x-rapidapi-key", s.apiKey)
+
+// 	//  Execute request
+// 	resp, err := s.client.Do(req)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	defer resp.Body.Close()
+
+// 	//  READ RAW RESPONSE
 // 	raw, _ := io.ReadAll(resp.Body)
 // 	fmt.Println("RAW RESPONSE:", string(raw))
 
-// 	// 5️⃣ Decode correctly
+// 	// Decode correctly
 // 	var quote stockapi.QuoteResponse
 // 	if err := json.Unmarshal(raw, &quote); err != nil {
 // 		return nil, err
 // 	}
 
-// 	// 7️⃣ Cache & return
+// 	// Cache & return
 // 	s.cache.SetPrice(ctx, symbol, &quote)
 // 	return &quote, nil
 // }
@@ -165,28 +228,28 @@ func (s *MarketService) StartPriceStream(
 	return out
 }
 
-// func (s *MarketService) RunAutoUpdater(
-// 	symbols []string,
-// 	interval time.Duration,
-// ) {
+func (s *MarketService) RunAutoUpdater(
+	symbols []string,
+	interval time.Duration,
+) {
 
-// 	go func() {
-// 		ticker := time.NewTicker(interval)
-// 		defer ticker.Stop()
+	go func() {
+		ticker := time.NewTicker(interval)
+		defer ticker.Stop()
 
-// 		for range ticker.C {
-// 			ctx := context.Background()
+		for range ticker.C {
+			ctx := context.Background()
 
-// 			for _, symbol := range symbols {
-// 				quote, err := s.GetPrice(ctx, symbol)
-// 				if err != nil {
-// 					continue
-// 				}
-// 				s.cache.SetPrice(ctx, symbol, quote)
-// 			}
-// 		}
-// 	}()
-// }
+			for _, symbol := range symbols {
+				quote, err := s.GetPrice(ctx, symbol)
+				if err != nil {
+					continue
+				}
+				s.cache.SetPrice(ctx, symbol, quote)
+			}
+		}
+	}()
+}
 
 func (s *MarketService) GetMarketNews(ctx context.Context, ticker string) (*stockapi.NewsResponse, error) {
 	key := "news:" + ticker

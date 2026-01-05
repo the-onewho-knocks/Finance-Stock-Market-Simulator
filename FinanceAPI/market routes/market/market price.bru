@@ -1,0 +1,16 @@
+meta {
+  name: market price
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:8080/market/price/spy
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

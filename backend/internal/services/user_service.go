@@ -23,7 +23,7 @@ func NewUserService(
 }
 
 // fake balance every user will initially have
-const InitialFakeBalance = 1000
+const InitialFakeBalance = 10000
 
 //user life cycle that performing different operations for the users
 
