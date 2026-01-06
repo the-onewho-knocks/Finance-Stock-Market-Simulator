@@ -1,0 +1,30 @@
+meta {
+  name: planned expense
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8080/users/77705829-b3e3-4846-8c7a-f4353fff483a/planned-expenses
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "title": "Bribe",
+    "amount": "1900000.00",
+    "note": "Bribes to governor and fuckin offecers",
+    "date": "2026-01-15T00:00:00Z"
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

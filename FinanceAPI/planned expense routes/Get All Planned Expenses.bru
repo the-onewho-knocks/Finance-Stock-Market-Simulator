@@ -1,0 +1,16 @@
+meta {
+  name: Get All Planned Expenses
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:8080/users/77705829-b3e3-4846-8c7a-f4353fff483a/planned-expenses
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

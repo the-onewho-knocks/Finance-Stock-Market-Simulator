@@ -163,6 +163,136 @@
 // 	log.Fatal(http.ListenAndServe(":8080", r))
 // }
 
+// package main
+
+// import (
+// 	"context"
+// 	"log"
+// 	"net/http"
+// 	"time"
+
+// 	"github.com/go-chi/chi/v5"
+// 	"github.com/go-chi/chi/v5/middleware"
+// 	"github.com/jackc/pgx/v5/pgxpool"
+
+// 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/cache"
+// 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/config"
+// 	handler "github.com/the-onewho-knocks/finance-Simulation/backend/internal/handlers"
+// 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/repositories/pgx"
+// 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/routes"
+// 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/services"
+// )
+
+// func main() {
+// 	// =========================
+// 	// Load Config
+// 	// =========================
+// 	cfg := config.LoadConfig()
+
+// 	// =========================
+// 	// PostgreSQL
+// 	// =========================
+// 	dbPool, err := pgxpool.New(context.Background(), cfg.DatabaseURL)
+// 	if err != nil {
+// 		log.Fatal(" failed to connect to database:", err)
+// 	}
+// 	defer dbPool.Close()
+
+// 	// =========================
+// 	// Redis
+// 	// =========================
+// 	cache.InitializeRedis(cfg)
+
+// 	stockCache := cache.NewStockCache()
+// 	marketCache := cache.NewMarketCache(cache.RedisClient)
+
+// 	// =========================
+// 	// Repositories
+// 	// =========================
+// 	userRepo := pgx.NewUserRepository(dbPool)
+// 	adminRepo := pgx.NewAdminRepository(dbPool)
+// 	portfolioRepo := pgx.NewPortfolioRepository(dbPool)
+// 	transactionRepo := pgx.NewTransactionRepository(dbPool)
+// 	expenseRepo := pgx.NewExpenseRepository(dbPool)
+// 	plannedExpenseRepo := pgx.NewPlannedExpenseRepository(dbPool)
+// 	networthRepo := pgx.NewNetworthRepository(dbPool)
+
+// 	// =========================
+// 	// Services
+// 	// =========================
+// 	userService := services.NewUserService(userRepo)
+// 	adminService := services.NewAdminService(adminRepo)
+
+// 	expenseService := services.NewExpenseService(expenseRepo)
+// 	plannedExpenseService := services.NewPlannedExpenseService(plannedExpenseRepo)
+
+// 	portfolioService := services.NewPortfolioService(
+// 		portfolioRepo,
+// 		stockCache,
+// 	)
+
+// 	networthService := services.NewNetworthService(
+// 		networthRepo,
+// 		userRepo,
+// 		portfolioService,
+// 		expenseService,
+// 	)
+
+// 	transactionService := services.NewTransactionService(
+// 		userRepo,
+// 		portfolioRepo,
+// 		transactionRepo,
+// 		stockCache,
+// 		networthService,
+// 	)
+
+// 	marketService := services.NewMarketService(
+// 		cfg.RapidAPIKey,
+// 		marketCache,
+// 		stockCache,
+// 	)
+
+// 	// =========================
+// 	// Handlers
+// 	// =========================
+// 	h := &routes.Handlers{
+// 		User:           handler.NewUserHandler(userService),
+// 		Admin:          handler.NewAdminHandler(adminService),
+// 		Portfolio:      handler.NewPortfolioHandler(portfolioService),
+// 		Transaction:    handler.NewTransactionHandler(transactionService),
+// 		Expense:        handler.NewExpenseHandler(expenseService),
+// 		PlannedExpense: handler.NewPlannedExpenseHandler(plannedExpenseService),
+// 		Networth:       handler.NewNetworthHandler(networthService),
+// 		Market:         handler.NewMarketHandler(marketService),
+// 	}
+
+// 	// =========================
+// 	// Router
+// 	// =========================
+// 	r := chi.NewRouter()
+
+// 	r.Use(middleware.RequestID)
+// 	r.Use(middleware.RealIP)
+// 	r.Use(middleware.Logger)
+// 	r.Use(middleware.Recoverer)
+// 	r.Use(middleware.Timeout(60 * time.Second))
+
+// 	// Health check
+// 	r.Get("/health", func(w http.ResponseWriter, _ *http.Request) {
+// 		w.WriteHeader(http.StatusOK)
+// 		w.Write([]byte("OK"))
+// 	})
+
+// 	// Mount API routes
+// 	r.Mount("/", routes.RegisterRoutes(h))
+
+// 	// =========================
+// 	// Start Server
+// 	// =========================
+// 	log.Println("🚀 Server running on port", cfg.AppPort)
+// 	log.Fatal(http.ListenAndServe(":"+cfg.AppPort, r))
+// }
+
 package main
 
 import (
@@ -181,9 +311,11 @@ import (
 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/repositories/pgx"
 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/routes"
 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/services"
+	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/stockapi"
 )
 
 func main() {
+
 	// =========================
 	// Load Config
 	// =========================
@@ -194,9 +326,11 @@ func main() {
 	// =========================
 	dbPool, err := pgxpool.New(context.Background(), cfg.DatabaseURL)
 	if err != nil {
-		log.Fatal(" failed to connect to database:", err)
+		log.Fatal("failed to connect to database:", err)
 	}
 	defer dbPool.Close()
+
+	log.Println("connected to PostgreSQL successfully")
 
 	// =========================
 	// Redis
@@ -205,6 +339,15 @@ func main() {
 
 	stockCache := cache.NewStockCache()
 	marketCache := cache.NewMarketCache(cache.RedisClient)
+	heatmapCache := cache.NewHeatMapCache(cache.RedisClient)
+
+	// =========================
+	// RapidAPI Client
+	// =========================
+	rapidApiClient := stockapi.NewRapidApiClient(
+		cfg.RapidAPIKey,
+		cfg.RapidAPIHost,
+	)
 
 	// =========================
 	// Repositories
@@ -252,6 +395,11 @@ func main() {
 		stockCache,
 	)
 
+	heatmapService := services.NewHeatmapService(
+		rapidApiClient,
+		heatmapCache,
+	)
+
 	// =========================
 	// Handlers
 	// =========================
@@ -264,6 +412,7 @@ func main() {
 		PlannedExpense: handler.NewPlannedExpenseHandler(plannedExpenseService),
 		Networth:       handler.NewNetworthHandler(networthService),
 		Market:         handler.NewMarketHandler(marketService),
+		Heatmap:        handler.NewHeatmapHandler(heatmapService),
 	}
 
 	// =========================
@@ -289,6 +438,6 @@ func main() {
 	// =========================
 	// Start Server
 	// =========================
-	log.Println("🚀 Server running on port", cfg.AppPort)
+	log.Println("Server running on port", cfg.AppPort)
 	log.Fatal(http.ListenAndServe(":"+cfg.AppPort, r))
 }

@@ -1,121 +1,81 @@
 package services
 
-// import (
-// 	"context"
-// 	"time"
+import (
+	"context"
+	"strconv"
+	"strings"
 
-// 	"github.com/shopspring/decimal"
-// 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/cache"
-// 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/models"
-// 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/stockapi"
-// )
+	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/cache"
+	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/models"
+	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/stockapi"
+)
 
-// type HeatmapService struct {
-// 	stockCache   *cache.StockCache
-// 	heatmapCache *cache.HeatmapCache
-// 	stockAPI     stockapi.Client
-// }
+type HeatmapService struct {
+	client *stockapi.RapidApiClient
+	cache  *cache.HeatmapCache
+}
 
-// func NewHeatmapService(
-// 	stockCache *cache.StockCache,
-// 	heatmapCache *cache.HeatmapCache,
-// 	stockAPI stockapi.Client,
-// ) *HeatmapService {
-// 	return &HeatmapService{
-// 		stockCache:   stockCache,
-// 		heatmapCache: heatmapCache,
-// 		stockAPI:     stockAPI,
-// 	}
-// }
+func NewHeatmapService(
+	client *stockapi.RapidApiClient,
+	cache *cache.HeatmapCache,
+) *HeatmapService {
+	return &HeatmapService{client: client, cache: cache}
+}
 
-// // build Heatmap builds sector wise heatmap data for symbols
-// func (s *HeatmapService) BuildHeatmap(
-// 	ctx context.Context,
-// 	symbols []string,
-// ) (*models.HeatmapResult, error) {
+func parseNumber(s string) float64 {
+	s = strings.ReplaceAll(s, "$", "")
+	s = strings.ReplaceAll(s, ",", "")
+	s = strings.ReplaceAll(s, "%", "")
+	v, _ := strconv.ParseFloat(s, 64)
+	return v
+}
 
-// 	sectorMap := make(map[string][]models.HeatmapItem)
-// 	sectorChangeSum := make(map[string]decimal.Decimal)
-// 	sectorCount := make(map[string]int)
+func (s *HeatmapService) GetMarketHeatmap(
+	ctx context.Context,
+	page int,
+) ([]models.HeatmapBlock, error) {
 
-// 	for _, symbol := range symbols {
+	var cached []models.HeatmapBlock
+	if ok, _ := s.cache.Get(ctx, page, &cached); ok {
+		return cached, nil
+	}
 
-// 		//change from redis
-// 		changeFloat, err := s.stockCache.GetChange(symbol)
-// 		if err != nil {
-// 			return nil, err
-// 		}
+	resp, err := s.client.GetMarketTickersRaw(page)
+	if err != nil {
+		return nil, err
+	}
 
-// 		changePct := decimal.NewFromFloat(changeFloat)
+	heatmap := make([]models.HeatmapBlock, 0, len(resp.Body))
+	for _, t := range resp.Body {
+		change := parseNumber(t.PctChange)
+		heatmap = append(heatmap, models.HeatmapBlock{
+			Symbol:    t.Symbol,
+			Name:      t.Name,
+			Value:     parseNumber(t.MarketCap),
+			ChangePct: parseNumber(t.PctChange),
+			Color:     heatmapColor(change),
+		})
+	}
 
-// 		profile, err := s.stockAPI.GetCompanyProfile(symbol)
-// 		if err != nil {
-// 			continue
-// 		}
+	_ = s.cache.Set(ctx, page, heatmap)
+	return heatmap, nil
+}
 
-// 		sector := profile.Sector
-// 		if sector == "" {
-// 			sector = "Others"
-// 		}
-
-// 		item := models.HeatmapItem{
-// 			Symbol:    symbol,
-// 			Company:   profile.Name,
-// 			ChangePct: changePct,
-// 			MarketCap: decimal.NewFromInt(profile.MarketCap),
-// 		}
-
-// 		sectorMap[sector] = append(sectorMap[sector], item)
-// 		sectorChangeSum[sector] = sectorChangeSum[sector].Add(changePct)
-// 		sectorCount[sector]++
-
-// 		symbolColor := mapChangeToColor(changeFloat)
-// 		if err := s.heatmapCache.SetColor(symbol, symbolColor); err != nil {
-// 			return nil, err
-// 		}
-// 	}
-
-// 	for sector, totalChange := range sectorChangeSum {
-// 		avg := totalChange.Div(decimal.NewFromInt(int64(sectorCount[sector])))
-// 		_ = s.heatmapCache.SetSectorColor(
-// 			sector,
-// 			mapChangeToColor(avg.InexactFloat64()),
-// 		)
-// 	}
-
-// 	sectors := make([]models.HeatmapSector, 0, len(sectorMap))
-// 	for sector, items := range sectorMap {
-// 		sectors = append(sectors, models.HeatmapSector{
-// 			Sector: sector,
-// 			Items:  items,
-// 		})
-// 	}
-
-// 	return &models.HeatmapResult{
-// 		Sectors:     sectors,
-// 		GeneratedAt: time.Now().UTC(),
-// 	}, nil
-// }
-
-// func mapChangeToColor(change float64) string {
-// 	switch {
-// 	case change >= 5:
-// 		return "dark-green"
-// 	case change >= 2:
-// 		return "green"
-// 	case change > 0:
-// 		return "light-green"
-// 	case change == 0:
-// 		return "neutral"
-// 	case change > -2:
-// 		return "light-red"
-// 	case change > -5:
-// 		return "red"
-// 	default:
-// 		return "dark-red"
-// 	}
-// }
-
-// func (s *HeatmapService) GetHeatmapColors() (map[string]string, error) {
-// 	return s.heatmapCache.GetFullHeatmap()
-// }
+func heatmapColor(change float64) string {
+	switch {
+	case change >= 3:
+		return "#006400" // dark green
+	case change >= 1:
+		return "#00a000" // green
+	case change > 0:
+		return "#7CFC00" // light green
+	case change == 0:
+		return "#808080" // grey
+	case change > -1:
+		return "#FF7F7F" // light red
+	case change > -3:
+		return "#ff0000" // red
+	default:
+		return "#8B0000" // dark red
+	}
+}

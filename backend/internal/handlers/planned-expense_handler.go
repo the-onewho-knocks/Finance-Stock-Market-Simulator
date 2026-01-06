@@ -107,23 +107,27 @@ func (h *PlannedExpenseHandler) DeletePlan(
 	r *http.Request,
 ) {
 	userIDParam := chi.URLParam(r, "userID")
-	planID := chi.URLParam(r, "planID")
+	planIDParam := chi.URLParam(r, "planID")
 
+	// parse user ID
 	userID, err := uuid.Parse(userIDParam)
 	if err != nil {
 		http.Error(w, "invalid user id", http.StatusBadRequest)
 		return
 	}
 
-	if planID == "" {
-		http.Error(w, "plan id is required", http.StatusBadRequest)
+	// parse plan ID
+	planID, err := uuid.Parse(planIDParam)
+	if err != nil {
+		http.Error(w, "invalid plan id", http.StatusBadRequest)
 		return
 	}
 
+	// delete plan
 	err = h.service.DeletePlan(
 		r.Context(),
-		planID,
 		userID,
+		planID,
 	)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -134,3 +138,4 @@ func (h *PlannedExpenseHandler) DeletePlan(
 		"message": "planned expense deleted successfully",
 	})
 }
+

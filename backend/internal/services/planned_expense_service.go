@@ -53,8 +53,8 @@ func (s *PlannedExpenseService) Getplans(
 
 func (s *PlannedExpenseService) DeletePlan(
 	ctx context.Context,
-	planID string,
 	userID uuid.UUID,
+	planID uuid.UUID,
 ) error {
-	return s.plannedRepo.DeletePlan(planID, userID)
+	return s.plannedRepo.DeletePlan(userID,planID)
 }

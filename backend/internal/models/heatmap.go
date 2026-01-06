@@ -1,51 +1,33 @@
 package models
 
-import (
-	"time"
-
-	"github.com/shopspring/decimal"
-)
-
-// Heatmap Item represents a single stock inside a sector
-// used for visual heatmap data (e.g., color-coded gain/loss).
-type HeatmapItem struct {
-	Symbol    string          `json:"symbol"`
-	Company   string          `json:"company"`
-	ChangePct decimal.Decimal `json:"change_pct"` // + or - percentage
-	MarketCap decimal.Decimal `json:"market_cap"`
+type MarketTickersResponse struct {
+	Meta    MetaInfo          `json:"meta"`
+	Headers map[string]string `json:"headers"`
+	Body    []MarketTicker   `json:"body"`
 }
 
-// HeatmapSector groups stocks in a single sector
-type HeatmapSector struct {
-	Sector string        `json:"sector"`
-	Items  []HeatmapItem `json:"items"`
+type MetaInfo struct {
+	Version      string `json:"version"`
+	Status       int    `json:"status"`
+	Copywrite    string `json:"copywrite"`
+	TotalRecords int    `json:"totalrecords"`
 }
 
-// HeatmapSnapshot is the database-stored version of each entry.
-// This keeps track of change % for a stock at a moment in time.
-type HeatmapSnapshot struct {
-	ID        int64           `json:"id" db:"id"`
-	Sector    string          `json:"sector" db:"sector"`
-	Symbol    string          `json:"symbol" db:"symbol"`
-	ChangePct decimal.Decimal `json:"change_pct" db:"change_pct"`
-	MarketCap decimal.Decimal `json:"market_cap" db:"market_cap"`
-
-	Timestamp time.Time `json:"timestamp" db:"timestamp"`
+type MarketTicker struct {
+	Symbol    string `json:"symbol"`
+	Name      string `json:"name"`
+	LastSale  string `json:"lastsale"`
+	NetChange string `json:"netchange"`
+	PctChange string `json:"pctchange"`
+	MarketCap string `json:"marketCap"`
 }
 
-// HeatmapResult is what your API returns to the frontend.
-// It is built from aggregated HeatmapSnapshot + stock info.
-type HeatmapResult struct {
-	Sectors     []HeatmapSector `json:"sectors"`
-	GeneratedAt time.Time       `json:"generated_at"`
+// ===== HEATMAP OUTPUT =====
+
+type HeatmapBlock struct {
+	Symbol    string  `json:"symbol"`
+	Name      string  `json:"name"`
+	Value     float64 `json:"value"`       // market cap
+	ChangePct float64 `json:"change_pct"`  
+	Color     string  `json:"color"` // color intensity
 }
-
-// Optional: If you support multiple market indices
-type MarketType string
-
-const (
-	MarketNifty  MarketType = "nifty"
-	MarketSensex MarketType = "sensex"
-	MarketNasdaq MarketType = "nasdaq"
-	MarketSP500  MarketType = "sp500"
-)

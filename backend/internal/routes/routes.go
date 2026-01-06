@@ -66,7 +66,7 @@ package routes
 import (
 	"github.com/go-chi/chi/v5"
 
-	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/handlers"
+	handler "github.com/the-onewho-knocks/finance-Simulation/backend/internal/handlers"
 )
 
 type Handlers struct {
@@ -78,6 +78,7 @@ type Handlers struct {
 	Expense        *handler.ExpenseHandler
 	PlannedExpense *handler.PlannedExpenseHandler
 	Networth       *handler.NetworthHandler
+	Heatmap        *handler.HeatmapHandler // ✅ ADD THIS
 }
 
 func RegisterRoutes(h *Handlers) chi.Router {
@@ -91,6 +92,7 @@ func RegisterRoutes(h *Handlers) chi.Router {
 	RegisterPlannedExpenseRoutes(r, h.PlannedExpense)
 	RegisterNetworthRoutes(r, h.Networth)
 	RegisterMarketRoutes(r, h.Market)
+	RegisterHeatmapRoutes(r, h.Heatmap) //new one
 
 	return r
 }

@@ -2,6 +2,7 @@ package pgx
 
 import (
 	"context"
+	"errors"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -52,11 +53,29 @@ func (r *PlannedExpenseRepositoryPgx) GetPlansByUser(userID uuid.UUID) ([]models
 	}
 	return res, nil
 }
+func (r *PlannedExpenseRepositoryPgx) DeletePlan(
+	userID uuid.UUID,
+	planID uuid.UUID,
+) error {
 
-func (r *PlannedExpenseRepositoryPgx) DeletePlan(planID string, userID uuid.UUID) error {
 	query := `
-		delete from planned_expenses where id=$1 and user_id = $2
+		DELETE FROM planned_expenses
+		WHERE id = $1 AND user_id = $2
 	`
-	_, err := r.DB.Exec(context.Background(), query, planID, userID)
-	return err
+
+	cmd, err := r.DB.Exec(
+		context.Background(),
+		query,
+		planID,
+		userID,
+	)
+	if err != nil {
+		return err
+	}
+
+	if cmd.RowsAffected() == 0 {
+		return errors.New("planned expense not found")
+	}
+
+	return nil
 }

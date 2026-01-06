@@ -1,54 +1,38 @@
 package handler
 
-// import (
-// 	"encoding/json"
-// 	"net/http"
+import (
+	"encoding/json"
+	"net/http"
+	"strconv"
 
-// 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/services"
-// )
+	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/services"
+)
 
-// type HeatmapHandler struct {
-// 	service *services.HeatmapService
-// }
+type HeatmapHandler struct {
+	service *services.HeatmapService
+}
 
-// func NewHeatmapHandler(
-// 	service *services.HeatmapService,
-// ) *HeatmapHandler {
-// 	return &HeatmapHandler{
-// 		service: service,
-// 	}
-// }
+func NewHeatmapHandler(service *services.HeatmapService) *HeatmapHandler {
+	return &HeatmapHandler{service: service}
+}
 
-// func (h *HeatmapHandler) BuildHeatmap(
-// 	w http.ResponseWriter,
-// 	r *http.Request,
-// ) {
-// 	defer r.Body.Close()
+// GET /heatmap/market?page=1
+func (h *HeatmapHandler) GetMarketHeatmap(
+	w http.ResponseWriter,
+	r *http.Request,
+) {
 
-// 	var req struct {
-// 		Symbols []string `json:"symbols"`
-// 	}
+	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
+	if page == 0 {
+		page = 1
+	}
 
-// 	if err := json.NewDecoder(r.Body).Decode(req); err != nil || len(req.Symbols) == 0 {
-// 		http.Error(w, "invalid request body", http.StatusBadRequest)
-// 		return
-// 	}
+	data, err := h.service.GetMarketHeatmap(r.Context(), page)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-// 	result, err := h.service.BuildHeatmap(r.Context(), req.Symbols)
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
-
-// 	writeJSON(w, http.StatusOK, result)
-// }
-
-// func (h *HeatmapHandler) GetHeatmapColors(w http.ResponseWriter, r *http.Request) {
-// 	data, err := h.service.GetHeatmapColors()
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
-
-// 	writeJSON(w, http.StatusOK, data)
-// }
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(data)
+}

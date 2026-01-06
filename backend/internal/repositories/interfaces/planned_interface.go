@@ -10,5 +10,5 @@ type PlannedExpenseRepository interface {
 
 	CreatePlan(plan *models.PlannedExpense) error
 	GetPlansByUser(userID uuid.UUID) ([]models.PlannedExpense, error)
-	DeletePlan(planID string, userID uuid.UUID) error
+	DeletePlan(userID uuid.UUID, planID uuid.UUID) error
 }
