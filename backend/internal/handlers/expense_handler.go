@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
+
 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/services"
 )
 
@@ -23,20 +24,22 @@ func NewExpenseHandler(
 	}
 }
 
+// ================= REQUEST DTO =================
+
 type createExpenseRequest struct {
 	Amount      decimal.Decimal `json:"amount"`
 	Category    string          `json:"category"`
 	Description string          `json:"description"`
-	Date        time.Time       `json:"date"`
+	Date        time.Time       `json:"date"` // expects RFC3339 or YYYY-MM-DD
 }
 
-// post request we have to perform
+// ================= ADD EXPENSE =================
+
 func (h *ExpenseHandler) AddExpense(
 	w http.ResponseWriter,
 	r *http.Request,
 ) {
 	userIDParam := chi.URLParam(r, "userID")
-
 	userID, err := uuid.Parse(userIDParam)
 	if err != nil {
 		http.Error(w, "invalid userID", http.StatusBadRequest)
@@ -44,15 +47,22 @@ func (h *ExpenseHandler) AddExpense(
 	}
 
 	var req createExpenseRequest
-	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	//validatiob
-	if req.Amount.LessThanOrEqual(decimal.Zero) || req.Category == "" {
-		http.Error(w, "amount and category are required", http.StatusBadRequest)
+	// validation
+	if req.Amount.LessThanOrEqual(decimal.Zero) {
+		http.Error(w, "amount must be greater than zero", http.StatusBadRequest)
 		return
+	}
+	if req.Category == "" {
+		http.Error(w, "category is required", http.StatusBadRequest)
+		return
+	}
+	if req.Date.IsZero() {
+		req.Date = time.Now().UTC()
 	}
 
 	err = h.expenseService.AddExpense(
@@ -72,6 +82,8 @@ func (h *ExpenseHandler) AddExpense(
 		"message": "expense added successfully",
 	})
 }
+
+// ================= LIST EXPENSES =================
 
 func (h *ExpenseHandler) ListExpenses(
 	w http.ResponseWriter,
@@ -93,24 +105,32 @@ func (h *ExpenseHandler) ListExpenses(
 	writeJSON(w, http.StatusOK, expenses)
 }
 
+// ================= DELETE EXPENSE =================
+
 func (h *ExpenseHandler) DeleteExpense(
 	w http.ResponseWriter,
 	r *http.Request,
 ) {
 	userIDParam := chi.URLParam(r, "userID")
-	expenseID := chi.URLParam(r, "expenseID")
+	expenseIDParam := chi.URLParam(r, "expenseID")
 
 	userID, err := uuid.Parse(userIDParam)
 	if err != nil {
 		http.Error(w, "invalid userID", http.StatusBadRequest)
-	}
-
-	if expenseID == "" {
-		http.Error(w, "expense id required", http.StatusBadRequest)
 		return
 	}
 
-	err = h.expenseService.DeleteExpense(r.Context(), expenseID, userID)
+	expenseID, err := uuid.Parse(expenseIDParam)
+	if err != nil {
+		http.Error(w, "invalid expenseID", http.StatusBadRequest)
+		return
+	}
+
+	err = h.expenseService.DeleteExpense(
+		r.Context(),
+		expenseID,
+		userID,
+	)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -119,8 +139,9 @@ func (h *ExpenseHandler) DeleteExpense(
 	writeJSON(w, http.StatusOK, map[string]string{
 		"message": "expense deleted successfully",
 	})
-
 }
+
+// ================= TOTAL EXPENSES =================
 
 func (h *ExpenseHandler) GetTotalExpenses(
 	w http.ResponseWriter,
@@ -133,7 +154,10 @@ func (h *ExpenseHandler) GetTotalExpenses(
 		return
 	}
 
-	total,err:= h.expenseService.GetTotalExpenses(r.Context(), userID)
+	total, err := h.expenseService.GetTotalExpenses(
+		r.Context(),
+		userID,
+	)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

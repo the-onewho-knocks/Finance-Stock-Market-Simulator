@@ -11,9 +11,9 @@ func RegisterExpenseRoutes(
 ) {
 	r.Route("/users/{userID}/expenses", func(r chi.Router) {
 
-		r.Post("/", expenseHandler.AddExpense)                 // add expense
-		r.Get("/", expenseHandler.ListExpenses)                // list expenses
-		r.Get("/total", expenseHandler.GetTotalExpenses)       // total expenses
-		r.Delete("/{expenseID}", expenseHandler.DeleteExpense) // delete expense
+		r.Post("/", expenseHandler.AddExpense)           // add expense
+		r.Get("/", expenseHandler.ListExpenses)          // list expenses
+		r.Get("/total", expenseHandler.GetTotalExpenses) // total expenses
+		r.Delete("/{expenseID}", expenseHandler.DeleteExpense)
 	})
 }

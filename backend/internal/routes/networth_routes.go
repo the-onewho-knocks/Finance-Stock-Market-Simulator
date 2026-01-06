@@ -12,16 +12,16 @@ func RegisterNetworthRoutes(
 ) {
 	r.Route("/users/{userID}/networth", func(r chi.Router) {
 
-		// recompute everything
+		//  recompute everything
 		r.Post("/recalculate", h.RecalculateNetworth)
 
-		// simple networth value
+		//  current networth
 		r.Get("/latest", h.GetLatestNetworth)
 
 		// historical snapshots
 		r.Get("/history", h.GetNetworthHistory)
 
-		// full breakdown for dashboards
+		// full breakdown
 		r.Get("/breakdown", h.GetNetworthBreakdown)
 	})
 }

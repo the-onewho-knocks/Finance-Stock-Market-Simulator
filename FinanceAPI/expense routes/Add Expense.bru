@@ -1,0 +1,26 @@
+meta {
+  name: Add Expense
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8080/users/a522415e-953a-4e96-8677-458b63fbda76/expenses
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "amount": "10.75",
+    "category": "candy",
+    "description": "from shop",
+    "date": "2026-01-06T00:00:00Z"
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

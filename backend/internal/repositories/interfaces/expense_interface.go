@@ -10,5 +10,5 @@ type ExpenseRepository interface {
 
 	AddExpense(e *models.Expense) error
 	ListExpense(userID uuid.UUID) ([]models.Expense, error)
-	DeleteExpense(id string, userID uuid.UUID) error
+	DeleteExpense(id uuid.UUID, userID uuid.UUID) error
 }

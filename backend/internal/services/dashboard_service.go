@@ -1,96 +1,79 @@
 package services
 
-// import (
-// 	"context"
-// 	"sync"
+import (
+	"context"
 
-// 	"github.com/google/uuid"
-// 	"github.com/shopspring/decimal"
+	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 
-// 	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/models"
-// )
+	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/cache"
+	"github.com/the-onewho-knocks/finance-Simulation/backend/internal/models"
+)
 
-// type DashboardService struct {
-// 	networthService  *NetworthService
-// 	portfolioService *PortfolioService
-// 	expenseService   *ExpenseService
-// 	heatmapService   *HeatmapService
-// }
+type DashboardService struct {
+	networthService  *NetworthService
+	portfolioService *PortfolioService
+	expenseService   *ExpenseService
+	cache            *cache.DashboardCache
+}
 
-// func NewDashboardService(
-// 	networthService *NetworthService,
-// 	portfolioService *PortfolioService,
-// 	expenseService *ExpenseService,
-// 	heatmapService *HeatmapService,
-// ) *DashboardService {
-// 	return &DashboardService{
-// 		networthService:  networthService,
-// 		portfolioService: portfolioService,
-// 		expenseService:   expenseService,
-// 		heatmapService:   heatmapService,
-// 	}
-// }
+func NewDashboardService(
+	networthService *NetworthService,
+	portfolioService *PortfolioService,
+	expenseService *ExpenseService,
+	cache *cache.DashboardCache,
+) *DashboardService {
+	return &DashboardService{
+		networthService:  networthService,
+		portfolioService: portfolioService,
+		expenseService:   expenseService,
+		cache:            cache,
+	}
+}
 
+func (s *DashboardService) AggregateDashboard(
+	ctx context.Context,
+	userID uuid.UUID,
+) (
+	*models.NetWorthBreakdown,
+	decimal.Decimal,
+	[]models.Expense,
+	error,
+) {
 
-// func (s *DashboardService) AggregateDashboard(
-// 	ctx context.Context,
-// 	userID uuid.UUID,
-// 	symbols []string,
-// ) (
-// 	*models.NetWorthBreakdown,
-// 	decimal.Decimal,
-// 	[]models.Expense,
-// 	*models.HeatmapResult,
-// 	error,
-// ) {
+	userKey := userID.String()
 
-// 	var (
-// 		networth       *models.NetWorthBreakdown
-// 		portfolioValue decimal.Decimal
-// 		expenses       []models.Expense
-// 		heatmap        *models.HeatmapResult
-// 	)
+	// ================= NET WORTH =================
+	var networth *models.NetWorthBreakdown
 
-// 	wg := sync.WaitGroup{}
-// 	wg.Add(4)
+	if val, ok := s.cache.GetNetworth(ctx, userKey); ok {
+		networth = &models.NetWorthBreakdown{
+			UserID:          userID,
+			CurrentNetWorth: decimal.NewFromFloat(val),
+		}
+	} else {
+		nw, err := s.networthService.RecalculateNetworth(ctx, userID)
+		if err == nil && nw != nil {
+			networth = nw
+			_ = s.cache.SetNetworth(ctx, userKey, nw.CurrentNetWorth.InexactFloat64())
+		}
+	}
 
-// 	// Networth (heavy aggregation)
-// 	go func() {
-// 		defer wg.Done()
-// 		nw, err := s.networthService.RecalculateNetworth(ctx, userID)
-// 		if err == nil {
-// 			networth = nw
-// 		}
-// 	}()
+	// ================= PORTFOLIO =================
+	portfolioValue := decimal.Zero
 
-// 	// Portfolio value (light read)
-// 	go func() {
-// 		defer wg.Done()
-// 		value, _, err := s.portfolioService.GetPortfolioMetrics(ctx, userID)
-// 		if err == nil {
-// 			portfolioValue = value
-// 		}
-// 	}()
+	if val, ok := s.cache.GetPortfolioValue(ctx, userKey); ok {
+		portfolioValue = decimal.NewFromFloat(val)
+	} else {
+		value, _, err := s.portfolioService.GetPortfolioMetrics(ctx, userID)
+		if err == nil {
+			portfolioValue = value
+			_ = s.cache.SetPortfolioValue(ctx, userKey, value.InexactFloat64())
+		}
+	}
 
-// 	// Recent expenses (read-only)
-// 	go func() {
-// 		defer wg.Done()
-// 		exp, err := s.expenseService.ListExpenses(ctx, userID)
-// 		if err == nil {
-// 			expenses = exp
-// 		}
-// 	}()
+	// ================= EXPENSES =================
+	expenses, _ := s.expenseService.ListExpenses(ctx, userID)
 
-// 	// Heatmap (cached + external)
-// 	go func() {
-// 		defer wg.Done()
-// 		hm, err := s.heatmapService.BuildHeatmap(ctx, symbols)
-// 		if err == nil {
-// 			heatmap = hm
-// 		}
-// 	}()
-
-// 	wg.Wait()
-
-// 	return networth, portfolioValue, expenses, heatmap, nil
-// }
+	return networth, portfolioValue, expenses, nil
+}

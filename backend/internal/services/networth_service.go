@@ -31,20 +31,19 @@ func NewNetworthService(
 	}
 }
 
-// this is the core aggregation here
 func (s *NetworthService) RecalculateNetworth(
 	ctx context.Context,
 	userID uuid.UUID,
 ) (*models.NetWorthBreakdown, error) {
 
-	user, err := s.userRepo.GetUserByEmail(userID.String())
+	user, err := s.userRepo.GetUserByID(userID)
 	if err != nil {
 		return nil, err
 	}
 
-	cash := decimal.NewFromFloat(float64(user.Fake_Balance))
+	cash := decimal.NewFromFloat(user.Fake_Balance)
 
-	portfolioValue, TotalInvested, err :=
+	portfolioValue, totalInvested, err :=
 		s.portfolioSvc.GetPortfolioMetrics(ctx, userID)
 	if err != nil {
 		return nil, err
@@ -56,7 +55,10 @@ func (s *NetworthService) RecalculateNetworth(
 		return nil, err
 	}
 
-	current := portfolioValue.Add(cash).Sub(totalExpenses)
+	current := portfolioValue.
+		Add(cash).
+		Sub(totalExpenses)
+
 	now := time.Now().UTC()
 
 	breakdown := &models.NetWorthBreakdown{
@@ -64,7 +66,7 @@ func (s *NetworthService) RecalculateNetworth(
 		PortfolioValue:  portfolioValue,
 		CashBalance:     cash,
 		TotalExpenses:   totalExpenses,
-		TotalInvested:   TotalInvested,
+		TotalInvested:   totalInvested,
 		CurrentNetWorth: current,
 		UpdatedAt:       now,
 	}

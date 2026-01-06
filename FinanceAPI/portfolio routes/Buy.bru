@@ -5,11 +5,21 @@ meta {
 }
 
 post {
-  url: 
-  body: none
+  url: http://localhost:8080/transactions/buy
+  body: json
   auth: inherit
+}
+
+body:json {
+  {
+    "user_id": "a522415e-953a-4e96-8677-458b63fbda76",
+    "symbol": "GE",
+    "quantity": "20"
+  }
+  
 }
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

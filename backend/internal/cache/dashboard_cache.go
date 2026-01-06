@@ -8,58 +8,60 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-type DashBoardCache struct {
+type DashboardCache struct {
 	client *redis.Client
 }
 
-func NewDashBoardCache() *DashBoardCache {
-	return &DashBoardCache{
+func NewDashboardCache() *DashboardCache {
+	return &DashboardCache{
 		client: RedisClient,
 	}
 }
 
-func (c *DashBoardCache) SetNetworth(userID string, value float64) error {
-	ctx := context.Background()
-	key := fmt.Sprintf("dashboard: %s:networth", userID)
-	return c.client.Set(ctx, key, value, 1*time.Minute).Err()
-}
+// ================= NET WORTH =================
 
-func (c *DashBoardCache) GetNetworth(userID string) (float64, error) {
-	ctx := context.Background()
+func (c *DashboardCache) SetNetworth(ctx context.Context, userID string, value float64) error {
 	key := fmt.Sprintf("dashboard:%s:networth", userID)
-	return c.client.Get(ctx, key).Float64()
+	return c.client.Set(ctx, key, value, time.Minute).Err()
 }
 
-func (c *DashBoardCache) SetPortFolioValue(userID string, value float64) error {
-	ctx := context.Background()
+func (c *DashboardCache) GetNetworth(ctx context.Context, userID string) (float64, bool) {
+	key := fmt.Sprintf("dashboard:%s:networth", userID)
+	val, err := c.client.Get(ctx, key).Float64()
+	if err == redis.Nil {
+		return 0, false
+	}
+	return val, err == nil
+}
+
+// ================= PORTFOLIO =================
+
+func (c *DashboardCache) SetPortfolioValue(ctx context.Context, userID string, value float64) error {
 	key := fmt.Sprintf("dashboard:%s:portfolio", userID)
-	return c.client.Set(ctx, key, value, 1*time.Minute).Err()
+	return c.client.Set(ctx, key, value, time.Minute).Err()
 }
 
-func (c *DashBoardCache) GetPortfolioValue(userID string) (float64, error) {
-	ctx := context.Background()
+func (c *DashboardCache) GetPortfolioValue(ctx context.Context, userID string) (float64, bool) {
 	key := fmt.Sprintf("dashboard:%s:portfolio", userID)
-	return c.client.Get(ctx, key).Float64()
+	val, err := c.client.Get(ctx, key).Float64()
+	if err == redis.Nil {
+		return 0, false
+	}
+	return val, err == nil
 }
 
-func (c *DashBoardCache) SetDailyExpense(userID string, value float64) error {
-	ctx := context.Background()
+// ================= DAILY EXPENSE =================
+
+func (c *DashboardCache) SetDailyExpense(ctx context.Context, userID string, value float64) error {
 	key := fmt.Sprintf("dashboard:%s:daily_expense", userID)
 	return c.client.Set(ctx, key, value, 2*time.Minute).Err()
 }
 
-func (c *DashBoardCache) GetDailyExpense(userID string) (float64, error) {
-	ctx := context.Background()
+func (c *DashboardCache) GetDailyExpense(ctx context.Context, userID string) (float64, bool) {
 	key := fmt.Sprintf("dashboard:%s:daily_expense", userID)
-	return c.client.Get(ctx, key).Float64()
-}
-
-func (c *DashBoardCache) SetMarketSentiment(value float64) error {
-	ctx := context.Background()
-	return c.client.Set(ctx, "dashboard:market:sentiment", value, 1*time.Minute).Err()
-}
-
-func (c *DashBoardCache) GetMarketSentiment() (float64, error) {
-	ctx := context.Background()
-	return c.client.Get(ctx, "dashboard:market:sentiment").Float64()
+	val, err := c.client.Get(ctx, key).Float64()
+	if err == redis.Nil {
+		return 0, false
+	}
+	return val, err == nil
 }
