@@ -21,7 +21,6 @@ func NewHistoryCache() *HistoryCache {
 	return &HistoryCache{}
 }
 
-
 func (c *HistoryCache) historyKey(stock, period string) string {
 	return fmt.Sprintf("history:price:%s:%s", stock, period)
 }

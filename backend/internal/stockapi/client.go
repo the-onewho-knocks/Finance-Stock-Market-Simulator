@@ -75,7 +75,7 @@ type Client interface {
 	SearchMutualFund(query string) ([]MutualFund, error)
 
 	// Mutual funds
-//	GetAllMutualFunds() ([]MutualFund, error)
+	//	GetAllMutualFunds() ([]MutualFund, error)
 
 	// Market data
 	GetCommodities() ([]Commodity, error)
@@ -107,25 +107,23 @@ type Client interface {
 	GetIPOList() ([]IPO, error)
 
 	// 52 week
-//	Get52WeekHighLow() ([]Week52Data, error)
+	//	Get52WeekHighLow() ([]Week52Data, error)
 
- GetRSI(
-	symbol string,
-	interval string,
-	seriesType string,
-	timePeriod int,
-	limit int,
-) (*RSIResponse, error)
+	GetRSI(
+		symbol string,
+		interval string,
+		seriesType string,
+		timePeriod int,
+		limit int,
+	) (*RSIResponse, error)
 
-GetSMA(
-	symbol string,
-	interval string,
-	seriesType string,
-	timePeriod int,
-	limit int,
-) (*SMAResponse, error)
-
-
+	GetSMA(
+		symbol string,
+		interval string,
+		seriesType string,
+		timePeriod int,
+		limit int,
+	) (*SMAResponse, error)
 }
 
 type IndicatorClient interface {

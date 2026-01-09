@@ -68,7 +68,7 @@ type Meta struct {
 
 type QuoteBody struct {
 	Symbol       string `json:"symbol"`
-	CompanyName string `json:"companyName"`
+	CompanyName  string `json:"companyName"`
 	MarketStatus string `json:"marketStatus"`
 
 	PrimaryData PrimaryData `json:"primaryData"`

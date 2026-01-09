@@ -56,5 +56,5 @@ func (s *PlannedExpenseService) DeletePlan(
 	userID uuid.UUID,
 	planID uuid.UUID,
 ) error {
-	return s.plannedRepo.DeletePlan(userID,planID)
+	return s.plannedRepo.DeletePlan(userID, planID)
 }

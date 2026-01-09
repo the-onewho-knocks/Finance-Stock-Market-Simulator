@@ -14,14 +14,14 @@ func SetJSON(
 	key string,
 	value any,
 	ttl time.Duration,
-)error{
+) error {
 
-	b , err := json.Marshal(value)
+	b, err := json.Marshal(value)
 	if err != nil {
 		return err
 	}
 
-	return client.Set(ctx , key , b , ttl).Err()
+	return client.Set(ctx, key, b, ttl).Err()
 }
 
 func GetJSON(
@@ -29,15 +29,15 @@ func GetJSON(
 	client *redis.Client,
 	key string,
 	dest any,
-) (bool , error){
+) (bool, error) {
 
-	val , err := client.Get(ctx , key).Result()
+	val, err := client.Get(ctx, key).Result()
 	if err == redis.Nil {
-		return false , nil
+		return false, nil
 	}
 	if err != nil {
-		return false , nil
+		return false, nil
 	}
 
-	return true , json.Unmarshal([]byte(val),dest)
+	return true, json.Unmarshal([]byte(val), dest)
 }

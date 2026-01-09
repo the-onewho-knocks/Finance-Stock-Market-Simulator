@@ -10,7 +10,7 @@ func RegisterUserRoutes(r chi.Router, h *handler.UserHandler) {
 
 	r.Get("/users/{id}", h.GetUserByID)
 	r.Get("/users/email/{email}", h.GetUserByEmail)
-//	r.Get("/users/google/{google_id}", h.GetUserByGoogleID)
+	//	r.Get("/users/google/{google_id}", h.GetUserByGoogleID)
 
 	r.Patch("/users/{id}", h.UpdateUser)
 

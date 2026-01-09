@@ -225,10 +225,6 @@ func (r *NetworthRepositoryPgx) GetBreakdown(userID uuid.UUID) (*models.NetWorth
 	return &b, nil
 }
 
-
-
-
-
 // package pgx
 
 // import (

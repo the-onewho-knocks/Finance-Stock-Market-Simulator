@@ -22,7 +22,6 @@ func NewExpenseService(
 	}
 }
 
-
 func (s *ExpenseService) AddExpense(
 	ctx context.Context,
 	userID uuid.UUID,
@@ -46,14 +45,12 @@ func (s *ExpenseService) AddExpense(
 	return s.expenseRepo.AddExpense(expense)
 }
 
-
 func (s *ExpenseService) ListExpenses(
 	ctx context.Context,
 	userID uuid.UUID,
 ) ([]models.Expense, error) {
 	return s.expenseRepo.ListExpense(userID)
 }
-
 
 func (s *ExpenseService) DeleteExpense(
 	ctx context.Context,
@@ -62,7 +59,6 @@ func (s *ExpenseService) DeleteExpense(
 ) error {
 	return s.expenseRepo.DeleteExpense(expenseID, userID)
 }
-
 
 func (s *ExpenseService) GetTotalExpenses(
 	ctx context.Context,

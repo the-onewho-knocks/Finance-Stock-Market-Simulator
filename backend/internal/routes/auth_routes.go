@@ -16,4 +16,3 @@ func RegisterAuthRoutes(r chi.Router, authHandler *handler.AuthHandler) {
 		r.Post("/google", authHandler.GoogleLogin)
 	})
 }
-

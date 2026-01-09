@@ -3,7 +3,7 @@ package models
 type MarketTickersResponse struct {
 	Meta    MetaInfo          `json:"meta"`
 	Headers map[string]string `json:"headers"`
-	Body    []MarketTicker   `json:"body"`
+	Body    []MarketTicker    `json:"body"`
 }
 
 type MetaInfo struct {
@@ -27,7 +27,7 @@ type MarketTicker struct {
 type HeatmapBlock struct {
 	Symbol    string  `json:"symbol"`
 	Name      string  `json:"name"`
-	Value     float64 `json:"value"`       // market cap
-	ChangePct float64 `json:"change_pct"`  
+	Value     float64 `json:"value"` // market cap
+	ChangePct float64 `json:"change_pct"`
 	Color     string  `json:"color"` // color intensity
 }

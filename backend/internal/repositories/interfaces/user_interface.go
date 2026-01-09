@@ -12,7 +12,7 @@ type UserRepository interface {
 	GetUserByID(id uuid.UUID) (*models.User, error)
 	GetUserByEmail(email string) (*models.User, error)
 	UpdateUser(user *models.User) error
-//	GetUserByGoogleID(googleID string) (*models.User, error)
+	//	GetUserByGoogleID(googleID string) (*models.User, error)
 
 	IncrementFakeBalance(userID uuid.UUID, amount float64) error
 	DeductFakeBalance(userID uuid.UUID, amount float64) error

@@ -26,7 +26,6 @@ func NewPlannedExpenseHandler(
 	}
 }
 
-
 type createPlanRequest struct {
 	Title  string          `json:"title"`
 	Amount decimal.Decimal `json:"amount"`
@@ -138,4 +137,3 @@ func (h *PlannedExpenseHandler) DeletePlan(
 		"message": "planned expense deleted successfully",
 	})
 }
-

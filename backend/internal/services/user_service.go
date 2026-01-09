@@ -45,16 +45,16 @@ func (s *UserService) CreateUser(
 	now := time.Now().UTC()
 
 	user := &models.User{
-		ID:           uuid.New(),
-		Email:        email,
-		FullName:     fullName,
-		AvatarURL:    avatarUrl,
-	//	GoogleID:     googleID,
+		ID:        uuid.New(),
+		Email:     email,
+		FullName:  fullName,
+		AvatarURL: avatarUrl,
+		//	GoogleID:     googleID,
 		Fake_Balance: InitialFakeBalance,
 		IsAdmin:      false,
 		CreatedAt:    now,
 		UpdatedAt:    now,
-	} 
+	}
 	// we are calling the function in the pgx query folder here after assigining the values
 	// to user variable and of type models.User{} so yeahh its kinda easy but having errors in the
 	// pgx folder will break everything so it is the most important folder
@@ -115,7 +115,6 @@ func (s *UserService) UpdateUser(
 	user *models.User,
 ) (*models.User, error) {
 
-
 	existing, err := s.userRepo.GetUserByID(user.ID)
 	if err != nil {
 		return nil, errors.New("user not found")
@@ -140,4 +139,3 @@ func (s *UserService) UpdateUser(
 
 	return existing, nil
 }
-

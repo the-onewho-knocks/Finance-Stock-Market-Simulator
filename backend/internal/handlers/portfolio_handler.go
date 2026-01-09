@@ -93,7 +93,7 @@ func (h *PortfolioHandler) BuyStock(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// BUY STOCK (real operation)
-	err := h.portfolioService.BuyStock(r.Context() , &req)
+	err := h.portfolioService.BuyStock(r.Context(), &req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -104,13 +104,13 @@ func (h *PortfolioHandler) BuyStock(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (h *PortfolioHandler) SellStock(w http.ResponseWriter , r *http.Request){
+func (h *PortfolioHandler) SellStock(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
-	var req struct{
-		UserID uuid.UUID `json:"user_id"`
-		StockSymbol string `json:"stock_symbol"`
-		Quantity int `json:"quantity"`
+	var req struct {
+		UserID      uuid.UUID `json:"user_id"`
+		StockSymbol string    `json:"stock_symbol"`
+		Quantity    int       `json:"quantity"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {

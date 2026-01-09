@@ -116,7 +116,6 @@ func (r *UserRepositoryPgx) UpdateUser(user *models.User) error {
 	return err
 }
 
-
 func (r *UserRepositoryPgx) IncrementFakeBalance(userID uuid.UUID, amount float64) error {
 	query := `
 		update users set fake_balance = fake_balance + $1 where id=$2

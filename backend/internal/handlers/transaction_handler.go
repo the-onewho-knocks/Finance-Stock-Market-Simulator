@@ -95,23 +95,23 @@ func (h *TransactionHandler) Sell(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func(h *TransactionHandler) GetTransactions(w http.ResponseWriter , r *http.Request){
-	userIDParam := chi.URLParam(r , "user_id")
+func (h *TransactionHandler) GetTransactions(w http.ResponseWriter, r *http.Request) {
+	userIDParam := chi.URLParam(r, "user_id")
 
-	userID , err := uuid.Parse(userIDParam)
-	if err != nil{
-		http.Error(w , "invalid user_id" , http.StatusBadRequest)
+	userID, err := uuid.Parse(userIDParam)
+	if err != nil {
+		http.Error(w, "invalid user_id", http.StatusBadRequest)
 	}
 
-	transactions , err := h.transactionService.GetTransactions(
+	transactions, err := h.transactionService.GetTransactions(
 		r.Context(),
 		userID,
-	) 
-	if err !=nil{
-		http.Error(w , err.Error() , http.StatusBadRequest)
+	)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	w.Header().Set("Content-Type","application/json")
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(transactions)
 }
