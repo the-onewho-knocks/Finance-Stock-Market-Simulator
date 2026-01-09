@@ -16,16 +16,14 @@ The system simulates real-world portfolio management, transactions, expenses, ma
 10) Production-ready backend practices focused on scalability and reliability
 
 ## Table of Contents:-
-1) Overview
-2) Architecture Diagram
-3) System Components
-4) API Design & Routes
-5) Technology Stack
-6) Getting Started
-7) Usage
-8) Future Improvements
-9) Author
-10) License
+- [Architecture Diagram](#Architecture-Diagram)
+- [Core Design Principles](#core-design-principles)
+- [Technology Stack](#technology-stack)
+- [System Components](#system-components)
+- [API Design & Routes](#api-design--routes)
+- [Getting Started](#getting-started)
+- [Author](#author)
+- [License](#license)
 
 ## Architecture Diagram:-
 Below is a high-level overview of the system architecture:
@@ -293,8 +291,8 @@ go mod tidy
 go run cmd/main.go
 ```
 ## Author
-Hardik Borse
-LinkedIn:[Hardik Borse](https://www.linkedin.com/in/hardik-borse-aa7729324/)
-Email: borsehardik@gmail.com
+**Hardik Borse** | [LinkedIn](https://www.linkedin.com/in/hardik-borse-aa7729324/) | [Email](mailto:borsehardik@gmail.com)
 
+## License
+This project is licensed under the **Apache License 2.0**.
 
