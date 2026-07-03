@@ -1,4 +1,3 @@
-
 export interface Holding {
   id: string
   user_id: string

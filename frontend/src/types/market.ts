@@ -40,3 +40,9 @@ export interface SearchResult {
   exchange: string
   type: string
 }
+
+export interface MarketOverview {
+  indices: { name: string; value: number; change: number; change_percent: number }[]
+  gainers: StockPrice[]
+  losers: StockPrice[]
+}

@@ -1,5 +1,5 @@
-import type { Holding } from './portfolio'
 import type { Transaction } from './transaction'
+import type { Holding } from './portfolio'
 import type { StockPrice } from './market'
 
 export interface DashboardData {

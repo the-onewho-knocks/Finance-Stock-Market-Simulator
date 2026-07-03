@@ -44,7 +44,7 @@ class ReportRepository:
                 SELECT id, user_id, symbol, content, recommendation, confidence_score, created_at
                 FROM reports
                 WHERE id = %s
-                """
+                """,
                 (report_id,),
             )
             row = cur.fetchone()
