@@ -30,12 +30,6 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
           >
             <Menu className="h-5 w-5" />
           </button>
-          <div className="flex items-center gap-2.5">
-            <div className="h-7 w-7 rounded-lg bg-accent/20 flex items-center justify-center">
-              <span className="text-xs font-bold text-accent-light">HF</span>
-            </div>
-            <span className="text-sm font-medium text-gray-200">HexaFinance</span>
-          </div>
           {isGuest && (
             <span className="rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-medium text-gray-500 backdrop-blur-sm">Guest</span>
           )}

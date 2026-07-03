@@ -17,12 +17,14 @@ export default function NewsPage() {
     <div className="space-y-6 animate-fadeIn">
       <h1 className="text-lg font-semibold text-gray-100">News</h1>
       <Tabs tabs={categories} active={active} onChange={setActive} />
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
+        <div className="lg:col-span-3">
           <NewsFeed category={active} />
         </div>
-        <div className="space-y-4">
-          <TrendingNews />
+        <div className="lg:col-span-1">
+          <div className="lg:sticky lg:top-20">
+            <TrendingNews />
+          </div>
         </div>
       </div>
     </div>

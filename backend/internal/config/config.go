@@ -27,7 +27,7 @@ func LoadConfig() *Config {
 
 	cfg := &Config{
 		DatabaseURL: getEnv("DATABASE_URL", ""),
-		AppPort:     getEnv("APP_PORT", "8080"),
+		AppPort:     getEnv("APP_PORT", "8081"),
 	}
 
 	if cfg.DatabaseURL == "" {

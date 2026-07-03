@@ -4,7 +4,6 @@ import { toast } from 'sonner'
 import type { RootState } from '../../app/store'
 import { plannedExpenseApi } from '../../features/plannedExpenses/api/plannedExpenseApi'
 import { PlannedExpenseTable } from '../../features/plannedExpenses/components/PlannedExpenseTable'
-import { Button } from '../../components/ui/Button'
 import { Loader } from '../../components/ui/Loader'
 import { Card } from '../../components/ui/Card'
 
@@ -38,7 +37,7 @@ export default function PlannedExpensesPage() {
         <p className="text-sm text-gray-500">No planned expenses yet.</p>
       ) : (
         <Card>
-          <PlannedExpenseTable plans={plans} onDelete={(id) => {}} />
+          <PlannedExpenseTable plans={plans} onDelete={(_id) => {}} />
         </Card>
       )}
     </div>

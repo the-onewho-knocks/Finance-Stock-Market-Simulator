@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Modal } from '../../../components/ui/Modal'
 import { Button } from '../../../components/ui/Button'
 import { Input } from '../../../components/ui/Input'
@@ -7,11 +7,16 @@ interface SellStockModalProps {
   open: boolean
   onClose: () => void
   onSell: (symbol: string, quantity: number) => void
+  defaultSymbol?: string
 }
 
-export function SellStockModal({ open, onClose, onSell }: SellStockModalProps) {
-  const [symbol, setSymbol] = useState('')
+export function SellStockModal({ open, onClose, onSell, defaultSymbol = '' }: SellStockModalProps) {
+  const [symbol, setSymbol] = useState(defaultSymbol)
   const [qty, setQty] = useState('')
+
+  useEffect(() => {
+    if (open && defaultSymbol) setSymbol(defaultSymbol)
+  }, [open, defaultSymbol])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()

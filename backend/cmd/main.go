@@ -108,6 +108,9 @@ func main() {
 	indianStockService := services.NewIndianStockService(indianStockClient)
 	indianStockHandler := handler.NewIndianStockHandler(indianStockService)
 
+	indicatorService := services.NewIndicatorService(rapidApiClient, cache.NewIndicatorCache(cache.RedisClient))
+	indicatorHandler := handler.NewIndicatorHandler(indicatorService)
+
 	researchHandler := handler.NewResearchHandler(cfg.StockResearchAIURL)
 
 	h := &routes.Handlers{
@@ -125,6 +128,7 @@ func main() {
 		Research:       researchHandler,
 		History:        historyHandler,
 		IndianStock:    indianStockHandler,
+		Indicator:      indicatorHandler,
 	}
 
 	r := chi.NewRouter()

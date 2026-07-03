@@ -7,19 +7,39 @@ import { PortfolioMetricsView } from '../../features/portfolio/components/Portfo
 import { HoldingsCard } from '../../features/portfolio/components/HoldingsCard'
 import { PortfolioTable } from '../../features/portfolio/components/PortfolioTable'
 import { AllocationChart } from '../../features/portfolio/components/AllocationChart'
-import { BuyStockModal } from '../../features/portfolio/components/BuyStockModal'
-import { SellStockModal } from '../../features/portfolio/components/SellStockModal'
 import { Card, CardTitle } from '../../components/ui/Card'
-import { Button } from '../../components/ui/Button'
+import { LineChart } from '../../components/charts/LineChart'
+import { BarChart } from '../../components/charts/BarChart'
 import { Loader } from '../../components/ui/Loader'
+
+const MOCK_HISTORY = [
+  { time: '2024-01-01', value: 95000 },
+  { time: '2024-02-01', value: 102000 },
+  { time: '2024-03-01', value: 98000 },
+  { time: '2024-04-01', value: 105000 },
+  { time: '2024-05-01', value: 112000 },
+  { time: '2024-06-01', value: 118500 },
+  { time: '2024-07-01', value: 115000 },
+  { time: '2024-08-01', value: 122000 },
+  { time: '2024-09-01', value: 119500 },
+  { time: '2024-10-01', value: 126000 },
+  { time: '2024-11-01', value: 131000 },
+  { time: '2024-12-01', value: 124532 },
+]
+
+const MOCK_SECTORS = [
+  { label: 'Technology', value: 58 },
+  { label: 'Financial', value: 15 },
+  { label: 'Healthcare', value: 10 },
+  { label: 'Consumer', value: 12 },
+  { label: 'Energy', value: 5 },
+]
 
 export default function PortfolioPage() {
   const user = useSelector((s: RootState) => s.auth.user)
   const [portfolio, setPortfolio] = useState<any | null>(null)
   const [metrics, setMetrics] = useState<any | null>(null)
   const [loading, setLoading] = useState(true)
-  const [buyOpen, setBuyOpen] = useState(false)
-  const [sellOpen, setSellOpen] = useState(false)
 
   const userId = user?.id || 'demo'
 
@@ -38,35 +58,30 @@ export default function PortfolioPage() {
 
   useEffect(() => { load() }, [userId])
 
-  const handleBuy = async (symbol: string, quantity: number) => {
-    try {
-      await portfolioApi.buy({ user_id: userId, symbol, quantity })
-      toast.success(`Bought ${quantity} ${symbol}`)
-      load()
-    } catch { toast.error('Buy failed') }
-  }
-
-  const handleSell = async (symbol: string, quantity: number) => {
-    try {
-      await portfolioApi.sell({ user_id: userId, symbol, quantity })
-      toast.success(`Sold ${quantity} ${symbol}`)
-      load()
-    } catch { toast.error('Sell failed') }
-  }
-
   if (loading) return <Loader />
 
   return (
     <div className="space-y-6 animate-fadeIn">
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold text-gray-100">Portfolio</h1>
-        <div className="flex gap-2">
-          <Button size="sm" onClick={() => setBuyOpen(true)}>Buy</Button>
-          <Button size="sm" variant="secondary" onClick={() => setSellOpen(true)}>Sell</Button>
-        </div>
       </div>
 
       {metrics && <PortfolioMetricsView metrics={metrics} />}
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <Card>
+          <CardTitle>Portfolio Value Over Time</CardTitle>
+          <div className="mt-3">
+            <LineChart data={MOCK_HISTORY} color="#7F00FF" height={280} />
+          </div>
+        </Card>
+        <Card>
+          <CardTitle>Sector Allocation</CardTitle>
+          <div className="mt-3">
+            <BarChart data={MOCK_SECTORS} color="#7F00FF" height={280} />
+          </div>
+        </Card>
+      </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-4">
@@ -86,9 +101,6 @@ export default function PortfolioPage() {
           <HoldingsCard holdings={portfolio?.holdings || []} />
         </div>
       </div>
-
-      <BuyStockModal open={buyOpen} onClose={() => setBuyOpen(false)} onBuy={handleBuy} />
-      <SellStockModal open={sellOpen} onClose={() => setSellOpen(false)} onSell={handleSell} />
     </div>
   )
 }

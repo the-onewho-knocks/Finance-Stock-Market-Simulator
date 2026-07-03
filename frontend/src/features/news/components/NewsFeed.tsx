@@ -17,12 +17,22 @@ export function NewsFeed({ category }: NewsFeedProps) {
   if (error) return <p className="text-sm text-gray-500">Failed to load news</p>
 
   const items = articles || []
+  if (items.length === 0) return <p className="text-sm text-gray-500">No news articles found.</p>
+
+  const [hero, ...rest] = items
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {items.slice(0, 18).map((a) => (
-        <NewsCard key={a.id} article={a} />
-      ))}
+    <div className="space-y-5">
+      <div className="w-full">
+        <NewsCard article={hero} />
+      </div>
+      <div className="columns-1 sm:columns-2 xl:columns-3 gap-5 [column-fill:_balance]">
+        {rest.slice(0, 17).map((a) => (
+          <div key={a.id} className="break-inside-avoid mb-5">
+            <NewsCard article={a} />
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

@@ -3,17 +3,17 @@ import { cn } from '../../lib/helpers'
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
   padding?: 'none' | 'sm' | 'md' | 'lg'
-  variant?: 'default' | 'elevated' | 'bordered'
+  variant?: 'glass' | 'elevated' | 'solid'
 }
 
 const paddings = { none: '', sm: 'p-3', md: 'p-5', lg: 'p-8' }
 const variants = {
-  default: 'bg-surface border border-border',
-  elevated: 'bg-surface border border-border shadow-lg shadow-black/20 glass-hover',
   glass: 'glass glass-hover',
+  elevated: 'glass glass-hover shadow-lg shadow-black/30',
+  solid: 'bg-surface border border-border',
 }
 
-export function Card({ className, padding = 'md', variant = 'default', children, ...props }: CardProps) {
+export function Card({ className, padding = 'md', variant = 'glass', children, ...props }: CardProps) {
   return (
     <div
       className={cn('rounded-xl transition-all duration-300 hover:-translate-y-0.5', variants[variant], paddings[padding], className)}

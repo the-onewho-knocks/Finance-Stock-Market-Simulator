@@ -5,7 +5,6 @@ import type { RootState } from '../../app/store'
 import { expenseApi } from '../../features/expenses/api/expenseApi'
 import { ExpenseSummaryView } from '../../features/expenses/components/ExpenseSummary'
 import { ExpenseTable } from '../../features/expenses/components/ExpenseTable'
-import { Button } from '../../components/ui/Button'
 import { Loader } from '../../components/ui/Loader'
 import { Card } from '../../components/ui/Card'
 

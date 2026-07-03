@@ -1,4 +1,4 @@
-import type { HTMLAttributes, TableHTMLAttributes } from 'react'
+import type { HTMLAttributes, TableHTMLAttributes, ThHTMLAttributes } from 'react'
 import { cn } from '../../lib/helpers'
 
 interface TableProps extends TableHTMLAttributes<HTMLTableElement> {
@@ -21,7 +21,7 @@ export function TBody({ className, ...props }: HTMLAttributes<HTMLTableSectionEl
   return <tbody className={cn('divide-y divide-[#1f1f1f]/60', className)} {...props} />
 }
 
-export function Th({ className, scope, ...props }: HTMLAttributes<HTMLTableCellElement>) {
+export function Th({ className, scope, ...props }: ThHTMLAttributes<HTMLTableCellElement>) {
   return (
     <th
       scope={scope || 'col'}

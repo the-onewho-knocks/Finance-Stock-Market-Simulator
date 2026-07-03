@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import type { StockPrice } from '../types'
 import { wsService } from '../../../services/websocket'
 
-export function usePriceStream(symbols: string[]) {
+export function usePriceStream(_symbols: string[]) {
   const [prices, setPrices] = useState<StockPrice[]>([])
   const [connected, setConnected] = useState(false)
 

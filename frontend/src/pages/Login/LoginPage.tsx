@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { authApi } from '../../features/auth/api/authApi'
 import { setUser, setToken, setGuest } from '../../features/auth/store/authSlice'
@@ -51,14 +51,17 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-black p-4 animate-fadeIn"
       style={{
         backgroundImage: `
-          radial-gradient(ellipse at 50% 0%, rgba(127,0,255,0.1) 0%, transparent 60%),
-          radial-gradient(circle at 1px 1px, rgba(255,255,255,0.04) 1px, transparent 0)
+          radial-gradient(ellipse at 50% 0%, rgba(127,0,255,0.12) 0%, transparent 60%),
+          radial-gradient(circle at 1px 1px, rgba(255,255,255,0.03) 1px, transparent 0)
         `,
         backgroundSize: '100% 100%, 40px 40px',
       }}
     >
       <div className="w-full max-w-sm">
-        <div className="mb-8" />
+        <div className="mb-8 text-center">
+          <h1 className="text-2xl font-bold text-gray-100">Welcome Back</h1>
+          <p className="mt-1.5 text-sm text-gray-500">Sign in to your HexaFinance account</p>
+        </div>
 
         <div className="rounded-xl border border-border bg-surface p-8"
           style={{ boxShadow: '0 4px 24px rgba(0,0,0,0.4)' }}
@@ -70,7 +73,7 @@ export default function LoginPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="demo@finance-sim.app"
+                placeholder="demo@hexafinance.app"
                 className="w-full rounded-md border border-border bg-black px-3 py-2.5 text-sm text-gray-200 placeholder-gray-600 focus:border-accent focus:ring-1 focus:ring-accent/30 focus:outline-none transition-colors"
               />
             </div>
@@ -99,7 +102,7 @@ export default function LoginPage() {
               <div className="w-full border-t border-border" />
             </div>
             <div className="relative flex justify-center text-xs">
-              <span className="bg-surface px-2 text-gray-600">or</span>
+              <span className="bg-surface px-2 text-gray-600">or continue with</span>
             </div>
           </div>
 
@@ -114,7 +117,8 @@ export default function LoginPage() {
           </div>
 
           <p className="mt-5 text-center text-xs text-gray-600">
-            Demo: enter any email + password to browse
+            Don't have an account?{' '}
+            <Link to="/signup" className="text-accent-light hover:underline">Create one</Link>
           </p>
         </div>
 

@@ -21,6 +21,7 @@ type Handlers struct {
 	Research       *handler.ResearchHandler
 	History        *handler.HistoryHandler
 	IndianStock    *handler.IndianStockHandler
+	Indicator      *handler.IndicatorHandler
 }
 
 func RegisterRoutes(h *Handlers) chi.Router {
@@ -47,6 +48,7 @@ func RegisterRoutes(h *Handlers) chi.Router {
 	RegisterResearchRoutes(r, h.Research)
 	RegisterHistoryRoutes(r, h.History)
 	RegisterIndianStockRoutes(r, h.IndianStock)
+	IndicatorRoutes(r, h.Indicator)
 
 	return r
 }

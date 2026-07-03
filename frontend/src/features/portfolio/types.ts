@@ -13,7 +13,9 @@ export interface Holding {
 }
 
 export interface Portfolio {
+  id?: string
   user_id: string
+  cash_balance: number
   holdings: Holding[]
   total_value: number
   total_cost: number

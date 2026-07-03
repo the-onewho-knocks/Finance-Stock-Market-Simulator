@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { Search, TrendingUp, TrendingDown, Minus } from 'lucide-react'
+import { Search, TrendingUp, TrendingDown } from 'lucide-react'
 import { heatmapApi, type HeatmapItem } from '../../features/market/api/heatmapApi'
 import { Loader } from '../../components/ui/Loader'
 import { cn } from '../../lib/helpers'
@@ -85,16 +85,23 @@ export default function MarketPage() {
       ) : filtered.length === 0 ? (
         <p className="text-center text-sm text-gray-500">No matching stocks</p>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-1.5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-1.5 auto-rows-min">
           {filtered.map((item) => {
             const isUp = item.changePercent >= 0
             const intensity = getIntensity(item.changePercent)
+            const sizeClasses: Record<string, string> = {
+              sm: 'col-span-1 row-span-1 p-2',
+              md: 'col-span-1 row-span-1 p-3',
+              lg: 'col-span-2 row-span-1 p-4',
+              xl: 'col-span-2 row-span-2 p-5',
+            }
             return (
               <div
                 key={item.symbol}
                 className={cn(
-                  'group relative rounded-lg border p-3 transition-all duration-200 hover:z-10 hover:scale-105 hover:shadow-lg',
+                  'group relative rounded-lg border transition-all duration-200 hover:z-10 hover:shadow-xl',
                   isUp ? 'border-green-900/40' : 'border-red-900/40',
+                  sizeClasses[item.size || 'md'],
                 )}
                 style={{
                   backgroundColor: isUp

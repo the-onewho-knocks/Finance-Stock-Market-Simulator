@@ -10,15 +10,15 @@ export default function DashboardLayout() {
   return (
     <div className="flex h-screen bg-black">
       <Sidebar open={sidebarOpen} />
-      <div
-        className={`flex flex-1 flex-col transition-[margin] duration-300 ${sidebarOpen ? 'ml-56' : 'ml-0'}`}
-      >
-        <Header onToggleSidebar={() => setSidebarOpen((v) => !v)} />
-        <main className="flex-1 overflow-auto p-6 animate-fadeIn">
-          <Outlet />
-        </main>
-        <Footer />
-      </div>
+        <div
+          className={`flex flex-1 flex-col overflow-y-auto transition-[margin] duration-300 ${sidebarOpen ? 'ml-56' : 'ml-0'}`}
+        >
+          <Header onToggleSidebar={() => setSidebarOpen((v) => !v)} />
+          <main className="flex-1 p-6">
+            <Outlet />
+          </main>
+          <Footer />
+        </div>
     </div>
   )
 }
