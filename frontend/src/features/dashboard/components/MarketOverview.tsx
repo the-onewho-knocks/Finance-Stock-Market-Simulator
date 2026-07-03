@@ -7,7 +7,7 @@ interface MarketOverviewProps {
 
 export function MarketOverviewCard({ prices }: MarketOverviewProps) {
   return (
-    <Card className="bg-[#0d0d0d] border-[#1f1f1f]">
+    <Card>
       <CardTitle>Market Prices</CardTitle>
       <div className="mt-3 space-y-2">
         {prices.slice(0, 6).map((p) => (

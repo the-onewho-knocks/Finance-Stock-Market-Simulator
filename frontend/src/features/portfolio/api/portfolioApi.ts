@@ -25,14 +25,17 @@ const MOCK_METRICS: PortfolioMetrics = {
   total_cost: 94660.00,
   total_gain_loss: 11212.45,
   total_gain_loss_percent: 11.84,
-  cash_balance: 18660.35,
-  allocation: [
-    { sector: 'Technology', value: 42858.40, percentage: 40.5 },
-    { sector: 'Consumer Cyclical', value: 19148.00, percentage: 18.1 },
-    { sector: 'Financial', value: 16280.00, percentage: 15.4 },
-    { sector: 'Healthcare', value: 12453.00, percentage: 11.8 },
-    { sector: 'Cash', value: 18660.35, percentage: 13.2 },
+  diversification: [
+    { symbol: 'AAPL', allocation: 28.5 },
+    { symbol: 'MSFT', allocation: 22.5 },
+    { symbol: 'NVDA', allocation: 18.2 },
+    { symbol: 'AMZN', allocation: 12.8 },
+    { symbol: 'META', allocation: 10.1 },
+    { symbol: 'TSLA', allocation: 4.9 },
+    { symbol: 'GOOGL', allocation: 3.0 },
   ],
+  best_performer: { symbol: 'NVDA', gain_loss_percent: 10.73 },
+  worst_performer: { symbol: 'TSLA', gain_loss_percent: -1.68 },
 }
 
 export const portfolioApi = {

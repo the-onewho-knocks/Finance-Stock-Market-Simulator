@@ -7,8 +7,10 @@ import { PortfolioMetricsView } from '../../features/portfolio/components/Portfo
 import { HoldingsCard } from '../../features/portfolio/components/HoldingsCard'
 import { PortfolioTable } from '../../features/portfolio/components/PortfolioTable'
 import { AllocationChart } from '../../features/portfolio/components/AllocationChart'
+import { BuyStockModal } from '../../features/portfolio/components/BuyStockModal'
+import { SellStockModal } from '../../features/portfolio/components/SellStockModal'
+import { Card, CardTitle } from '../../components/ui/Card'
 import { Button } from '../../components/ui/Button'
-import { Card } from '../../components/ui/Card'
 import { Loader } from '../../components/ui/Loader'
 
 export default function PortfolioPage() {
@@ -16,6 +18,8 @@ export default function PortfolioPage() {
   const [portfolio, setPortfolio] = useState<any | null>(null)
   const [metrics, setMetrics] = useState<any | null>(null)
   const [loading, setLoading] = useState(true)
+  const [buyOpen, setBuyOpen] = useState(false)
+  const [sellOpen, setSellOpen] = useState(false)
 
   const userId = user?.id || 'demo'
 
@@ -28,14 +32,27 @@ export default function PortfolioPage() {
       ])
       setPortfolio(p)
       setMetrics(m)
-    } catch {
-      toast.error('Failed to load portfolio')
-    } finally {
-      setLoading(false)
-    }
+    } catch { toast.error('Failed to load portfolio') }
+    finally { setLoading(false) }
   }
 
   useEffect(() => { load() }, [userId])
+
+  const handleBuy = async (symbol: string, quantity: number) => {
+    try {
+      await portfolioApi.buy({ user_id: userId, symbol, quantity })
+      toast.success(`Bought ${quantity} ${symbol}`)
+      load()
+    } catch { toast.error('Buy failed') }
+  }
+
+  const handleSell = async (symbol: string, quantity: number) => {
+    try {
+      await portfolioApi.sell({ user_id: userId, symbol, quantity })
+      toast.success(`Sold ${quantity} ${symbol}`)
+      load()
+    } catch { toast.error('Sell failed') }
+  }
 
   if (loading) return <Loader />
 
@@ -44,8 +61,8 @@ export default function PortfolioPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold text-gray-100">Portfolio</h1>
         <div className="flex gap-2">
-          <Button size="sm" variant="secondary">Buy</Button>
-          <Button size="sm" variant="secondary">Sell</Button>
+          <Button size="sm" onClick={() => setBuyOpen(true)}>Buy</Button>
+          <Button size="sm" variant="secondary" onClick={() => setSellOpen(true)}>Sell</Button>
         </div>
       </div>
 
@@ -53,26 +70,25 @@ export default function PortfolioPage() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-4">
-          <Card className="bg-[#0d0d0d] border-[#1f1f1f]">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-semibold text-gray-200">Holdings</h3>
+          <Card>
+            <CardTitle>Holdings</CardTitle>
+            <div className="mt-3">
+              {portfolio?.holdings && portfolio.holdings.length > 0 ? (
+                <PortfolioTable holdings={portfolio.holdings} />
+              ) : (
+                <p className="text-sm text-gray-500">No holdings yet.</p>
+              )}
             </div>
-            {portfolio?.holdings && portfolio.holdings.length > 0 ? (
-              <PortfolioTable holdings={portfolio.holdings} />
-            ) : (
-              <p className="text-sm text-gray-500">No holdings yet.</p>
-            )}
           </Card>
         </div>
         <div className="space-y-4">
-          <AllocationChart metrics={metrics} />
-          <HoldingsCard
-            holdings={portfolio?.holdings || []}
-            totalValue={portfolio?.total_value || 0}
-            totalPnl={portfolio?.total_gain_loss || 0}
-          />
+          <AllocationChart data={metrics?.diversification || []} />
+          <HoldingsCard holdings={portfolio?.holdings || []} />
         </div>
       </div>
+
+      <BuyStockModal open={buyOpen} onClose={() => setBuyOpen(false)} onBuy={handleBuy} />
+      <SellStockModal open={sellOpen} onClose={() => setSellOpen(false)} onSell={handleSell} />
     </div>
   )
 }

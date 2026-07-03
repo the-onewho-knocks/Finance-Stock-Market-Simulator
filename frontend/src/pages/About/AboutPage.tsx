@@ -22,15 +22,12 @@ const techStack = [
 
 export default function AboutPage() {
   return (
-    <div className="mx-auto max-w-5xl space-y-10 py-6">
+    <div className="mx-auto max-w-5xl space-y-10 py-6 animate-fadeIn">
       <div className="text-center">
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-accent shadow-lg shadow-accent/30">
-          <TrendingUp className="h-8 w-8 text-white" />
-        </div>
-        <h1 className="text-3xl font-bold text-gray-100">Finance Simulation</h1>
+        <div className="mb-4" />
         <p className="mt-3 text-lg text-gray-400 max-w-2xl mx-auto">
-          A full-stack financial management platform with real-time market data, portfolio tracking,
-          AI-powered research, and expense management — inspired by TradingView and modern fintech dashboards.
+          A full-stack financial platform with real-time market data, portfolio tracking,
+          AI-powered research, and expense management — inspired by modern fintech dashboards.
         </p>
       </div>
 
@@ -63,7 +60,7 @@ export default function AboutPage() {
           <span className="rounded-md bg-yellow-600/20 px-3 py-1.5 font-medium text-yellow-400">Finnhub API</span>
           <span className="text-gray-500">(direct from frontend)</span>
           <span className="mx-1 text-gray-600">|</span>
-          <span className="rounded-md bg-[#1f1f1f] px-3 py-1.5 font-medium text-gray-400">PostgreSQL</span>
+          <span className="rounded-md bg-border px-3 py-1.5 font-medium text-gray-400">PostgreSQL</span>
         </div>
       </Card>
 

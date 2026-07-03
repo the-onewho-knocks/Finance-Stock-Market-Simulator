@@ -8,7 +8,7 @@ export default function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
 
   return (
-    <div className="flex h-screen bg-[#000000]">
+    <div className="flex h-screen bg-black">
       <Sidebar open={sidebarOpen} />
       <div
         className={`flex flex-1 flex-col transition-[margin] duration-300 ${sidebarOpen ? 'ml-56' : 'ml-0'}`}

@@ -10,7 +10,7 @@ export function StockCard({ quote }: StockCardProps) {
   const isUp = quote.change >= 0
 
   return (
-    <Card className="bg-[#0d0d0d] border-[#1f1f1f]">
+    <Card>
       <CardTitle>{quote.name}</CardTitle>
       <div className="mt-2 text-2xl font-bold text-gray-100">${quote.price.toFixed(2)}</div>
       <div className={isUp ? 'text-green-400' : 'text-red-400'}>

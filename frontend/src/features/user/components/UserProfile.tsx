@@ -8,7 +8,7 @@ interface UserProfileViewProps {
 
 export function UserProfileView({ user }: UserProfileViewProps) {
   return (
-    <Card className="bg-[#0d0d0d] border-[#1f1f1f]">
+    <Card>
       <CardTitle>Account Details</CardTitle>
       <div className="mt-3 space-y-2 text-sm">
         <div className="flex justify-between"><span className="text-gray-500">Email</span><span className="text-gray-200">{user.email}</span></div>

@@ -12,7 +12,7 @@ export function HoldingsCard({ holdings }: HoldingsCardProps) {
   return (
     <div className="space-y-2">
       {holdings.map((h) => (
-        <Card key={h.symbol} className="flex items-center justify-between bg-[#0d0d0d] border-[#1f1f1f]">
+        <Card key={h.symbol} className="flex items-center justify-between">
           <div>
             <p className="text-sm font-semibold text-gray-100">{h.symbol}</p>
             <p className="text-xs text-gray-500">{h.quantity} shares @ ${h.avg_price.toFixed(2)}</p>

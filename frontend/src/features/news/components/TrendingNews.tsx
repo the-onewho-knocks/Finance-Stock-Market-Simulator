@@ -18,7 +18,7 @@ export function TrendingNews() {
   if (loading) return <Loader />
 
   return (
-    <Card className="bg-[#0d0d0d] border-[#1f1f1f]">
+    <Card>
       <CardTitle>Trending News</CardTitle>
       <div className="mt-3 space-y-3">
         {items.slice(0, 5).map((item) => (

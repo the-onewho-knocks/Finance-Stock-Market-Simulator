@@ -1,4 +1,4 @@
-export const APP_NAME = 'Finance Simulation'
+export const APP_NAME = 'HexaFinance'
 
 export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081'
 

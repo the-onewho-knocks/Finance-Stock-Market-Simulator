@@ -11,7 +11,7 @@ interface PlanCardProps {
 
 export function PlanCard({ plan, onDelete }: PlanCardProps) {
   return (
-    <Card className="bg-[#0d0d0d] border-[#1f1f1f]">
+    <Card>
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-2">

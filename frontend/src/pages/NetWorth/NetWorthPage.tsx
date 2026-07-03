@@ -7,8 +7,8 @@ import { NetWorthSummary } from '../../features/networth/components/NetWorthSumm
 import { NetWorthChart } from '../../features/networth/components/NetWorthChart'
 import { NetWorthHistoryTable } from '../../features/networth/components/NetWorthHistory'
 import { BreakdownCard } from '../../features/networth/components/BreakdownCard'
-import { RecalculateButton } from '../../features/networth/components/RecalculateButton'
 import { Loader } from '../../components/ui/Loader'
+import { Card } from '../../components/ui/Card'
 
 export default function NetWorthPage() {
   const user = useSelector((s: RootState) => s.auth.user)
@@ -16,49 +16,45 @@ export default function NetWorthPage() {
   const [history, setHistory] = useState<any[]>([])
   const [breakdown, setBreakdown] = useState<any | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const userId = user?.id || 'demo'
 
   const load = async () => {
-    if (!user) return
-    setLoading(true)
+    setLoading(true); setError('')
     try {
       const [l, h, b] = await Promise.all([
-        networthApi.getLatest(user.id),
-        networthApi.getHistory(user.id),
-        networthApi.getBreakdown(user.id),
+        networthApi.getLatest(userId),
+        networthApi.getHistory(userId),
+        networthApi.getBreakdown(userId),
       ])
       setLatest(l.networth)
       setHistory(h)
       setBreakdown(b)
-    } catch { toast.error('Failed to load net worth') }
+    } catch { setError('Failed to load net worth'); toast.error('Failed to load net worth') }
     finally { setLoading(false) }
   }
 
-  useEffect(() => { load() }, [user])
-
-  const handleRecalculate = async () => {
-    if (!user) return
-    try {
-      await networthApi.recalculate(user.id)
-      toast.success('Recalculated')
-      load()
-    } catch { toast.error('Recalculation failed') }
-  }
+  useEffect(() => { load() }, [userId])
 
   if (loading) return <Loader />
+  if (error) return <Card variant="glass" className="border-red-500/50"><p className="text-sm text-red-400">{error}</p></Card>
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fadeIn">
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold text-gray-100">Net Worth</h1>
-        <RecalculateButton onClick={handleRecalculate} />
       </div>
       <NetWorthSummary latest={latest} />
-      <NetWorthChart history={history} />
+      {history.length > 0 && <NetWorthChart history={history} />}
       {breakdown && <BreakdownCard breakdown={breakdown} />}
-      <div className="rounded-lg border border-[#1f1f1f] bg-[#0d0d0d] p-4">
+      <Card>
         <h3 className="mb-3 text-sm font-medium text-gray-300">History</h3>
-        <NetWorthHistoryTable history={history} />
-      </div>
+        {history.length === 0 ? (
+          <p className="text-sm text-gray-500">No history data available.</p>
+        ) : (
+          <NetWorthHistoryTable history={history} />
+        )}
+      </Card>
     </div>
   )
 }

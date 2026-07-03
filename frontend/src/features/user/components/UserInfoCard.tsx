@@ -8,7 +8,7 @@ interface UserInfoCardProps {
 
 export function UserInfoCard({ user }: UserInfoCardProps) {
   return (
-    <Card className="bg-[#0d0d0d] border-[#1f1f1f]">
+    <Card>
       <div className="flex items-center gap-4">
         {user.avatar_url && (
           <img src={user.avatar_url} alt="" className="h-14 w-14 rounded-full" />

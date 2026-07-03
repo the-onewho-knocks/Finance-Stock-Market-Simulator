@@ -9,7 +9,7 @@ interface RecentActivityProps {
 
 export function RecentActivity({ transactions }: RecentActivityProps) {
   return (
-    <Card className="bg-[#0d0d0d] border-[#1f1f1f]">
+    <Card>
       <CardTitle>Recent Activity</CardTitle>
       <div className="mt-3 space-y-2">
         {transactions.slice(0, 5).map((t) => (

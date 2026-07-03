@@ -22,7 +22,7 @@ export function TransactionHistory({ transactions }: TransactionHistoryProps) {
   const { page, setPage, totalPages, paginatedItems } = usePagination(filtered, 10)
 
   return (
-    <Card className="bg-[#0d0d0d] border-[#1f1f1f]">
+    <Card>
       <div className="flex items-center justify-between mb-4">
         <CardTitle>Transaction History</CardTitle>
         <TransactionFiltersView filters={filters} onChange={setFilters} />

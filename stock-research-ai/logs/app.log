@@ -904,3 +904,422 @@ httpx.ConnectError: [Errno 11001] getaddrinfo failed
 2026-07-03 22:38:56.712 | INFO     | services.research_service:run_research:21 - Research started: 734a6565-649f-43f3-a8a7-d59ebc7ad4e2 for AAPL
 2026-07-03 22:39:05.478 | WARNING  | providers.finance.sec_client:cik_from_ticker:69 - CIK lookup exception for AAPL: [Errno 11001] getaddrinfo failed
 2026-07-03 22:39:05.482 | WARNING  | tools.sec_tool:get_all_filings:54 - CIK lookup failed for AAPL, falling back to search
+2026-07-03 22:47:18.088 | INFO     | services.research_service:run_research:21 - Research started: f55c40e9-c921-4b3d-ae7b-454816dfd9a5 for AAPL
+2026-07-03 22:47:19.552 | ERROR    | tools.financial_tool:get_financials:22 - Financial fetch failed for AAPL
+Traceback (most recent call last):
+
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpx\_transports\default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpx\_transports\default.py", line 394, in handle_async_request
+    resp = await self._pool.handle_async_request(req)
+                 │    │     │                    └ <Request [b'GET']>
+                 │    │     └ <function AsyncConnectionPool.handle_async_request at 0x000002047FACE2A0>
+                 │    └ <AsyncConnectionPool [Requests: 0 active, 0 queued | Connections: 0 active, 0 idle]>
+                 └ <httpx.AsyncHTTPTransport object at 0x0000020403FEE1C0>
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpcore\_async\connection_pool.py", line 256, in handle_async_request
+    raise exc from None
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpcore\_async\connection_pool.py", line 236, in handle_async_request
+    response = await connection.handle_async_request(
+                     │          └ <function AsyncHTTPConnection.handle_async_request at 0x000002047FACD3A0>
+                     └ <AsyncHTTPConnection [CONNECTION FAILED]>
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpcore\_async\connection.py", line 101, in handle_async_request
+    raise exc
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpcore\_async\connection.py", line 78, in handle_async_request
+    stream = await self._connect(request)
+                   │    │        └ <Request [b'GET']>
+                   │    └ <function AsyncHTTPConnection._connect at 0x000002047FACD440>
+                   └ <AsyncHTTPConnection [CONNECTION FAILED]>
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpcore\_async\connection.py", line 124, in _connect
+    stream = await self._network_backend.connect_tcp(**kwargs)
+                   │    │                │             └ {'host': 'financialmodelingprep.com', 'port': 443, 'local_address': None, 'timeout': 15, 'socket_options': None}
+                   │    │                └ <function AutoBackend.connect_tcp at 0x000002047FAC72E0>
+                   │    └ <httpcore._backends.auto.AutoBackend object at 0x0000020403FEE9E0>
+                   └ <AsyncHTTPConnection [CONNECTION FAILED]>
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpcore\_backends\auto.py", line 31, in connect_tcp
+    return await self._backend.connect_tcp(
+                 │    │        └ <function AnyIOBackend.connect_tcp at 0x000002047FAE2CA0>
+                 │    └ <httpcore.AnyIOBackend object at 0x0000020403FEE3A0>
+                 └ <httpcore._backends.auto.AutoBackend object at 0x0000020403FEE9E0>
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpcore\_backends\anyio.py", line 113, in connect_tcp
+    with map_exceptions(exc_map):
+         │              └ {<class 'TimeoutError'>: <class 'httpcore.ConnectTimeout'>, <class 'OSError'>: <class 'httpcore.ConnectError'>, <class 'anyio...
+         └ <function map_exceptions at 0x000002047F987D80>
+  File "C:\Program Files\Python313\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    │    │   │     └ gaierror(11001, 'getaddrinfo failed')
+    │    │   └ <method 'throw' of 'generator' objects>
+    │    └ <generator object map_exceptions at 0x000002047FBF1120>
+    └ <contextlib._GeneratorContextManager object at 0x000002047FC0DA90>
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpcore\_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+          └ <class 'httpcore.ConnectError'>
+
+httpcore.ConnectError: [Errno 11001] getaddrinfo failed
+
+
+The above exception was the direct cause of the following exception:
+
+
+Traceback (most recent call last):
+
+  File "<string>", line 1, in <module>
+  File "C:\Program Files\Python313\Lib\multiprocessing\spawn.py", line 122, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+               │     │   └ 204
+               │     └ 3
+               └ <function _main at 0x00000204623B54E0>
+  File "C:\Program Files\Python313\Lib\multiprocessing\spawn.py", line 135, in _main
+    return self._bootstrap(parent_sentinel)
+           │    │          └ 204
+           │    └ <function BaseProcess._bootstrap at 0x0000020462094680>
+           └ <SpawnProcess name='SpawnProcess-1' parent=15252 started>
+  File "C:\Program Files\Python313\Lib\multiprocessing\process.py", line 313, in _bootstrap
+    self.run()
+    │    └ <function BaseProcess.run at 0x00000204620BFBA0>
+    └ <SpawnProcess name='SpawnProcess-1' parent=15252 started>
+  File "C:\Program Files\Python313\Lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+    │    │        │    │        │    └ {'config': <uvicorn.config.Config object at 0x00000204644D3CB0>, 'target': <bound method Server.run of <uvicorn.server.Server...
+    │    │        │    │        └ <SpawnProcess name='SpawnProcess-1' parent=15252 started>
+    │    │        │    └ ()
+    │    │        └ <SpawnProcess name='SpawnProcess-1' parent=15252 started>
+    │    └ <function subprocess_started at 0x00000204645BE480>
+    └ <SpawnProcess name='SpawnProcess-1' parent=15252 started>
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\uvicorn\_subprocess.py", line 80, in subprocess_started
+    target(sockets=sockets)
+    │              └ [<socket.socket fd=400, family=2, type=1, proto=6, laddr=('127.0.0.1', 8000)>]
+    └ <bound method Server.run of <uvicorn.server.Server object at 0x00000204644D3E00>>
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\uvicorn\server.py", line 75, in run
+    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())
+           │           │    │             │                      │    │      └ <function Config.get_loop_factory at 0x0000020464540B80>
+           │           │    │             │                      │    └ <uvicorn.config.Config object at 0x00000204644D3CB0>
+           │           │    │             │                      └ <uvicorn.server.Server object at 0x00000204644D3E00>
+           │           │    │             └ [<socket.socket fd=400, family=2, type=1, proto=6, laddr=('127.0.0.1', 8000)>]
+           │           │    └ <function Server.serve at 0x00000204645BD3A0>
+           │           └ <uvicorn.server.Server object at 0x00000204644D3E00>
+           └ <function run at 0x0000020462867A60>
+  File "C:\Program Files\Python313\Lib\asyncio\runners.py", line 195, in run
+    return runner.run(main)
+           │      │   └ <coroutine object Server.serve at 0x00000204645CF060>
+           │      └ <function Runner.run at 0x0000020464296480>
+           └ <asyncio.runners.Runner object at 0x0000020464638AD0>
+  File "C:\Program Files\Python313\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<Server.serve() running at C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\s...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x0000020464294040>
+           │    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x0000020464638AD0>
+  File "C:\Program Files\Python313\Lib\asyncio\base_events.py", line 712, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x000002046428FF60>
+    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+  File "C:\Program Files\Python313\Lib\asyncio\base_events.py", line 683, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x0000020464295DA0>
+    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+  File "C:\Program Files\Python313\Lib\asyncio\base_events.py", line 2061, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x0000020462853CE0>
+    └ <Handle Task.task_wakeup()>
+  File "C:\Program Files\Python313\Lib\asyncio\events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle Task.task_wakeup()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle Task.task_wakeup()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle Task.task_wakeup()>
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\langgraph\_internal\_runnable.py", line 501, in ainvoke
+    ret = await self.afunc(*args, **kwargs)
+                │    │      │       └ {}
+                │    │      └ ({'symbol': 'AAPL', 'user_id': None, 'deep_analysis': False, 'news_data': {'news_summary': "Found 20 recent news articles for...
+                │    └ <function financial_node at 0x000002047FB04220>
+                └ financial_agent(tags=None, recurse=True, explode_args=False, func_accepts={})
+
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\graph\nodes.py", line 33, in financial_node
+    output = await _financial.run(symbol)
+                   │          │   └ 'AAPL'
+                   │          └ <function FinancialAgent.run at 0x0000020467E01A80>
+                   └ <agents.financial_agent.FinancialAgent object at 0x000002047FAC3380>
+
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\agents\financial_agent.py", line 9, in run
+    raw = await self._tool.get_financials(symbol)
+                │    │     │              └ 'AAPL'
+                │    │     └ <function FinancialTool.get_financials at 0x0000020467E01DA0>
+                │    └ <tools.financial_tool.FinancialTool object at 0x000002047FAC34D0>
+                └ <agents.financial_agent.FinancialAgent object at 0x000002047FAC3380>
+
+> File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\tools\financial_tool.py", line 13, in get_financials
+    income, balance, ratios = await self._fetch_all(symbol)
+                                    │    │          └ 'AAPL'
+                                    │    └ <function FinancialTool._fetch_all at 0x0000020467E02160>
+                                    └ <tools.financial_tool.FinancialTool object at 0x000002047FAC34D0>
+
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\tools\financial_tool.py", line 33, in _fetch_all
+    income = await self._client.get_income_statement(symbol)
+                   │    │       │                    └ 'AAPL'
+                   │    │       └ <function FMPClient.get_income_statement at 0x0000020467E01F80>
+                   │    └ <providers.finance.fmp_client.FMPClient object at 0x000002047FAC3620>
+                   └ <tools.financial_tool.FinancialTool object at 0x000002047FAC34D0>
+
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\providers\finance\fmp_client.py", line 27, in get_income_statement
+    r = await c.get(
+              │ └ <function AsyncClient.get at 0x00000204671FB380>
+              └ <httpx.AsyncClient object at 0x000002047F99F7D0>
+
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpx\_client.py", line 1768, in get
+    return await self.request(
+                 │    └ <function AsyncClient.request at 0x00000204671FAF20>
+                 └ <httpx.AsyncClient object at 0x000002047F99F7D0>
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpx\_client.py", line 1540, in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+                 │    │    │             │                      └ <httpx._client.UseClientDefault object at 0x00000204671D4AD0>
+                 │    │    │             └ <httpx._client.UseClientDefault object at 0x00000204671D4AD0>
+                 │    │    └ <Request('GET', 'https://financialmodelingprep.com/stable/income-statement?apikey=JydmJmFycp33F48oOiXYs3t1RPZI5kdr&symbol=AAP...
+                 │    └ <function AsyncClient.send at 0x00000204671FB100>
+                 └ <httpx.AsyncClient object at 0x000002047F99F7D0>
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpx\_client.py", line 1629, in send
+    response = await self._send_handling_auth(
+                     │    └ <function AsyncClient._send_handling_auth at 0x00000204671FB1A0>
+                     └ <httpx.AsyncClient object at 0x000002047F99F7D0>
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpx\_client.py", line 1657, in _send_handling_auth
+    response = await self._send_handling_redirects(
+                     │    └ <function AsyncClient._send_handling_redirects at 0x00000204671FB240>
+                     └ <httpx.AsyncClient object at 0x000002047F99F7D0>
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpx\_client.py", line 1694, in _send_handling_redirects
+    response = await self._send_single_request(request)
+                     │    │                    └ <Request('GET', 'https://financialmodelingprep.com/stable/income-statement?apikey=JydmJmFycp33F48oOiXYs3t1RPZI5kdr&symbol=AAP...
+                     │    └ <function AsyncClient._send_single_request at 0x00000204671FB2E0>
+                     └ <httpx.AsyncClient object at 0x000002047F99F7D0>
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpx\_client.py", line 1730, in _send_single_request
+    response = await transport.handle_async_request(request)
+                     │         │                    └ <Request('GET', 'https://financialmodelingprep.com/stable/income-statement?apikey=JydmJmFycp33F48oOiXYs3t1RPZI5kdr&symbol=AAP...
+                     │         └ <function AsyncHTTPTransport.handle_async_request at 0x00000204671EFEC0>
+                     └ <httpx.AsyncHTTPTransport object at 0x0000020403FEE1C0>
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpx\_transports\default.py", line 393, in handle_async_request
+    with map_httpcore_exceptions():
+         └ <function map_httpcore_exceptions at 0x00000204671EF4C0>
+  File "C:\Program Files\Python313\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    │    │   │     └ ConnectError(gaierror(11001, 'getaddrinfo failed'))
+    │    │   └ <method 'throw' of 'generator' objects>
+    │    └ <generator object map_httpcore_exceptions at 0x000002047FB5C740>
+    └ <contextlib._GeneratorContextManager object at 0x000002047FC0D940>
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpx\_transports\default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+          │          └ '[Errno 11001] getaddrinfo failed'
+          └ <class 'httpx.ConnectError'>
+
+httpx.ConnectError: [Errno 11001] getaddrinfo failed
+2026-07-03 22:47:23.479 | WARNING  | providers.finance.sec_client:cik_from_ticker:69 - CIK lookup exception for AAPL: [Errno 11001] getaddrinfo failed
+2026-07-03 22:47:23.482 | WARNING  | tools.sec_tool:get_all_filings:54 - CIK lookup failed for AAPL, falling back to search
+2026-07-03 22:53:22.203 | INFO     | services.research_service:run_research:21 - Research started: 183b1ce1-3289-4971-b67b-05233ec5108d for TSLA
+2026-07-03 22:53:23.661 | ERROR    | tools.financial_tool:get_financials:22 - Financial fetch failed for TSLA
+Traceback (most recent call last):
+
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpx\_transports\default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpx\_transports\default.py", line 394, in handle_async_request
+    resp = await self._pool.handle_async_request(req)
+                 │    │     │                    └ <Request [b'GET']>
+                 │    │     └ <function AsyncConnectionPool.handle_async_request at 0x000002047FACE2A0>
+                 │    └ <AsyncConnectionPool [Requests: 0 active, 0 queued | Connections: 0 active, 0 idle]>
+                 └ <httpx.AsyncHTTPTransport object at 0x00000204040672A0>
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpcore\_async\connection_pool.py", line 256, in handle_async_request
+    raise exc from None
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpcore\_async\connection_pool.py", line 236, in handle_async_request
+    response = await connection.handle_async_request(
+                     │          └ <function AsyncHTTPConnection.handle_async_request at 0x000002047FACD3A0>
+                     └ <AsyncHTTPConnection [CONNECTION FAILED]>
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpcore\_async\connection.py", line 101, in handle_async_request
+    raise exc
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpcore\_async\connection.py", line 78, in handle_async_request
+    stream = await self._connect(request)
+                   │    │        └ <Request [b'GET']>
+                   │    └ <function AsyncHTTPConnection._connect at 0x000002047FACD440>
+                   └ <AsyncHTTPConnection [CONNECTION FAILED]>
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpcore\_async\connection.py", line 124, in _connect
+    stream = await self._network_backend.connect_tcp(**kwargs)
+                   │    │                │             └ {'host': 'financialmodelingprep.com', 'port': 443, 'local_address': None, 'timeout': 15, 'socket_options': None}
+                   │    │                └ <function AutoBackend.connect_tcp at 0x000002047FAC72E0>
+                   │    └ <httpcore._backends.auto.AutoBackend object at 0x00000204040672F0>
+                   └ <AsyncHTTPConnection [CONNECTION FAILED]>
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpcore\_backends\auto.py", line 31, in connect_tcp
+    return await self._backend.connect_tcp(
+                 │    │        └ <function AnyIOBackend.connect_tcp at 0x000002047FAE2CA0>
+                 │    └ <httpcore.AnyIOBackend object at 0x0000020404067570>
+                 └ <httpcore._backends.auto.AutoBackend object at 0x00000204040672F0>
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpcore\_backends\anyio.py", line 113, in connect_tcp
+    with map_exceptions(exc_map):
+         │              └ {<class 'TimeoutError'>: <class 'httpcore.ConnectTimeout'>, <class 'OSError'>: <class 'httpcore.ConnectError'>, <class 'anyio...
+         └ <function map_exceptions at 0x000002047F987D80>
+  File "C:\Program Files\Python313\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    │    │   │     └ gaierror(11001, 'getaddrinfo failed')
+    │    │   └ <method 'throw' of 'generator' objects>
+    │    └ <generator object map_exceptions at 0x000002047FBF17B0>
+    └ <contextlib._GeneratorContextManager object at 0x000002040404AC80>
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpcore\_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+          └ <class 'httpcore.ConnectError'>
+
+httpcore.ConnectError: [Errno 11001] getaddrinfo failed
+
+
+The above exception was the direct cause of the following exception:
+
+
+Traceback (most recent call last):
+
+  File "<string>", line 1, in <module>
+  File "C:\Program Files\Python313\Lib\multiprocessing\spawn.py", line 122, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+               │     │   └ 204
+               │     └ 3
+               └ <function _main at 0x00000204623B54E0>
+  File "C:\Program Files\Python313\Lib\multiprocessing\spawn.py", line 135, in _main
+    return self._bootstrap(parent_sentinel)
+           │    │          └ 204
+           │    └ <function BaseProcess._bootstrap at 0x0000020462094680>
+           └ <SpawnProcess name='SpawnProcess-1' parent=15252 started>
+  File "C:\Program Files\Python313\Lib\multiprocessing\process.py", line 313, in _bootstrap
+    self.run()
+    │    └ <function BaseProcess.run at 0x00000204620BFBA0>
+    └ <SpawnProcess name='SpawnProcess-1' parent=15252 started>
+  File "C:\Program Files\Python313\Lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+    │    │        │    │        │    └ {'config': <uvicorn.config.Config object at 0x00000204644D3CB0>, 'target': <bound method Server.run of <uvicorn.server.Server...
+    │    │        │    │        └ <SpawnProcess name='SpawnProcess-1' parent=15252 started>
+    │    │        │    └ ()
+    │    │        └ <SpawnProcess name='SpawnProcess-1' parent=15252 started>
+    │    └ <function subprocess_started at 0x00000204645BE480>
+    └ <SpawnProcess name='SpawnProcess-1' parent=15252 started>
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\uvicorn\_subprocess.py", line 80, in subprocess_started
+    target(sockets=sockets)
+    │              └ [<socket.socket fd=400, family=2, type=1, proto=6, laddr=('127.0.0.1', 8000)>]
+    └ <bound method Server.run of <uvicorn.server.Server object at 0x00000204644D3E00>>
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\uvicorn\server.py", line 75, in run
+    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())
+           │           │    │             │                      │    │      └ <function Config.get_loop_factory at 0x0000020464540B80>
+           │           │    │             │                      │    └ <uvicorn.config.Config object at 0x00000204644D3CB0>
+           │           │    │             │                      └ <uvicorn.server.Server object at 0x00000204644D3E00>
+           │           │    │             └ [<socket.socket fd=400, family=2, type=1, proto=6, laddr=('127.0.0.1', 8000)>]
+           │           │    └ <function Server.serve at 0x00000204645BD3A0>
+           │           └ <uvicorn.server.Server object at 0x00000204644D3E00>
+           └ <function run at 0x0000020462867A60>
+  File "C:\Program Files\Python313\Lib\asyncio\runners.py", line 195, in run
+    return runner.run(main)
+           │      │   └ <coroutine object Server.serve at 0x00000204645CF060>
+           │      └ <function Runner.run at 0x0000020464296480>
+           └ <asyncio.runners.Runner object at 0x0000020464638AD0>
+  File "C:\Program Files\Python313\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<Server.serve() running at C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\s...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x0000020464294040>
+           │    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x0000020464638AD0>
+  File "C:\Program Files\Python313\Lib\asyncio\base_events.py", line 712, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x000002046428FF60>
+    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+  File "C:\Program Files\Python313\Lib\asyncio\base_events.py", line 683, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x0000020464295DA0>
+    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+  File "C:\Program Files\Python313\Lib\asyncio\base_events.py", line 2061, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x0000020462853CE0>
+    └ <Handle Task.task_wakeup()>
+  File "C:\Program Files\Python313\Lib\asyncio\events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle Task.task_wakeup()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle Task.task_wakeup()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle Task.task_wakeup()>
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\langgraph\_internal\_runnable.py", line 501, in ainvoke
+    ret = await self.afunc(*args, **kwargs)
+                │    │      │       └ {}
+                │    │      └ ({'symbol': 'TSLA', 'user_id': None, 'deep_analysis': False, 'news_data': {'news_summary': 'Found 20 recent news articles for...
+                │    └ <function financial_node at 0x000002047FB04220>
+                └ financial_agent(tags=None, recurse=True, explode_args=False, func_accepts={})
+
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\graph\nodes.py", line 33, in financial_node
+    output = await _financial.run(symbol)
+                   │          │   └ 'TSLA'
+                   │          └ <function FinancialAgent.run at 0x0000020467E01A80>
+                   └ <agents.financial_agent.FinancialAgent object at 0x000002047FAC3380>
+
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\agents\financial_agent.py", line 9, in run
+    raw = await self._tool.get_financials(symbol)
+                │    │     │              └ 'TSLA'
+                │    │     └ <function FinancialTool.get_financials at 0x0000020467E01DA0>
+                │    └ <tools.financial_tool.FinancialTool object at 0x000002047FAC34D0>
+                └ <agents.financial_agent.FinancialAgent object at 0x000002047FAC3380>
+
+> File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\tools\financial_tool.py", line 13, in get_financials
+    income, balance, ratios = await self._fetch_all(symbol)
+                                    │    │          └ 'TSLA'
+                                    │    └ <function FinancialTool._fetch_all at 0x0000020467E02160>
+                                    └ <tools.financial_tool.FinancialTool object at 0x000002047FAC34D0>
+
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\tools\financial_tool.py", line 33, in _fetch_all
+    income = await self._client.get_income_statement(symbol)
+                   │    │       │                    └ 'TSLA'
+                   │    │       └ <function FMPClient.get_income_statement at 0x0000020467E01F80>
+                   │    └ <providers.finance.fmp_client.FMPClient object at 0x000002047FAC3620>
+                   └ <tools.financial_tool.FinancialTool object at 0x000002047FAC34D0>
+
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\providers\finance\fmp_client.py", line 27, in get_income_statement
+    r = await c.get(
+              │ └ <function AsyncClient.get at 0x00000204671FB380>
+              └ <httpx.AsyncClient object at 0x000002047F99F7D0>
+
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpx\_client.py", line 1768, in get
+    return await self.request(
+                 │    └ <function AsyncClient.request at 0x00000204671FAF20>
+                 └ <httpx.AsyncClient object at 0x000002047F99F7D0>
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpx\_client.py", line 1540, in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+                 │    │    │             │                      └ <httpx._client.UseClientDefault object at 0x00000204671D4AD0>
+                 │    │    │             └ <httpx._client.UseClientDefault object at 0x00000204671D4AD0>
+                 │    │    └ <Request('GET', 'https://financialmodelingprep.com/stable/income-statement?apikey=JydmJmFycp33F48oOiXYs3t1RPZI5kdr&symbol=TSL...
+                 │    └ <function AsyncClient.send at 0x00000204671FB100>
+                 └ <httpx.AsyncClient object at 0x000002047F99F7D0>
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpx\_client.py", line 1629, in send
+    response = await self._send_handling_auth(
+                     │    └ <function AsyncClient._send_handling_auth at 0x00000204671FB1A0>
+                     └ <httpx.AsyncClient object at 0x000002047F99F7D0>
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpx\_client.py", line 1657, in _send_handling_auth
+    response = await self._send_handling_redirects(
+                     │    └ <function AsyncClient._send_handling_redirects at 0x00000204671FB240>
+                     └ <httpx.AsyncClient object at 0x000002047F99F7D0>
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpx\_client.py", line 1694, in _send_handling_redirects
+    response = await self._send_single_request(request)
+                     │    │                    └ <Request('GET', 'https://financialmodelingprep.com/stable/income-statement?apikey=JydmJmFycp33F48oOiXYs3t1RPZI5kdr&symbol=TSL...
+                     │    └ <function AsyncClient._send_single_request at 0x00000204671FB2E0>
+                     └ <httpx.AsyncClient object at 0x000002047F99F7D0>
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpx\_client.py", line 1730, in _send_single_request
+    response = await transport.handle_async_request(request)
+                     │         │                    └ <Request('GET', 'https://financialmodelingprep.com/stable/income-statement?apikey=JydmJmFycp33F48oOiXYs3t1RPZI5kdr&symbol=TSL...
+                     │         └ <function AsyncHTTPTransport.handle_async_request at 0x00000204671EFEC0>
+                     └ <httpx.AsyncHTTPTransport object at 0x00000204040672A0>
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpx\_transports\default.py", line 393, in handle_async_request
+    with map_httpcore_exceptions():
+         └ <function map_httpcore_exceptions at 0x00000204671EF4C0>
+  File "C:\Program Files\Python313\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    │    │   │     └ ConnectError(gaierror(11001, 'getaddrinfo failed'))
+    │    │   └ <method 'throw' of 'generator' objects>
+    │    └ <generator object map_httpcore_exceptions at 0x000002047FB5C740>
+    └ <contextlib._GeneratorContextManager object at 0x000002040407E5F0>
+  File "C:\A-Projects-gng\Finance-Simulation\stock-research-ai\venv\Lib\site-packages\httpx\_transports\default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+          │          └ '[Errno 11001] getaddrinfo failed'
+          └ <class 'httpx.ConnectError'>
+
+httpx.ConnectError: [Errno 11001] getaddrinfo failed
+2026-07-03 22:53:32.314 | WARNING  | rag.ingestion.embedding_pipeline:embed_and_index:26 - Could not ensure collections: All connection attempts failed
+2026-07-03 22:53:35.263 | WARNING  | rag.retrieval.search:search_similar:46 - Qdrant search failed: All connection attempts failed
+2026-07-03 22:53:38.081 | WARNING  | rag.retrieval.search:search_similar:46 - Qdrant search failed: All connection attempts failed

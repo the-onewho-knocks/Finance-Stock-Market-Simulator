@@ -9,25 +9,28 @@ import { ExpenseCard } from '../../features/dashboard/components/ExpenseCard'
 import { MarketOverviewCard } from '../../features/dashboard/components/MarketOverview'
 import { RecentActivity } from '../../features/dashboard/components/RecentActivity'
 import { Loader } from '../../components/ui/Loader'
+import { Card } from '../../components/ui/Card'
 
 export default function DashboardPage() {
   const user = useSelector((s: RootState) => s.auth.user)
   const [data, setData] = useState<Awaited<ReturnType<typeof dashboardApi.getDashboard>> | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(() => {
-    if (!user) return
+    if (!user) { setLoading(false); return }
     dashboardApi.getDashboard(user.id)
       .then(setData)
-      .catch(() => {})
+      .catch(() => setError('Failed to load dashboard'))
       .finally(() => setLoading(false))
   }, [user])
 
   if (loading) return <Loader />
-  if (!data) return <p className="text-gray-500">Failed to load dashboard</p>
+  if (error) return <Card variant="glass" className="border-red-500/50"><p className="text-sm text-red-400">{error}</p></Card>
+  if (!data) return <p className="text-sm text-gray-500">No dashboard data available.</p>
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fadeIn">
       <h1 className="text-lg font-semibold text-gray-100">Dashboard</h1>
       <DashboardSummary
         networth={data.total_networth}

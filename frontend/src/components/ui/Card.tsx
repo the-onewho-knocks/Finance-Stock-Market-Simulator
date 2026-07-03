@@ -8,15 +8,15 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
 
 const paddings = { none: '', sm: 'p-3', md: 'p-5', lg: 'p-8' }
 const variants = {
-  default: 'bg-[#0d0d0d] border border-[#1f1f1f]',
-  elevated: 'bg-[#0d0d0d] border border-[#1f1f1f] shadow-lg shadow-black/20',
-  bordered: 'bg-transparent border border-[#1f1f1f]',
+  default: 'bg-surface border border-border',
+  elevated: 'bg-surface border border-border shadow-lg shadow-black/20 glass-hover',
+  glass: 'glass glass-hover',
 }
 
 export function Card({ className, padding = 'md', variant = 'default', children, ...props }: CardProps) {
   return (
     <div
-      className={cn('rounded-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/10', variants[variant], paddings[padding], className)}
+      className={cn('rounded-xl transition-all duration-300 hover:-translate-y-0.5', variants[variant], paddings[padding], className)}
       {...props}
     >
       {children}

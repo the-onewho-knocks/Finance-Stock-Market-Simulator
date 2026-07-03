@@ -15,7 +15,6 @@ import ExpensesPage from '../pages/Expenses/ExpensesPage'
 import PlannedExpensesPage from '../pages/PlannedExpenses/PlannedExpensesPage'
 import NetWorthPage from '../pages/NetWorth/NetWorthPage'
 import ProfilePage from '../pages/Profile/ProfilePage'
-import AIInsightsPage from '../pages/AIInsights/AIInsightsPage'
 import IndicatorsPage from '../pages/Indicators/IndicatorsPage'
 import HistoryPage from '../pages/History/HistoryPage'
 import AlertsPage from '../pages/Alerts/AlertsPage'
@@ -39,7 +38,6 @@ export default function AppRouter() {
           <Route path="/planned-expenses" element={<PlannedExpensesPage />} />
           <Route path="/networth" element={<NetWorthPage />} />
           <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/ai-insights" element={<AIInsightsPage />} />
           <Route path="/indicators" element={<IndicatorsPage />} />
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/alerts" element={<AlertsPage />} />

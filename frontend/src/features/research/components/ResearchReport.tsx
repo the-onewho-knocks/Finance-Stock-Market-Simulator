@@ -58,7 +58,7 @@ export function StockImages({ symbol }: { symbol: string }) {
           href={img.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="group relative overflow-hidden rounded-lg border border-[#1f1f1f] bg-[#050505] aspect-[16/9]"
+          className="group relative overflow-hidden rounded-lg border border-border bg-[#050505] aspect-[16/9]"
         >
           <img
             src={img.image}
@@ -91,11 +91,11 @@ export function ResearchReport({ result }: ResearchReportProps) {
             <img
               src={profile.logo}
               alt={result.company_name}
-              className="h-12 w-12 rounded-xl bg-[#1f1f1f] object-contain p-1.5"
+              className="h-12 w-12 rounded-xl bg-border object-contain p-1.5"
               onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
             />
           ) : (
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#1f1f1f] text-sm font-bold text-gray-500">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-border text-sm font-bold text-gray-500">
               {result.symbol.slice(0, 2)}
             </div>
           )}
@@ -121,14 +121,14 @@ export function ResearchReport({ result }: ResearchReportProps) {
       <StockImages symbol={result.symbol} />
 
       {/* Executive Summary - full width, prominent */}
-      <Card className="bg-[#0d0d0d] border-[#1f1f1f]">
+      <Card>
         <CardTitle className="text-base">Executive Summary</CardTitle>
         <p className="mt-3 text-sm text-gray-300 leading-relaxed">{result.executive_summary}</p>
       </Card>
 
       {/* Strengths, Risks, Opportunities, Red Flags */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-[#0d0d0d] border-green-900/30">
+        <Card className="border-green-900/30">
           <CardTitle className="text-sm text-green-400">Strengths</CardTitle>
           <ul className="mt-3 space-y-2">
             {result.strengths.map((s, i) => (
@@ -139,7 +139,7 @@ export function ResearchReport({ result }: ResearchReportProps) {
             ))}
           </ul>
         </Card>
-        <Card className="bg-[#0d0d0d] border-red-900/30">
+        <Card className="border-red-900/30">
           <CardTitle className="text-sm text-red-400">Risks</CardTitle>
           <ul className="mt-3 space-y-2">
             {result.risks.map((r, i) => (
@@ -150,7 +150,7 @@ export function ResearchReport({ result }: ResearchReportProps) {
             ))}
           </ul>
         </Card>
-        <Card className="bg-[#0d0d0d] border-accent/20">
+        <Card className="border-accent/20">
           <CardTitle className="text-sm text-accent-light">Opportunities</CardTitle>
           <ul className="mt-3 space-y-2">
             {result.opportunities.map((o, i) => (
@@ -161,7 +161,7 @@ export function ResearchReport({ result }: ResearchReportProps) {
             ))}
           </ul>
         </Card>
-        <Card className="bg-[#0d0d0d] border-yellow-900/30">
+        <Card className="border-yellow-900/30">
           <CardTitle className="text-sm text-yellow-400">Red Flags</CardTitle>
           <ul className="mt-3 space-y-2">
             {result.red_flags.map((f, i) => (
@@ -177,25 +177,25 @@ export function ResearchReport({ result }: ResearchReportProps) {
       {/* Detailed summaries - full width cards */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {result.news_summary && (
-          <Card className="bg-[#0d0d0d] border-[#1f1f1f]">
+          <Card>
             <CardTitle>News Summary</CardTitle>
             <p className="mt-3 text-sm text-gray-300 leading-relaxed">{result.news_summary}</p>
           </Card>
         )}
         {result.financial_summary && (
-          <Card className="bg-[#0d0d0d] border-[#1f1f1f]">
+          <Card>
             <CardTitle>Financial Summary</CardTitle>
             <p className="mt-3 text-sm text-gray-300 leading-relaxed">{result.financial_summary}</p>
           </Card>
         )}
         {result.market_summary && (
-          <Card className="bg-[#0d0d0d] border-[#1f1f1f]">
+          <Card>
             <CardTitle>Market Summary</CardTitle>
             <p className="mt-3 text-sm text-gray-300 leading-relaxed">{result.market_summary}</p>
           </Card>
         )}
         {result.sec_summary && (
-          <Card className="bg-[#0d0d0d] border-[#1f1f1f]">
+          <Card>
             <CardTitle>SEC Summary</CardTitle>
             <p className="mt-3 text-sm text-gray-300 leading-relaxed">{result.sec_summary}</p>
           </Card>
@@ -204,11 +204,11 @@ export function ResearchReport({ result }: ResearchReportProps) {
 
       {/* Sources */}
       {result.sources && result.sources.length > 0 && (
-        <Card className="bg-[#0d0d0d] border-[#1f1f1f]">
+        <Card>
           <CardTitle>Sources</CardTitle>
           <div className="mt-3 flex flex-wrap gap-2">
             {result.sources.map((s, i) => (
-              <span key={i} className="rounded-md bg-[#1f1f1f] px-2.5 py-1 text-xs text-gray-400">
+              <span key={i} className="rounded-md bg-border px-2.5 py-1 text-xs text-gray-400">
                 {s.type}
               </span>
             ))}

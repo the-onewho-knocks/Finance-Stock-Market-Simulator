@@ -5,50 +5,30 @@ import type { RootState } from '../../app/store'
 import { expenseApi } from '../../features/expenses/api/expenseApi'
 import { ExpenseSummaryView } from '../../features/expenses/components/ExpenseSummary'
 import { ExpenseTable } from '../../features/expenses/components/ExpenseTable'
-import { AddExpenseModal } from '../../features/expenses/components/AddExpenseModal'
-import { DeleteExpenseDialog } from '../../features/expenses/components/DeleteExpenseDialog'
 import { Button } from '../../components/ui/Button'
 import { Loader } from '../../components/ui/Loader'
+import { Card } from '../../components/ui/Card'
 
 export default function ExpensesPage() {
   const user = useSelector((s: RootState) => s.auth.user)
   const [expenses, setExpenses] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [addOpen, setAddOpen] = useState(false)
-  const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
+  const [error, setError] = useState('')
+  const userId = user?.id || 'demo'
 
   const load = async () => {
-    if (!user) return
-    setLoading(true)
+    setLoading(true); setError('')
     try {
-      const data = await expenseApi.list(user.id)
+      const data = await expenseApi.list(userId)
       setExpenses(data)
-    } catch { toast.error('Failed to load expenses') }
+    } catch { setError('Failed to load expenses'); toast.error('Failed to load expenses') }
     finally { setLoading(false) }
   }
 
-  useEffect(() => { load() }, [user])
-
-  const handleAdd = async (data: { category: string; amount: number; description: string; date: string }) => {
-    if (!user) return
-    try {
-      await expenseApi.add(user.id, data)
-      toast.success('Expense added')
-      load()
-    } catch { toast.error('Failed to add expense') }
-  }
-
-  const handleDelete = async () => {
-    if (!user || !deleteTarget) return
-    try {
-      await expenseApi.remove(user.id, deleteTarget)
-      toast.success('Expense deleted')
-      setDeleteTarget(null)
-      load()
-    } catch { toast.error('Failed to delete expense') }
-  }
+  useEffect(() => { load() }, [userId])
 
   if (loading) return <Loader />
+  if (error) return <Card variant="glass" className="border-red-500/50"><p className="text-sm text-red-400">{error}</p></Card>
 
   const byCategory: { category: string; total: number; count: number }[] = Object.values(
     expenses.reduce((acc: Record<string, { category: string; total: number; count: number }>, e: any) => {
@@ -59,18 +39,23 @@ export default function ExpensesPage() {
     }, {}),
   )
 
+  const total = expenses.reduce((s: number, e: any) => s + e.amount, 0)
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fadeIn">
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold text-gray-100">Expenses</h1>
-        <Button onClick={() => setAddOpen(true)}>Add Expense</Button>
       </div>
-      <ExpenseSummaryView byCategory={byCategory} total={expenses.reduce((s: number, e: any) => s + e.amount, 0)} />
-      <div className="rounded-lg border border-[#1f1f1f] bg-[#0d0d0d] p-4">
-        <ExpenseTable expenses={expenses} />
-      </div>
-      <AddExpenseModal open={addOpen} onClose={() => setAddOpen(false)} onAdd={handleAdd} />
-      <DeleteExpenseDialog open={!!deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={handleDelete} />
+      {expenses.length === 0 && !loading && !error ? (
+        <p className="text-sm text-gray-500">No expenses recorded yet.</p>
+      ) : (
+        <>
+          <ExpenseSummaryView byCategory={byCategory} total={total} />
+          <Card>
+            <ExpenseTable expenses={expenses} />
+          </Card>
+        </>
+      )}
     </div>
   )
 }

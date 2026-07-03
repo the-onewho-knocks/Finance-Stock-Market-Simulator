@@ -48,7 +48,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#000000] p-4"
+    <div className="flex min-h-screen items-center justify-center bg-black p-4 animate-fadeIn"
       style={{
         backgroundImage: `
           radial-gradient(ellipse at 50% 0%, rgba(127,0,255,0.1) 0%, transparent 60%),
@@ -58,17 +58,9 @@ export default function LoginPage() {
       }}
     >
       <div className="w-full max-w-sm">
-        <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-accent to-accent-dark shadow-lg"
-            style={{ boxShadow: '0 8px 32px rgba(127,0,255,0.3)' }}
-          >
-            <span className="text-2xl font-bold text-white">FS</span>
-          </div>
-          <h1 className="text-2xl font-bold text-white">Finance Simulation</h1>
-          <p className="mt-1 text-sm text-gray-400">Sign in to your dashboard</p>
-        </div>
+        <div className="mb-8" />
 
-        <div className="rounded-xl border border-[#363a45] bg-[#0d0d0d] p-8"
+        <div className="rounded-xl border border-border bg-surface p-8"
           style={{ boxShadow: '0 4px 24px rgba(0,0,0,0.4)' }}
         >
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -79,7 +71,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="demo@finance-sim.app"
-                className="w-full rounded-md border border-[#1f1f1f] bg-[#000000] px-3 py-2.5 text-sm text-gray-200 placeholder-gray-600 focus:border-accent focus:ring-1 focus:ring-accent/30 focus:outline-none transition-colors"
+                className="w-full rounded-md border border-border bg-black px-3 py-2.5 text-sm text-gray-200 placeholder-gray-600 focus:border-accent focus:ring-1 focus:ring-accent/30 focus:outline-none transition-colors"
               />
             </div>
             <div>
@@ -89,7 +81,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter any password"
-                className="w-full rounded-md border border-[#1f1f1f] bg-[#000000] px-3 py-2.5 text-sm text-gray-200 placeholder-gray-600 focus:border-accent focus:ring-1 focus:ring-accent/30 focus:outline-none transition-colors"
+                className="w-full rounded-md border border-border bg-black px-3 py-2.5 text-sm text-gray-200 placeholder-gray-600 focus:border-accent focus:ring-1 focus:ring-accent/30 focus:outline-none transition-colors"
               />
             </div>
             {error && <p className="text-xs text-red-400">{error}</p>}
@@ -104,10 +96,10 @@ export default function LoginPage() {
 
           <div className="relative my-5">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-[#1f1f1f]" />
+              <div className="w-full border-t border-border" />
             </div>
             <div className="relative flex justify-center text-xs">
-              <span className="bg-[#0d0d0d] px-2 text-gray-600">or</span>
+              <span className="bg-surface px-2 text-gray-600">or</span>
             </div>
           </div>
 
@@ -115,7 +107,7 @@ export default function LoginPage() {
             <GoogleLoginButton />
             <button
               onClick={handleGuest}
-              className="flex w-full items-center justify-center gap-2 rounded-md border border-[#1f1f1f] bg-transparent px-4 py-2.5 text-sm text-gray-400 hover:bg-[#1f1f1f] hover:text-gray-200 transition-colors cursor-pointer"
+              className="flex w-full items-center justify-center gap-2 rounded-md border border-border bg-transparent px-4 py-2.5 text-sm text-gray-400 hover:bg-surface-hover hover:text-gray-200 transition-colors cursor-pointer"
             >
               Continue as Guest
             </button>

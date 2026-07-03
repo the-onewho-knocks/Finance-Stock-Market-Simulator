@@ -10,7 +10,7 @@ interface BreakdownCardProps {
 export function BreakdownCard({ breakdown }: BreakdownCardProps) {
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-      <Card className="bg-[#0d0d0d] border-[#1f1f1f]">
+      <Card>
         <CardTitle>Breakdown</CardTitle>
         <div className="mt-3 space-y-2">
           <div className="flex justify-between text-sm">
@@ -21,13 +21,13 @@ export function BreakdownCard({ breakdown }: BreakdownCardProps) {
             <span className="text-gray-400">Liabilities</span>
             <span className="text-red-400">{formatCurrency(breakdown.liabilities)}</span>
           </div>
-          <div className="flex justify-between border-t border-[#1f1f1f] pt-2 text-sm font-semibold">
+          <div className="flex justify-between border-t border-border pt-2 text-sm font-semibold">
             <span className="text-gray-200">Net Worth</span>
             <span className="text-gray-100">{formatCurrency(breakdown.networth)}</span>
           </div>
         </div>
       </Card>
-      <Card className="bg-[#0d0d0d] border-[#1f1f1f]">
+      <Card>
         <CardTitle>Allocation</CardTitle>
         <PieChart data={breakdown.categories.map((c) => ({ name: c.label, value: c.value }))} />
       </Card>

@@ -8,7 +8,7 @@ interface NetWorthSummaryProps {
 
 export function NetWorthSummary({ latest, change }: NetWorthSummaryProps) {
   return (
-    <Card className="bg-[#0d0d0d] border-[#1f1f1f]">
+    <Card>
       <p className="text-xs text-gray-500">Current Net Worth</p>
       <p className="mt-1 text-3xl font-bold text-gray-100">{formatCurrency(latest)}</p>
       {change !== undefined && (

@@ -14,7 +14,7 @@ export function ExpenseTable({ expenses }: ExpenseTableProps) {
     <div className="overflow-x-auto">
       <table className="min-w-full text-sm">
         <thead>
-          <tr className="border-b border-[#1f1f1f] text-left text-xs text-gray-500">
+          <tr className="border-b border-border text-left text-xs text-gray-500">
             <th className="pb-2 pr-4 font-medium">Date</th>
             <th className="pb-2 pr-4 font-medium">Category</th>
             <th className="pb-2 pr-4 font-medium">Description</th>
@@ -23,7 +23,7 @@ export function ExpenseTable({ expenses }: ExpenseTableProps) {
         </thead>
         <tbody>
           {expenses.map((e) => (
-            <tr key={e.id} className="border-b border-[#1f1f1f]/50 text-gray-300">
+            <tr key={e.id} className="border-b border-border/50 text-gray-300">
               <td className="py-2.5 pr-4 text-xs text-gray-500">{formatDate(e.date)}</td>
               <td className="py-2.5 pr-4"><Badge>{e.category}</Badge></td>
               <td className="py-2.5 pr-4">{e.description}</td>

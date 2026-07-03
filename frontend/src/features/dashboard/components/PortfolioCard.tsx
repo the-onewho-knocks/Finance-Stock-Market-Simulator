@@ -10,7 +10,7 @@ interface PortfolioCardProps {
 
 export function PortfolioCard({ holdings, totalValue, totalPnl }: PortfolioCardProps) {
   return (
-    <Card className="bg-[#0d0d0d] border-[#1f1f1f]">
+    <Card>
       <CardTitle>Portfolio</CardTitle>
       <div className="mt-2 flex items-baseline gap-3">
         <span className="text-2xl font-bold text-gray-100">{formatCurrency(totalValue)}</span>

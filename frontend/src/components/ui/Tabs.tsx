@@ -1,4 +1,4 @@
-import type { HTMLAttributes } from 'react'
+import { type HTMLAttributes, useId } from 'react'
 import { cn } from '../../lib/helpers'
 
 interface TabsProps {
@@ -6,14 +6,22 @@ interface TabsProps {
   active: string
   onChange: (key: string) => void
   className?: string
+  id?: string
 }
 
-export function Tabs({ tabs, active, onChange, className }: TabsProps) {
+export function Tabs({ tabs, active, onChange, className, id: externalId }: TabsProps) {
+  const autoId = useId()
+  const id = externalId || autoId
+
   return (
-    <div className={cn('flex border-b border-[#1f1f1f]', className)}>
+    <div className={cn('flex border-b border-border', className)} role="tablist" aria-label="Navigation tabs">
       {tabs.map((tab) => (
         <button
           key={tab.key}
+          role="tab"
+          id={`${id}-tab-${tab.key}`}
+          aria-selected={active === tab.key}
+          aria-controls={`${id}-panel-${tab.key}`}
           onClick={() => onChange(tab.key)}
           className={cn(
             'px-4 py-2.5 text-sm font-medium transition-all duration-150 cursor-pointer border-b-2 -mb-px',
@@ -29,6 +37,6 @@ export function Tabs({ tabs, active, onChange, className }: TabsProps) {
   )
 }
 
-export function TabsContent({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn('pt-4', className)} {...props} />
+export function TabsContent({ id, className, ...props }: HTMLAttributes<HTMLDivElement>) {
+  return <div role="tabpanel" id={id} className={cn('pt-4', className)} {...props} />
 }

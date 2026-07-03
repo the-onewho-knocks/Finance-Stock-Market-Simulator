@@ -12,7 +12,7 @@ export function PortfolioTable({ holdings }: PortfolioTableProps) {
     <div className="overflow-x-auto">
       <table className="min-w-full text-sm">
         <thead>
-          <tr className="border-b border-[#1f1f1f] text-left text-xs text-gray-500">
+          <tr className="border-b border-border text-left text-xs text-gray-500">
             <th className="pb-2 pr-4 font-medium">Symbol</th>
             <th className="pb-2 pr-4 font-medium">Qty</th>
             <th className="pb-2 pr-4 font-medium">Avg Price</th>
@@ -23,7 +23,7 @@ export function PortfolioTable({ holdings }: PortfolioTableProps) {
         </thead>
         <tbody>
           {holdings.map((h) => (
-            <tr key={h.symbol} className="border-b border-[#1f1f1f]/50 text-gray-300">
+            <tr key={h.symbol} className="border-b border-border/50 text-gray-300">
               <td className="py-2.5 pr-4 font-medium text-gray-100">{h.symbol}</td>
               <td className="py-2.5 pr-4">{h.quantity}</td>
               <td className="py-2.5 pr-4">${h.avg_price.toFixed(2)}</td>

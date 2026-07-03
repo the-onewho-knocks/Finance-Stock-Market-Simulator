@@ -22,7 +22,7 @@ export default function IntroPage() {
   const navigate = useNavigate()
 
   return (
-    <div className="min-h-screen bg-black text-gray-100">
+    <div className="min-h-screen bg-black text-gray-100 animate-fadeIn">
       {/* Hero */}
       <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 text-center">
         <div className="pointer-events-none absolute inset-0">
@@ -31,19 +31,8 @@ export default function IntroPage() {
         </div>
 
         <div className="relative z-10 max-w-4xl">
-          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-accent shadow-2xl shadow-accent/40">
-            <TrendingUp className="h-10 w-10 text-white" />
-          </div>
-
-          <h1 className="text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
-            Finance{' '}
-            <span className="bg-gradient-to-r from-accent-light to-purple-400 bg-clip-text text-transparent">
-              Simulation
-            </span>
-          </h1>
-
           <p className="mx-auto mt-6 max-w-2xl text-lg text-gray-400 leading-relaxed">
-            A full-stack financial platform with real-time market data, portfolio management,
+            A professional-grade financial platform with real-time market data, portfolio management,
             AI-powered research, and expense tracking — all in one place.
           </p>
 
@@ -76,7 +65,7 @@ export default function IntroPage() {
       </section>
 
       {/* Stats */}
-      <section className="border-y border-[#1f1f1f] bg-[#0d0d0d]">
+      <section className="border-y border-border bg-surface">
         <div className="mx-auto grid max-w-5xl grid-cols-2 gap-8 px-6 py-12 md:grid-cols-4">
           {stats.map((s) => (
             <div key={s.label} className="text-center">
@@ -113,8 +102,8 @@ export default function IntroPage() {
               </ul>
             </div>
             <div className="relative">
-              <div className="overflow-hidden rounded-xl border border-[#1f1f1f] bg-gradient-to-br from-[#0d0d0d] to-[#050505]">
-                <div className="flex items-center gap-1.5 border-b border-[#1f1f1f] px-4 py-2.5">
+              <div className="overflow-hidden rounded-xl border border-border bg-gradient-to-br from-surface to-[#050505]">
+                <div className="flex items-center gap-1.5 border-b border-border px-4 py-2.5">
                   <div className="h-2.5 w-2.5 rounded-full bg-red-500" />
                   <div className="h-2.5 w-2.5 rounded-full bg-yellow-500" />
                   <div className="h-2.5 w-2.5 rounded-full bg-green-500" />
@@ -132,8 +121,7 @@ export default function IntroPage() {
                   ))}
                   {/* SMA line */}
                   <polyline points="60,120 90,115 120,110 150,105 180,100 210,95 240,90 270,85 300,80 330,75 360,70 390,65 420,60 450,55" fill="none" stroke="#7F00FF" strokeWidth={2} />
-                  {/* Grid lines */}
-                  {[50,80,110,140,170,200].map(y=><line key={`g${y}`} x1={40} y1={y} x2={470} y2={y} stroke="#1f1f1f" strokeWidth={0.5} />)}
+                  {[50,80,110,140,170,200].map(y=><line key={`g${y}`} x1={40} y1={y} x2={470} y2={y} stroke="var(--color-border)" strokeWidth={0.5} />)}
                 </svg>
               </div>
             </div>
@@ -142,12 +130,12 @@ export default function IntroPage() {
       </section>
 
       {/* Illustration — Dashboard Image */}
-      <section className="border-y border-[#1f1f1f] bg-[#0d0d0d] py-20 px-4">
+      <section className="border-y border-border bg-surface py-20 px-4">
         <div className="mx-auto max-w-5xl">
           <div className="grid items-center gap-12 md:grid-cols-2">
             <div className="order-2 md:order-1">
-              <div className="overflow-hidden rounded-xl border border-[#1f1f1f] bg-[#050505]">
-                <div className="flex items-center gap-1.5 border-b border-[#1f1f1f] px-4 py-2.5">
+              <div className="overflow-hidden rounded-xl border border-border bg-[#050505]">
+                <div className="flex items-center gap-1.5 border-b border-border px-4 py-2.5">
                   <div className="h-2.5 w-2.5 rounded-full bg-red-500" />
                   <div className="h-2.5 w-2.5 rounded-full bg-yellow-500" />
                   <div className="h-2.5 w-2.5 rounded-full bg-green-500" />
@@ -164,7 +152,7 @@ export default function IntroPage() {
                       <div className="text-sm font-semibold text-green-500">+$3,241.12 (+2.67%)</div>
                     </div>
                   </div>
-                  <div className="h-2 rounded bg-[#1f1f1f] overflow-hidden">
+                  <div className="h-2 rounded bg-border overflow-hidden">
                     <div className="h-full w-3/5 rounded bg-gradient-to-r from-accent to-purple-500" />
                   </div>
                   <div className="flex gap-3 text-xs">
@@ -211,7 +199,7 @@ export default function IntroPage() {
             {features.map((f) => (
               <div
                 key={f.title}
-                className="group rounded-xl border border-[#1f1f1f] bg-[#0d0d0d] p-6 transition-all hover:border-accent/30 hover:bg-[#121212]"
+                className="group rounded-xl border border-border bg-surface p-6 transition-all hover:border-accent/30 hover:bg-[#121212]"
               >
                 <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10 group-hover:bg-accent/20 transition-colors">
                   <f.icon className="h-5 w-5 text-accent-light" />
@@ -225,7 +213,7 @@ export default function IntroPage() {
       </section>
 
       {/* CTA */}
-      <section className="border-t border-[#1f1f1f] bg-[#0d0d0d] py-16 px-4 text-center">
+      <section className="border-t border-border bg-surface py-16 px-4 text-center">
         <div className="mx-auto max-w-2xl">
           <h2 className="text-3xl font-bold">Ready to Get Started?</h2>
           <p className="mt-4 text-gray-400">
@@ -253,8 +241,8 @@ export default function IntroPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-[#1f1f1f] py-8 px-4 text-center text-xs text-gray-600">
-        Finance Simulation &copy; {new Date().getFullYear()} &mdash; Built with React, Go, and Python
+      <footer className="border-t border-border py-8 px-4 text-center text-xs text-gray-600">
+        HexaFinance &copy; {new Date().getFullYear()} &mdash; Built with React, Go, and Python
       </footer>
     </div>
   )

@@ -14,7 +14,7 @@ export function TransactionTable({ transactions }: TransactionTableProps) {
     <div className="overflow-x-auto">
       <table className="min-w-full text-sm">
         <thead>
-          <tr className="border-b border-[#1f1f1f] text-left text-xs text-gray-500">
+          <tr className="border-b border-border text-left text-xs text-gray-500">
             <th className="pb-2 pr-4 font-medium">Date</th>
             <th className="pb-2 pr-4 font-medium">Type</th>
             <th className="pb-2 pr-4 font-medium">Symbol</th>
@@ -25,7 +25,7 @@ export function TransactionTable({ transactions }: TransactionTableProps) {
         </thead>
         <tbody>
           {transactions.map((t) => (
-            <tr key={t.id} className="border-b border-[#1f1f1f]/50 text-gray-300">
+            <tr key={t.id} className="border-b border-border/50 text-gray-300">
               <td className="py-2.5 pr-4 text-xs text-gray-500">{formatDate(t.timestamp, 'MMM dd, HH:mm')}</td>
               <td className="py-2.5 pr-4">
                 <Badge variant={t.type === 'buy' ? 'success' : 'danger'}>{t.type}</Badge>

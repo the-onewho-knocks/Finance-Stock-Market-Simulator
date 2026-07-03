@@ -1,20 +1,24 @@
 import { useState, useEffect } from 'react'
-import { Card, CardTitle } from '../../components/ui/Card'
+import axios from 'axios'
+import { Card } from '../../components/ui/Card'
 import { Input } from '../../components/ui/Input'
 import { Button } from '../../components/ui/Button'
-import { ResearchReport, ResearchReportSkeleton, StockImages } from '../../features/research/components/ResearchReport'
+import { ResearchReport, ResearchReportSkeleton } from '../../features/research/components/ResearchReport'
 import { useResearch } from '../../features/research/hooks/useResearch'
-import { stockProfileApi } from '../../features/research/api/stockProfileApi'
 
+const FINNHUB_BASE = 'https://finnhub.io/api/v1'
+const FINNHUB_KEY = import.meta.env.VITE_FINNHUB_API_KEY || 'd8lbm01r01qtamgttvjgd8lbm01r01qtamgttvk0'
 const DEFAULT_SYMBOL = 'AAPL'
 
 export default function ResearchPage() {
   const { run, loading, result, error } = useResearch()
   const [inputSymbol, setInputSymbol] = useState('')
-  const [profile, setProfile] = useState<{ logo: string; name: string } | null>(null)
+  const [defaultInfo, setDefaultInfo] = useState<any | null>(null)
 
   useEffect(() => {
-    stockProfileApi.getProfile(DEFAULT_SYMBOL).then(setProfile)
+    axios.get(`${FINNHUB_BASE}/stock/profile2`, {
+      params: { symbol: DEFAULT_SYMBOL, token: FINNHUB_KEY },
+    }).then(({ data }) => setDefaultInfo(data)).catch(() => {})
   }, [])
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -23,14 +27,13 @@ export default function ResearchPage() {
   }
 
   return (
-    <div className="space-y-6 animate-fadeIn max-w-5xl">
+    <div className="space-y-6 animate-fadeIn">
       <div>
         <h1 className="text-lg font-semibold text-gray-100">AI Stock Research</h1>
         <p className="text-sm text-gray-500">Deep-dive research powered by multi-agent AI</p>
       </div>
 
-      {/* Search form */}
-      <Card className="bg-[#0d0d0d] border-[#1f1f1f]">
+      <Card className="glass">
         <form onSubmit={handleSubmit} className="flex items-end gap-3">
           <div className="flex-1">
             <Input
@@ -46,41 +49,64 @@ export default function ResearchPage() {
         </form>
       </Card>
 
-      {/* Static pre-search default info */}
-      {!result && !loading && !error && (
+      {!result && !loading && !error && defaultInfo && (
         <div className="space-y-4">
-          {profile && (
-            <div className="flex items-center gap-4 p-5 rounded-lg border border-[#1f1f1f] bg-[#0d0d0d]">
-              {profile.logo ? (
-                <img src={profile.logo} alt={profile.name} className="h-12 w-12 rounded-lg bg-[#1f1f1f] object-contain p-1" />
+          <div className="glass-card p-6">
+            <div className="flex items-start gap-5">
+              {defaultInfo.logo ? (
+                <img src={defaultInfo.logo} alt={defaultInfo.name} className="h-16 w-16 rounded-xl bg-white/5 object-contain p-2" />
               ) : (
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#1f1f1f] text-sm font-bold text-gray-500">
+                <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-white/5 text-lg font-bold text-gray-500">
                   {DEFAULT_SYMBOL}
                 </div>
               )}
-              <div>
-                <h2 className="text-lg font-semibold text-gray-100">{profile.name}</h2>
-                <p className="text-sm text-gray-500">{DEFAULT_SYMBOL} &middot; Enter a stock symbol above and click Research to start</p>
+              <div className="flex-1">
+                <h2 className="text-2xl font-bold text-gray-100">{defaultInfo.name}</h2>
+                <div className="mt-2 flex flex-wrap items-center gap-3 text-sm">
+                  <span className="rounded-md bg-accent/10 px-2.5 py-0.5 text-accent-light font-medium">{DEFAULT_SYMBOL}</span>
+                  <span className="text-gray-500">{defaultInfo.exchange}</span>
+                  <span className="text-gray-500">&middot;</span>
+                  <span className="text-gray-500">{defaultInfo.finnhubIndustry || 'Technology'}</span>
+                </div>
+                <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  <div>
+                    <p className="text-xs text-gray-600">Market Cap</p>
+                    <p className="text-sm font-semibold text-gray-200">
+                      {defaultInfo.marketCapitalization ? `$${(defaultInfo.marketCapitalization / 1e9).toFixed(1)}B` : '\u2014'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-600">IPO Date</p>
+                    <p className="text-sm font-semibold text-gray-200">{defaultInfo.ipo || '\u2014'}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-600">Shares Outstanding</p>
+                    <p className="text-sm font-semibold text-gray-200">
+                      {defaultInfo.shareOutstanding ? `${(defaultInfo.shareOutstanding / 1e9).toFixed(2)}B` : '\u2014'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-600">Country</p>
+                    <p className="text-sm font-semibold text-gray-200">{defaultInfo.country || 'US'}</p>
+                  </div>
+                </div>
               </div>
             </div>
-          )}
-          <div className="rounded-lg border border-[#1f1f1f] bg-[#0d0d0d] p-6 text-center">
-            <p className="text-sm text-gray-500">Enter any stock symbol (e.g., TSLA, MSFT, NVDA) and hit Research for a comprehensive AI-powered analysis.</p>
+          </div>
+          <div className="glass-card p-6 text-center">
+            <p className="text-sm text-gray-500">
+              Enter any stock symbol (e.g., <span className="text-accent-light">TSLA</span>, <span className="text-accent-light">MSFT</span>, <span className="text-accent-light">NVDA</span>) above and click <span className="text-accent-light">Research</span> for a comprehensive AI-powered analysis.
+            </p>
           </div>
         </div>
       )}
 
-      {/* Loading skeleton */}
       {loading && <ResearchReportSkeleton />}
-
-      {/* Error */}
       {error && !loading && (
-        <Card className="border-red-500/50 bg-[#0d0d0d]">
+        <Card className="border-red-500/50 glass">
           <p className="text-sm text-red-400">{error}</p>
         </Card>
       )}
-
-      {/* Research result */}
       {result && !loading && <ResearchReport result={result} />}
     </div>
   )

@@ -13,8 +13,8 @@ export function PriceTicker({ price, onClick }: PriceTickerProps) {
     <div
       onClick={onClick}
       className={cn(
-        'flex items-center gap-4 rounded-lg border border-[#1f1f1f] bg-[#0d0d0d] px-4 py-3 transition-colors',
-        onClick && 'cursor-pointer hover:bg-[#1f1f1f]',
+        'flex items-center gap-4 rounded-lg border border-border bg-surface px-4 py-3 transition-colors',
+        onClick && 'cursor-pointer hover:bg-border',
       )}
     >
       <div>

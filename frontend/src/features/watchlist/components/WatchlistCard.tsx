@@ -8,7 +8,7 @@ interface WatchlistCardProps {
 
 export function WatchlistCard({ item, onRemove, onClick }: WatchlistCardProps) {
   return (
-    <div className="flex items-center justify-between rounded-lg border border-[#1f1f1f] bg-[#0d0d0d] px-4 py-3">
+    <div className="flex items-center justify-between rounded-lg border border-border bg-surface px-4 py-3">
       <button onClick={() => onClick(item.symbol)} className="text-sm font-semibold text-gray-100 hover:text-accent-light cursor-pointer">
         {item.symbol}
       </button>

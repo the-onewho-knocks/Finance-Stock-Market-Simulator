@@ -8,7 +8,7 @@ interface NetWorthCardProps {
 export function NetWorthCard({ history }: NetWorthCardProps) {
   const chartData = history.map(h => ({ time: h.date, value: h.value }))
   return (
-    <Card className="bg-[#0d0d0d] border-[#1f1f1f]">
+    <Card>
       <CardTitle>Net Worth History</CardTitle>
       <div className="mt-3">
         <AreaChart data={chartData} color="#10b981" height={200} />
