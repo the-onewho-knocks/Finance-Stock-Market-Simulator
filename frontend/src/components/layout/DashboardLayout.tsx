@@ -1,15 +1,20 @@
+import { useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import Header from './Header'
 import Footer from './Footer'
 
 export default function DashboardLayout() {
+  const [sidebarOpen, setSidebarOpen] = useState(true)
+
   return (
     <div className="flex h-screen bg-[#000000]">
-      <Sidebar />
-      <div className="ml-56 flex flex-1 flex-col">
-        <Header />
-        <main className="flex-1 overflow-auto p-6">
+      <Sidebar open={sidebarOpen} />
+      <div
+        className={`flex flex-1 flex-col transition-[margin] duration-300 ${sidebarOpen ? 'ml-56' : 'ml-0'}`}
+      >
+        <Header onToggleSidebar={() => setSidebarOpen((v) => !v)} />
+        <main className="flex-1 overflow-auto p-6 animate-fadeIn">
           <Outlet />
         </main>
         <Footer />

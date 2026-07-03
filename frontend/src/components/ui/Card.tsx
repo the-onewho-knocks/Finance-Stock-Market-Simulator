@@ -16,7 +16,7 @@ const variants = {
 export function Card({ className, padding = 'md', variant = 'default', children, ...props }: CardProps) {
   return (
     <div
-      className={cn('rounded-lg transition-shadow hover:shadow-lg hover:shadow-black/10', variants[variant], paddings[padding], className)}
+      className={cn('rounded-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/10', variants[variant], paddings[padding], className)}
       {...props}
     >
       {children}

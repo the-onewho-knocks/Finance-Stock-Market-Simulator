@@ -4,16 +4,21 @@ import { newsApi } from '../api/newsApi'
 import { NewsCard } from './NewsCard'
 import { Loader } from '../../../components/ui/Loader'
 
-export function NewsFeed() {
+interface NewsFeedProps {
+  category: string
+}
+
+export function NewsFeed({ category }: NewsFeedProps) {
   const [articles, setArticles] = useState<FinnhubNewsItem[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    newsApi.getMarketNews('general')
+    setLoading(true)
+    newsApi.getMarketNews(category)
       .then(setArticles)
       .catch(() => setArticles([]))
       .finally(() => setLoading(false))
-  }, [])
+  }, [category])
 
   if (loading) return <Loader />
 

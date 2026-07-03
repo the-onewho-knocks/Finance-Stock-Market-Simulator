@@ -884,3 +884,23 @@ httpx.ConnectError: [Errno 11001] getaddrinfo failed
 2026-06-22 13:53:23.054 | INFO     | services.research_service:run_research:21 - Research started: 59b272bf-0e98-4a4c-8004-4691601560f7 for NVDA
 2026-06-22 13:53:32.547 | WARNING  | providers.finance.sec_client:get_submissions:93 - Submissions fetch failed for CIK 0001045810: [Errno 11001] getaddrinfo failed
 2026-06-22 13:53:37.581 | INFO     | rag.ingestion.embedding_pipeline:embed_and_index:56 - Indexed 1 chunks for NVDA in 'sec_filings'
+2026-07-03 22:28:14.430 | INFO     | services.research_service:run_research:21 - Research started: 276704cd-8d82-456b-afce-37e2a202aad5 for AAPL
+2026-07-03 22:28:24.833 | INFO     | vectorstore.qdrant_client:get_qdrant_client:15 - Qdrant client initialised → http://localhost:6333
+2026-07-03 22:28:27.146 | WARNING  | rag.ingestion.embedding_pipeline:embed_and_index:26 - Could not ensure collections: All connection attempts failed
+2026-07-03 22:28:30.063 | WARNING  | rag.retrieval.search:search_similar:46 - Qdrant search failed: All connection attempts failed
+2026-07-03 22:28:32.866 | WARNING  | rag.retrieval.search:search_similar:46 - Qdrant search failed: All connection attempts failed
+2026-07-03 22:28:57.752 | INFO     | services.research_service:run_research:21 - Research started: 61952c8c-f6cb-4790-b955-317f78f41642 for AAPL
+2026-07-03 22:29:09.546 | WARNING  | rag.ingestion.embedding_pipeline:embed_and_index:26 - Could not ensure collections: All connection attempts failed
+2026-07-03 22:29:12.409 | WARNING  | rag.retrieval.search:search_similar:46 - Qdrant search failed: All connection attempts failed
+2026-07-03 22:29:15.260 | WARNING  | rag.retrieval.search:search_similar:46 - Qdrant search failed: All connection attempts failed
+2026-07-03 22:29:40.737 | INFO     | services.research_service:run_research:21 - Research started: 01f9a752-f567-4f08-84c5-07c53049b510 for AAPL
+2026-07-03 22:29:48.051 | WARNING  | providers.finance.sec_client:cik_from_ticker:69 - CIK lookup exception for AAPL: [Errno 11001] getaddrinfo failed
+2026-07-03 22:29:48.054 | WARNING  | tools.sec_tool:get_all_filings:54 - CIK lookup failed for AAPL, falling back to search
+2026-07-03 22:31:18.730 | INFO     | services.research_service:run_research:21 - Research started: b9d63c4c-d589-4864-888a-cd930132f207 for AAPL
+2026-07-03 22:31:28.019 | WARNING  | providers.finance.sec_client:get_submissions:93 - Submissions fetch failed for CIK 0000320193: [Errno 11001] getaddrinfo failed
+2026-07-03 22:31:33.046 | WARNING  | rag.ingestion.embedding_pipeline:embed_and_index:26 - Could not ensure collections: All connection attempts failed
+2026-07-03 22:31:36.240 | WARNING  | rag.retrieval.search:search_similar:46 - Qdrant search failed: All connection attempts failed
+2026-07-03 22:31:39.079 | WARNING  | rag.retrieval.search:search_similar:46 - Qdrant search failed: All connection attempts failed
+2026-07-03 22:38:56.712 | INFO     | services.research_service:run_research:21 - Research started: 734a6565-649f-43f3-a8a7-d59ebc7ad4e2 for AAPL
+2026-07-03 22:39:05.478 | WARNING  | providers.finance.sec_client:cik_from_ticker:69 - CIK lookup exception for AAPL: [Errno 11001] getaddrinfo failed
+2026-07-03 22:39:05.482 | WARNING  | tools.sec_tool:get_all_filings:54 - CIK lookup failed for AAPL, falling back to search

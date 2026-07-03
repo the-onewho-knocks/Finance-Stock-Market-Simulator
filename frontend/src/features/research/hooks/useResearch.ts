@@ -1,29 +1,28 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { researchApi } from '../api/researchApi'
-import type { ResearchRequest, ResearchResponse } from '../types'
+import { setResearchResult, setResearchError } from '../store/researchSlice'
+import type { ResearchRequest } from '../types'
+import type { RootState, AppDispatch } from '../../../app/store'
 
 export function useResearch() {
+  const dispatch = useDispatch<AppDispatch>()
+  const result = useSelector((s: RootState) => s.research.result)
+  const error = useSelector((s: RootState) => s.research.error)
   const [loading, setLoading] = useState(false)
-  const [result, setResult] = useState<ResearchResponse | null>(null)
-  const [error, setError] = useState<string | null>(null)
 
-  const run = async (req: ResearchRequest) => {
+  const run = useCallback(async (symbol: string) => {
     setLoading(true)
-    setError(null)
     try {
+      const req: ResearchRequest = { symbol }
       const res = await researchApi.runResearch(req)
-      setResult(res)
+      dispatch(setResearchResult(res))
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Research failed')
+      dispatch(setResearchError(e instanceof Error ? e.message : 'Research failed'))
     } finally {
       setLoading(false)
     }
-  }
+  }, [dispatch])
 
-  const reset = () => {
-    setResult(null)
-    setError(null)
-  }
-
-  return { run, reset, loading, result, error }
+  return { run, loading, result, error }
 }

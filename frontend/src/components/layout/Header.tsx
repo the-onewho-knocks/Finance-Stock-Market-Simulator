@@ -1,9 +1,13 @@
 import { useState } from 'react'
-import { LogOut, User } from 'lucide-react'
+import { LogOut, User, Menu } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 
-export default function Header() {
+interface HeaderProps {
+  onToggleSidebar: () => void
+}
+
+export default function Header({ onToggleSidebar }: HeaderProps) {
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   const isGuest = localStorage.getItem('guest_mode') === 'true'
@@ -12,13 +16,20 @@ export default function Header() {
     localStorage.removeItem('auth_token')
     localStorage.removeItem('guest_mode')
     toast.success('Logged out')
-    navigate('/login')
+    navigate('/')
   }
 
   return (
     <header className="sticky top-0 z-30 bg-[#0d0d0d]">
       <div className="flex h-12 items-center justify-between border-b border-[#1f1f1f] px-6">
         <div className="flex items-center gap-3">
+          <button
+            onClick={onToggleSidebar}
+            className="rounded p-1 text-gray-400 hover:bg-[#1f1f1f] hover:text-gray-200 transition-colors cursor-pointer"
+            aria-label="Toggle sidebar"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
           <h1 className="text-sm font-medium text-gray-200">Finance Simulation</h1>
           {isGuest && (
             <span className="rounded border border-[#1f1f1f] px-1.5 py-0.5 text-[10px] font-medium text-gray-500">Guest</span>
