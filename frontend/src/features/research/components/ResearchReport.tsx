@@ -54,7 +54,7 @@ export function ResearchReport({ result }: ResearchReportProps) {
         <Card className="bg-[#0d0d0d] border-[#1f1f1f]">
           <CardTitle className="text-sm">Opportunities</CardTitle>
           <ul className="mt-2 space-y-1">
-            {result.opportunities.map((o, i) => <li key={i} className="text-xs text-blue-400">+ {o}</li>)}
+            {result.opportunities.map((o, i) => <li key={i} className="text-xs text-accent-light">+ {o}</li>)}
           </ul>
         </Card>
         <Card className="bg-[#0d0d0d] border-[#1f1f1f]">

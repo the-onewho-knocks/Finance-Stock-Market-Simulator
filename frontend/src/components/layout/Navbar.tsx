@@ -18,7 +18,7 @@ export default function Navbar() {
           className={({ isActive }) =>
             cn(
               'px-3 py-1.5 text-xs font-medium rounded transition-colors',
-              isActive ? 'bg-blue-600/20 text-blue-400' : 'text-gray-400 hover:text-gray-200',
+              isActive ? 'bg-accent/20 text-accent-light' : 'text-gray-400 hover:text-gray-200',
             )
           }
         >

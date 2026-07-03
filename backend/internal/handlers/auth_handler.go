@@ -16,6 +16,35 @@ func NewAuthHandler(authService *services.AuthService) *AuthHandler {
 	return &AuthHandler{authService: authService}
 }
 
+func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, `{"error":"invalid request"}`, http.StatusBadRequest)
+		return
+	}
+	if req.Email == "" || req.Password == "" {
+		http.Error(w, `{"error":"email and password required"}`, http.StatusBadRequest)
+		return
+	}
+
+	result, err := h.authService.Login(r.Context(), req.Email, req.Password)
+	if err != nil {
+		http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusUnauthorized)
+		return
+	}
+
+	token, err := utils.GenerateToken(result.UserID, result.Email, result.IsAdmin)
+	if err != nil {
+		http.Error(w, `{"error":"token error"}`, http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(map[string]any{"token": token, "user": result})
+}
+
 func (h *AuthHandler) GoogleLogin(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		IDToken string `json:"id_token"`

@@ -10,7 +10,7 @@ const badgeVariants = {
   success: 'bg-green-900/40 text-green-400 border border-green-800/30',
   danger: 'bg-red-900/40 text-red-400 border border-red-800/30',
   warning: 'bg-yellow-900/40 text-yellow-400 border border-yellow-800/30',
-  info: 'bg-blue-900/40 text-blue-400 border border-blue-800/30',
+  info: 'bg-accent-dark/40 text-accent-light border border-accent-dark/30',
 }
 
 export function Badge({ className, variant = 'default', children, ...props }: BadgeProps) {

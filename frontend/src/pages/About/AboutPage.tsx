@@ -1,5 +1,5 @@
 import { Card, CardTitle } from '../../components/ui/Card'
-import { TrendingUp, Wallet, Search, Newspaper, BarChart3, Shield, BrainCircuit, Receipt } from 'lucide-react'
+import { TrendingUp, Wallet, Search, Newspaper, BarChart3, BrainCircuit, Receipt, Globe } from 'lucide-react'
 
 const features = [
   { icon: TrendingUp, title: 'Real-time Market Data', description: 'Live prices, candlestick charts, and market overview powered by lightweight-charts (TradingView library).' },
@@ -9,7 +9,7 @@ const features = [
   { icon: BarChart3, title: 'Technical Indicators', description: 'Advanced charts with candlestick patterns, moving averages, and RSI for in-depth analysis.' },
   { icon: Receipt, title: 'Expense Tracking', description: 'Track, categorize, and plan expenses with visual breakdowns and net worth history.' },
   { icon: BrainCircuit, title: 'AI Insights', description: 'AI-driven market insights and predictions to inform your investment decisions.' },
-  { icon: Shield, title: 'Secure Admin Panel', description: 'Full user management and system administration for controlling the platform.' },
+  { icon: Globe, title: 'Real-Time Data', description: 'Live market data feeds with WebSocket streaming for up-to-the-second prices.' },
 ]
 
 const techStack = [
@@ -24,7 +24,7 @@ export default function AboutPage() {
   return (
     <div className="mx-auto max-w-5xl space-y-10 py-6">
       <div className="text-center">
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-600 shadow-lg shadow-blue-600/30">
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-accent shadow-lg shadow-accent/30">
           <TrendingUp className="h-8 w-8 text-white" />
         </div>
         <h1 className="text-3xl font-bold text-gray-100">Finance Simulation</h1>
@@ -36,10 +36,10 @@ export default function AboutPage() {
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {features.map((f) => (
-          <Card key={f.title} variant="elevated" className="hover:border-blue-500/30 transition-all">
+          <Card key={f.title} variant="elevated" className="hover:border-accent/30 transition-all">
             <div className="flex items-start gap-4">
-              <div className="rounded-lg bg-blue-600/10 p-2.5">
-                <f.icon className="h-5 w-5 text-blue-400" />
+              <div className="rounded-lg bg-accent/10 p-2.5">
+                <f.icon className="h-5 w-5 text-accent-light" />
               </div>
               <div>
                 <CardTitle>{f.title}</CardTitle>
@@ -53,7 +53,7 @@ export default function AboutPage() {
       <Card variant="elevated">
         <CardTitle>Architecture</CardTitle>
         <div className="mt-3 flex flex-wrap items-center justify-center gap-3 text-xs">
-          <span className="rounded-md bg-blue-600/20 px-3 py-1.5 font-medium text-blue-400">React Frontend :5173</span>
+          <span className="rounded-md bg-accent/20 px-3 py-1.5 font-medium text-accent-light">React Frontend :5173</span>
           <span className="text-gray-600">&rarr;</span>
           <span className="rounded-md bg-green-600/20 px-3 py-1.5 font-medium text-green-400">Go Backend :8081</span>
           <span className="text-gray-600">&rarr;</span>

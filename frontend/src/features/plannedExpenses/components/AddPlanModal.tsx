@@ -38,7 +38,7 @@ export function AddPlanModal({ open, onClose, onCreate }: AddPlanModalProps) {
         <Input label="Description" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="What is this for?" />
         <Input label="Target Date" type="date" value={targetDate} onChange={(e) => setTargetDate(e.target.value)} />
         <label className="flex items-center gap-2 text-sm text-gray-400">
-          <input type="checkbox" checked={recurring} onChange={(e) => setRecurring(e.target.checked)} className="accent-blue-600" />
+          <input type="checkbox" checked={recurring} onChange={(e) => setRecurring(e.target.checked)} className="accent-accent" />
           Recurring
         </label>
         <div className="flex justify-end gap-3">

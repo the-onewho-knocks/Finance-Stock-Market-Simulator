@@ -47,7 +47,7 @@ export function SplitPanel({ left, right, defaultLeftWidth = 50, minLeftWidth = 
       </div>
       <div
         onMouseDown={handleMouseDown}
-        className="w-1 shrink-0 cursor-col-resize bg-[#1f1f1f] hover:bg-blue-500 transition-colors relative z-10"
+        className="w-1 shrink-0 cursor-col-resize bg-[#1f1f1f] hover:bg-accent transition-colors relative z-10"
       >
         <div className="absolute inset-y-0 -left-1 -right-1" />
       </div>

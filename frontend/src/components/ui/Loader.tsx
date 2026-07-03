@@ -12,7 +12,7 @@ export function Loader({ size = 'md', className }: LoaderProps) {
     <div className={cn('flex items-center justify-center py-8', className)}>
       <div
         className={cn(
-          'animate-spin rounded-full border-[#1f1f1f] border-t-blue-500',
+          'animate-spin rounded-full border-[#1f1f1f] border-t-accent',
           sizes[size],
         )}
       />

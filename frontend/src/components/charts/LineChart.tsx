@@ -7,7 +7,7 @@ interface LineChartProps {
   height?: number
 }
 
-export function LineChart({ data, color = '#3b82f6', height = 250 }: LineChartProps) {
+export function LineChart({ data, color = '#7F00FF', height = 250 }: LineChartProps) {
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {

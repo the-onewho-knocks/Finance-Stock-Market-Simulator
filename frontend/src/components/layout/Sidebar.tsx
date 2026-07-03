@@ -3,11 +3,11 @@ import { cn } from '../../lib/helpers'
 import {
   LayoutDashboard, TrendingUp, Wallet, ArrowLeftRight,
   BarChart3, Newspaper, Star, Search, BrainCircuit,
-  Receipt, CalendarRange, WalletCards, User, Shield, Info,
+  Receipt, CalendarRange, WalletCards, User, Info,
 } from 'lucide-react'
 
 const navItems = [
-  { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
+  { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/market', icon: TrendingUp, label: 'Market' },
   { to: '/portfolio', icon: Wallet, label: 'Portfolio' },
   { to: '/transactions', icon: ArrowLeftRight, label: 'Transactions' },
@@ -21,14 +21,13 @@ const navItems = [
   { to: '/indicators', icon: BarChart3, label: 'Indicators' },
   { to: '/about', icon: Info, label: 'About' },
   { to: '/profile', icon: User, label: 'Profile' },
-  { to: '/admin', icon: Shield, label: 'Admin' },
 ]
 
 export default function Sidebar() {
   return (
     <aside className="fixed left-0 top-0 z-40 h-screen w-56 border-r border-[#1f1f1f] bg-[#0d0d0d] overflow-y-auto">
       <div className="flex items-center gap-2 border-b border-[#1f1f1f] px-4 py-4">
-        <div className="h-7 w-7 rounded bg-blue-600 flex items-center justify-center text-xs font-bold text-white">FS</div>
+        <div className="h-7 w-7 rounded bg-accent flex items-center justify-center text-xs font-bold text-white">FS</div>
         <span className="text-sm font-semibold text-gray-100">Finance Sim</span>
       </div>
       <nav className="space-y-0.5 p-2">
@@ -41,7 +40,7 @@ export default function Sidebar() {
               cn(
                 'flex items-center gap-3 rounded px-3 py-2 text-sm transition-colors',
                 isActive
-                  ? 'bg-blue-600/20 text-blue-400'
+                  ? 'bg-accent/20 text-accent-light'
                   : 'text-gray-400 hover:bg-[#1f1f1f] hover:text-gray-200',
               )
             }

@@ -100,6 +100,14 @@ func main() {
 		dashboardCache,
 	)
 
+	historyCache := cache.NewHistoryCache()
+	historyService := services.NewHistoryService(*rapidApiClient, historyCache)
+	historyHandler := handler.NewHistoryHandler(historyService)
+
+	indianStockClient := stockapi.NewIndianStockClient(cfg.RapidAPIKey)
+	indianStockService := services.NewIndianStockService(indianStockClient)
+	indianStockHandler := handler.NewIndianStockHandler(indianStockService)
+
 	researchHandler := handler.NewResearchHandler(cfg.StockResearchAIURL)
 
 	h := &routes.Handlers{
@@ -115,6 +123,8 @@ func main() {
 		Heatmap:        handler.NewHeatmapHandler(heatmapService),
 		Dashboard:      handler.NewDashboardHandler(dashboardService),
 		Research:       researchHandler,
+		History:        historyHandler,
+		IndianStock:    indianStockHandler,
 	}
 
 	r := chi.NewRouter()

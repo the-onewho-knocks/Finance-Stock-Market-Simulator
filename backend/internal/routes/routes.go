@@ -19,6 +19,8 @@ type Handlers struct {
 	Heatmap        *handler.HeatmapHandler
 	Dashboard      *handler.DashboardHandler
 	Research       *handler.ResearchHandler
+	History        *handler.HistoryHandler
+	IndianStock    *handler.IndianStockHandler
 }
 
 func RegisterRoutes(h *Handlers) chi.Router {
@@ -43,6 +45,8 @@ func RegisterRoutes(h *Handlers) chi.Router {
 	RegisterHeatmapRoutes(r, h.Heatmap)
 	RegisterDashboardRoutes(r, h.Dashboard)
 	RegisterResearchRoutes(r, h.Research)
+	RegisterHistoryRoutes(r, h.History)
+	RegisterIndianStockRoutes(r, h.IndianStock)
 
 	return r
 }

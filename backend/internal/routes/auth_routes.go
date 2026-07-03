@@ -11,6 +11,10 @@ func RegisterAuthRoutes(r chi.Router, authHandler *handler.AuthHandler) {
 	// Auth routes group
 	r.Route("/auth", func(r chi.Router) {
 
+		// POST /auth/login
+		// Body: { "email": "...", "password": "..." }
+		r.Post("/login", authHandler.Login)
+
 		// POST /auth/google
 		// Body: { "id_token": "<google-id-token>" }
 		r.Post("/google", authHandler.GoogleLogin)

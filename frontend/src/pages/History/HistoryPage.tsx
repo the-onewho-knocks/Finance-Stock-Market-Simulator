@@ -32,7 +32,7 @@ export default function HistoryPage() {
       {chartData.length > 0 && (
         <Card className="bg-[#0d0d0d] border-[#1f1f1f]">
           <CardTitle>{symbol.toUpperCase()} History</CardTitle>
-          <AreaChart data={chartData} color="#3b82f6" height={350} />
+          <AreaChart data={chartData} color="#7F00FF" height={350} />
         </Card>
       )}
     </div>

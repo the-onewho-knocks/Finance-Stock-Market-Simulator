@@ -6,7 +6,7 @@ interface BarChartProps {
   height?: number
 }
 
-export function BarChart({ data, color = '#3b82f6', height = 250 }: BarChartProps) {
+export function BarChart({ data, color = '#7F00FF', height = 250 }: BarChartProps) {
   return (
     <ResponsiveContainer width="100%" height={height}>
       <RechartsBar data={data}>

@@ -27,6 +27,28 @@ type AuthResult struct {
 	IsAdmin bool
 }
 
+func (s *AuthService) Login(ctx context.Context, email, password string) (*AuthResult, error) {
+	if email == "" || password == "" {
+		return nil, errors.New("missing credentials")
+	}
+
+	user, err := s.userService.GetUserByEmail(ctx, email)
+	if err != nil {
+		user, err = s.userService.CreateUser(ctx, email, email, "", "")
+		if err != nil {
+			return nil, errors.New("login failed")
+		}
+	}
+
+	return &AuthResult{
+		UserID:  user.ID,
+		Email:   user.Email,
+		Name:    user.FullName,
+		Avatar:  user.AvatarURL,
+		IsAdmin: user.IsAdmin,
+	}, nil
+}
+
 func (s *AuthService) GoogleLogin(
 	ctx context.Context,
 	idToken string,

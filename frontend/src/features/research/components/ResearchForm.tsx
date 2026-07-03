@@ -27,7 +27,7 @@ export function ResearchForm({ onSubmit, loading }: ResearchFormProps) {
         />
       </div>
       <label className="flex items-center gap-2 pb-1 text-sm text-gray-400">
-        <input type="checkbox" checked={deep} onChange={(e) => setDeep(e.target.checked)} className="accent-blue-600" />
+        <input type="checkbox" checked={deep} onChange={(e) => setDeep(e.target.checked)} className="accent-accent" />
         Deep Analysis
       </label>
       <Button type="submit" disabled={loading || !symbol.trim()}>

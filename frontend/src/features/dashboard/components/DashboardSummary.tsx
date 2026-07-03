@@ -17,7 +17,7 @@ export function DashboardSummary({ networth, portfolio, cash, expenses }: Dashbo
       </Card>
       <Card className="bg-[#0d0d0d] border-[#1f1f1f]">
         <p className="text-xs text-gray-500">Portfolio</p>
-        <p className="mt-1 text-xl font-bold text-blue-400">{formatCurrency(portfolio)}</p>
+        <p className="mt-1 text-xl font-bold text-accent-light">{formatCurrency(portfolio)}</p>
       </Card>
       <Card className="bg-[#0d0d0d] border-[#1f1f1f]">
         <p className="text-xs text-gray-500">Cash Balance</p>

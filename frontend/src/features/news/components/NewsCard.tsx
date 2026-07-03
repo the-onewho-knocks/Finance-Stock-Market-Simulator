@@ -11,7 +11,7 @@ export function NewsCard({ article }: NewsCardProps) {
       href={article.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="group block rounded-lg border border-[#1f1f1f] bg-[#0d0d0d] overflow-hidden hover:border-blue-500/50 transition-colors"
+      className="group block rounded-lg border border-[#1f1f1f] bg-[#0d0d0d] overflow-hidden hover:border-accent/50 transition-colors"
     >
       {article.image && (
         <img
@@ -27,7 +27,7 @@ export function NewsCard({ article }: NewsCardProps) {
           <span>&middot;</span>
           <span>{timeAgo(new Date(article.datetime * 1000).toISOString())}</span>
         </div>
-        <h3 className="mt-2 text-sm font-semibold text-gray-100 group-hover:text-blue-400 transition-colors line-clamp-2">
+        <h3 className="mt-2 text-sm font-semibold text-gray-100 group-hover:text-accent-light transition-colors line-clamp-2">
           {article.headline}
         </h3>
         <p className="mt-1 text-xs text-gray-500 line-clamp-2">{article.summary}</p>

@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import DashboardLayout from '../components/layout/DashboardLayout'
 import ProtectedRoute from './protected-route'
+import IntroPage from '../pages/Intro/IntroPage'
 import LoginPage from '../pages/Login/LoginPage'
 import AboutPage from '../pages/About/AboutPage'
 import DashboardPage from '../pages/Dashboard/DashboardPage'
@@ -18,16 +19,16 @@ import AIInsightsPage from '../pages/AIInsights/AIInsightsPage'
 import IndicatorsPage from '../pages/Indicators/IndicatorsPage'
 import HistoryPage from '../pages/History/HistoryPage'
 import AlertsPage from '../pages/Alerts/AlertsPage'
-import AdminPage from '../pages/Admin/AdminPage'
 import NotFoundPage from '../pages/NotFound/NotFoundPage'
 
 export default function AppRouter() {
   return (
     <Routes>
+      <Route path="/" element={<IntroPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route element={<ProtectedRoute />}>
         <Route element={<DashboardLayout />}>
-          <Route path="/" element={<DashboardPage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/portfolio" element={<PortfolioPage />} />
           <Route path="/transactions" element={<TransactionsPage />} />
           <Route path="/market" element={<MarketPage />} />
@@ -43,7 +44,6 @@ export default function AppRouter() {
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/alerts" element={<AlertsPage />} />
           <Route path="/about" element={<AboutPage />} />
-          <Route path="/admin" element={<AdminPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Route>
